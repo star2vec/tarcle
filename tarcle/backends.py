@@ -2,8 +2,13 @@
 
 The pilot only needs forced-choice scoring: total logprob of each candidate
 continuation given a prompt. `LocalHFBackend` is the real path (gpt2 on CPU for
-smoke tests, Llama-3.2-3B bf16 on CUDA for the gate). `OpenAICompatBackend` is
-an intentionally unimplemented fallback for hosted endpoints.
+smoke tests, Llama-3.2-3B bf16 on CUDA for the gate; fp16 on MPS for M1 runs).
+`OpenAICompatBackend` is an intentionally unimplemented fallback for hosted
+endpoints.
+
+Precision policy (CLAUDE.md rule 4): fp16/MPS is acceptable for *behavioral*
+runs only. Anything whose output is geometry (FV extraction onward) runs
+bf16 minimum on CUDA.
 """
 from __future__ import annotations
 
@@ -33,11 +38,26 @@ class Backend(Protocol):
     ) -> list[ChoiceScores]: ...
 
 
+def check_device(device: str) -> None:
+    """Fail fast with a clear message before any model download starts."""
+    if device.startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError(
+            f"device '{device}' requested but CUDA is not available in this "
+            "torch build/machine"
+        )
+    if device == "mps" and not torch.backends.mps.is_available():
+        raise RuntimeError(
+            "device 'mps' requested but MPS is not available (requires an "
+            "Apple Silicon build of torch on macOS >= 12.3)"
+        )
+
+
 class LocalHFBackend:
     def __init__(
         self, model_name: str, device: str = "cpu", dtype: str = "float32",
         batch_size: int = 8,
     ):
+        check_device(device)
         self.device = device
         self.batch_size = batch_size
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)

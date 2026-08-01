@@ -141,6 +141,20 @@ def test_gate_verdict_bands():
     assert gate_verdict(table({0: 0.9}), ks)["verdict"] == "INCOMPLETE"
 
 
+def test_unavailable_device_raises():
+    import torch
+
+    from tarcle.backends import check_device
+
+    if not torch.cuda.is_available():
+        with pytest.raises(RuntimeError, match="CUDA is not available"):
+            check_device("cuda")
+    if not torch.backends.mps.is_available():
+        with pytest.raises(RuntimeError, match="MPS is not available"):
+            check_device("mps")
+    check_device("cpu")  # never raises
+
+
 def test_slow_path_matches_fast_path():
     """Teacher-forced continuation scoring must agree with the next-token fast path
     on single-token candidates (guards the position indexing of the slow path)."""
