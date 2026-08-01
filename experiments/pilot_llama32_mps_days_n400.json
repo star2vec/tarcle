@@ -1,0 +1,13 @@
+{
+  "run_name": "llama32_3b_mps_days_n400_s16",
+  "model": "meta-llama/Llama-3.2-3B",
+  "backend": "local_hf",
+  "device": "mps",
+  "dtype": "float16",
+  "variants": ["days"],
+  "ks": [3, 4, 5],
+  "n_per_k": 400,
+  "shots": 16,
+  "seed": 0,
+  "batch_size": 8
+}

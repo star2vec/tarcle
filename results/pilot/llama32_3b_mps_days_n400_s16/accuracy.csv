@@ -1,0 +1,7 @@
+variant,k,stratum,domain,n,accuracy
+days,3,copy,all,200,0.995
+days,3,heldout,all,200,0.775
+days,4,copy,all,200,1.0
+days,4,heldout,all,200,0.61
+days,5,copy,all,200,1.0
+days,5,heldout,all,200,0.285

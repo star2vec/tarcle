@@ -37,7 +37,7 @@ def shift(domain: str, operand: str, k: int) -> str:
 class PromptItem:
     prompt: str
     target: str
-    variant: str  # "days" | "mixed"
+    variant: str  # a single domain ("days", "months", ...) or "mixed"
     k: int
     domain: str  # domain of the query operand
     query: str
@@ -75,10 +75,10 @@ def make_prompt_set(
     demo is force-placed); held-out stratum guarantees the query operand never
     appears as a demo operand. The gate metric uses the held-out stratum only.
     """
-    if variant == "days":
-        domains = ["days"]
-    elif variant == "mixed":
+    if variant == "mixed":
         domains = MIXED_DOMAINS
+    elif variant in DOMAINS:
+        domains = [variant]  # single-domain variant: "days", "months", ...
     else:
         raise ValueError(f"unknown variant: {variant}")
 

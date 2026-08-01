@@ -2,13 +2,19 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from pathlib import Path
 
 import pytest
 
 from tarcle import prompts as P
 from tarcle.pilot import PilotConfig, run
-from tarcle.pilot_report import accuracy_table, gate_verdict, load_run, main as report_main
+from tarcle.pilot_report import (
+    accuracy_table,
+    gate_variant,
+    gate_verdict,
+    load_run,
+    main as report_main,
+)
 
 
 def test_shift_wraparound():
@@ -34,7 +40,7 @@ def test_prompt_set_determinism(tmp_path):
 
 
 def test_stratification():
-    for variant in ("days", "mixed"):
+    for variant in ("days", "months", "mixed"):
         items = P.make_prompt_set(variant, 2, 60, 10, seed=0)
         copy = [it for it in items if it.query_in_demos]
         heldout = [it for it in items if not it.query_in_demos]
@@ -57,6 +63,50 @@ def test_targets_and_choices():
         assert it.prompt.count("Q:") == 11  # 10 demos + query
         for d, op, tgt in it.demos:
             assert tgt == P.shift(d, op, it.k)
+
+
+def test_single_domain_variant_months():
+    """months is a full Z/12 single-domain variant, not a slice of mixed."""
+    items = P.make_prompt_set("months", 5, 24, 10, seed=0)
+    assert {it.domain for it in items} == {"months"}
+    for it in items:
+        assert it.choices == P.DOMAINS["months"]
+        assert len(it.choices) == 12
+        assert it.target == P.shift("months", it.query, 5)
+        assert all(d == "months" for d, _, _ in it.demos)
+    with pytest.raises(ValueError, match="unknown variant"):
+        P.make_prompt_set("weekdays", 1, 4, 3, seed=0)
+
+
+@pytest.mark.parametrize(
+    "run_name", ["gpt2_cpu_smoke", "llama32_3b_mps"]
+)
+def test_committed_runs_still_reproduce(tmp_path, run_name):
+    """Regenerating a committed run's prompt set must reproduce its recorded
+    SHA-256. Guards the whole seeded-generation path against silent drift."""
+    run_dir = Path(__file__).resolve().parents[1] / "results" / "pilot" / run_name
+    if not run_dir.exists():
+        pytest.skip(f"{run_name} not present")
+    cfg = json.loads((run_dir / "manifest.json").read_text())["config"]
+    items = [
+        it
+        for v in cfg["variants"]
+        for k in cfg["ks"]
+        for it in P.make_prompt_set(v, k, cfg["n_per_k"], cfg["shots"], cfg["seed"])
+    ]
+    sha = P.write_prompt_set(items, tmp_path / "regen.jsonl")
+    assert sha == json.loads((run_dir / "manifest.json").read_text())["prompts_sha256"]
+
+
+def test_gate_variant_selection():
+    def items(variants):
+        return [{"variant": v} for v in variants]
+
+    assert gate_variant(items(["days", "mixed"])) == "days"
+    assert gate_variant(items(["months"])) == "months"
+    assert gate_variant(items(["months", "mixed"])) == "months"
+    with pytest.raises(ValueError, match="no single-domain variant"):
+        gate_variant(items(["mixed"]))
 
 
 class OracleBackend:

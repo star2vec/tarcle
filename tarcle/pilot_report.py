@@ -64,12 +64,25 @@ def accuracy_table(items: list[dict]) -> list[dict]:
     ]
 
 
-def gate_verdict(table: list[dict], ks: list[int]) -> dict:
-    """GO/NO-GO from the days variant, held-out stratum, per k."""
+def gate_variant(items: list[dict]) -> str:
+    """The variant the gate is read off: the single-domain one ("days", "months"),
+    preferring "days" when a run has several. "mixed" is a control, never the gate."""
+    variants = {it["variant"] for it in items}
+    if "days" in variants:
+        return "days"
+    single = sorted(variants - {"mixed"})
+    if not single:
+        raise ValueError("run has no single-domain variant to gate on")
+    return single[0]
+
+
+def gate_verdict(table: list[dict], ks: list[int], variant: str = "days") -> dict:
+    """GO/NO-GO from the gate variant, held-out stratum, per k."""
     acc = {
         row["k"]: row["accuracy"]
         for row in table
-        if (row["variant"], row["stratum"], row["domain"]) == ("days", "heldout", "all")
+        if (row["variant"], row["stratum"], row["domain"])
+        == (variant, "heldout", "all")
     }
     missing = [k for k in ks if k not in acc]
     if missing:
@@ -82,22 +95,25 @@ def gate_verdict(table: list[dict], ks: list[int]) -> dict:
         verdict = "MARGINAL"
     return {
         "verdict": verdict,
+        "variant": variant,
         "per_k": acc,
         "below_go": [k for k in ks if acc[k] < GO_THRESHOLD],
         "at_floor": [k for k in ks if acc[k] <= NO_GO_THRESHOLD],
     }
 
 
-def shift_confusion(items: list[dict], ks: list[int]) -> np.ndarray:
-    """P(predicted shift | true k) on the days variant, held-out stratum.
-    predicted shift = (pred_day - query_day) mod 7."""
-    n = len(DOMAINS["days"])
+def shift_confusion(
+    items: list[dict], ks: list[int], variant: str = "days"
+) -> np.ndarray:
+    """P(predicted shift | true k) on a single-domain variant, held-out stratum.
+    predicted shift = (pred_index - query_index) mod n, n = cycle length."""
+    n = len(DOMAINS[variant])
     counts = np.zeros((len(ks), n))
-    day_idx = {d: i for i, d in enumerate(DOMAINS["days"])}
+    idx = {x: i for i, x in enumerate(DOMAINS[variant])}
     for it in items:
-        if it["variant"] != "days" or it["query_in_demos"]:
+        if it["variant"] != variant or it["query_in_demos"]:
             continue
-        pred_k = (day_idx[it["pred"]] - day_idx[it["query"]]) % n
+        pred_k = (idx[it["pred"]] - idx[it["query"]]) % n
         counts[ks.index(it["k"]), pred_k] += 1
     rows = counts.sum(axis=1, keepdims=True)
     return np.divide(counts, rows, out=np.zeros_like(counts), where=rows > 0)
@@ -153,8 +169,11 @@ def plot_accuracy(table: list[dict], items: list[dict], out_path: Path) -> None:
     plt.close(fig)
 
 
-def plot_confusion(conf: np.ndarray, ks: list[int], out_path: Path) -> None:
-    fig, ax = plt.subplots(figsize=(4.6, 4.0))
+def plot_confusion(
+    conf: np.ndarray, ks: list[int], out_path: Path, variant: str = "days"
+) -> None:
+    n = conf.shape[1]
+    fig, ax = plt.subplots(figsize=(0.42 * n + 2.2, 0.26 * len(ks) + 2.2))
     fig.patch.set_facecolor("#fcfcfb")
     cmap = matplotlib.colors.LinearSegmentedColormap.from_list("seq_blue", SEQ_BLUES)
     ax.imshow(conf, cmap=cmap, vmin=0, vmax=1)
@@ -167,9 +186,11 @@ def plot_confusion(conf: np.ndarray, ks: list[int], out_path: Path) -> None:
                 )
     ax.set_xticks(range(conf.shape[1]))
     ax.set_yticks(range(len(ks)), ks)
-    ax.set_xlabel("predicted shift (mod 7)", fontsize=9, color=MUTED)
+    ax.set_xlabel(f"predicted shift (mod {n})", fontsize=9, color=MUTED)
     ax.set_ylabel("true k", fontsize=9, color=MUTED)
-    ax.set_title("Predicted-shift confusion (days, held-out)", fontsize=11, color=INK)
+    ax.set_title(
+        f"Predicted-shift confusion ({variant}, held-out)", fontsize=11, color=INK
+    )
     ax.tick_params(colors=MUTED, labelsize=9)
     for spine in ax.spines.values():
         spine.set_visible(False)
@@ -198,12 +219,15 @@ def main(argv: list[str] | None = None) -> None:
         writer.writerows(table)
 
     plot_accuracy(table, items, args.run_dir / "accuracy_vs_k.png")
-    if any(it["variant"] == "days" for it in items):
-        plot_confusion(
-            shift_confusion(items, ks), ks, args.run_dir / "confusion_days.png"
-        )
+    variant = gate_variant(items)
+    plot_confusion(
+        shift_confusion(items, ks, variant),
+        ks,
+        args.run_dir / f"confusion_{variant}.png",
+        variant,
+    )
 
-    verdict = gate_verdict(table, ks)
+    verdict = gate_verdict(table, ks, variant)
     (args.run_dir / "report.json").write_text(
         json.dumps({"model": model, "gate": verdict, "table": table}, indent=2) + "\n",
         encoding="utf-8", newline="\n",
@@ -216,8 +240,8 @@ def main(argv: list[str] | None = None) -> None:
             f"{row['variant']:8} {row['k']:>2} {row['stratum']:8} "
             f"{row['n']:>4} {row['accuracy']:8.3f}"
         )
-    print(f"\ngate (days, held-out, GO>={GO_THRESHOLD}, NO-GO<={NO_GO_THRESHOLD}): "
-          f"{verdict['verdict']}")
+    print(f"\ngate ({variant}, held-out, GO>={GO_THRESHOLD}, "
+          f"NO-GO<={NO_GO_THRESHOLD}): {verdict['verdict']}")
     if verdict.get("below_go"):
         print(f"  below GO threshold: k={verdict['below_go']}")
     if "gpt2" in model:

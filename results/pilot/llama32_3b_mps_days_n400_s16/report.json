@@ -1,0 +1,68 @@
+{
+  "model": "meta-llama/Llama-3.2-3B",
+  "gate": {
+    "verdict": "NO-GO",
+    "variant": "days",
+    "per_k": {
+      "3": 0.775,
+      "4": 0.61,
+      "5": 0.285
+    },
+    "below_go": [
+      5
+    ],
+    "at_floor": [
+      5
+    ]
+  },
+  "table": [
+    {
+      "variant": "days",
+      "k": 3,
+      "stratum": "copy",
+      "domain": "all",
+      "n": 200,
+      "accuracy": 0.995
+    },
+    {
+      "variant": "days",
+      "k": 3,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 200,
+      "accuracy": 0.775
+    },
+    {
+      "variant": "days",
+      "k": 4,
+      "stratum": "copy",
+      "domain": "all",
+      "n": 200,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "days",
+      "k": 4,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 200,
+      "accuracy": 0.61
+    },
+    {
+      "variant": "days",
+      "k": 5,
+      "stratum": "copy",
+      "domain": "all",
+      "n": 200,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "days",
+      "k": 5,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 200,
+      "accuracy": 0.285
+    }
+  ]
+}
