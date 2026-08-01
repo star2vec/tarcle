@@ -1,0 +1,39 @@
+{
+  "config": {
+    "run_name": "llama32_3b_mps",
+    "model": "meta-llama/Llama-3.2-3B",
+    "backend": "local_hf",
+    "device": "mps",
+    "dtype": "float16",
+    "variants": [
+      "days",
+      "mixed"
+    ],
+    "ks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "n_per_k": 100,
+    "shots": 10,
+    "seed": 0,
+    "batch_size": 8,
+    "results_dir": "results/pilot",
+    "base_url": ""
+  },
+  "config_sha256": "f556c496e82a42091e4a03aa391371e6998166f2dbce70e85b5f9b13eb3766a9",
+  "prompts_sha256": "53462a2131939374ed090744f2b5fb9f1cdfa1e4e40a26e09e18aab7d70e1a35",
+  "git_commit": "ac4b195e943939e9e83e1c3d6daaf0961d62bf6e",
+  "timestamp_utc": "2026-08-01T18:48:46.962152+00:00",
+  "python": "3.12.13",
+  "platform": "macOS-14.2.1-arm64-arm-64bit",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "4.57.6",
+    "numpy": "2.5.1"
+  }
+}
