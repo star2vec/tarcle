@@ -1,0 +1,39 @@
+{
+  "config": {
+    "run_name": "gpt2_cpu_smoke",
+    "model": "gpt2",
+    "backend": "local_hf",
+    "device": "cpu",
+    "dtype": "float32",
+    "variants": [
+      "days",
+      "mixed"
+    ],
+    "ks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "n_per_k": 100,
+    "shots": 10,
+    "seed": 0,
+    "batch_size": 8,
+    "results_dir": "results/pilot",
+    "base_url": ""
+  },
+  "config_sha256": "994aa303ff4ddff129e71a5f0b966556a75ac984712b7bdeddea69758bd6c6aa",
+  "prompts_sha256": "53462a2131939374ed090744f2b5fb9f1cdfa1e4e40a26e09e18aab7d70e1a35",
+  "git_commit": "unknown",
+  "timestamp_utc": "2026-08-01T17:39:24.150191+00:00",
+  "python": "3.11.15",
+  "platform": "macOS-14.5-x86_64-i386-64bit",
+  "versions": {
+    "torch": "2.2.2",
+    "transformers": "4.57.6",
+    "numpy": "1.26.4"
+  }
+}
