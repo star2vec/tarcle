@@ -13,6 +13,7 @@ Runs recorded:
 | `llama32_3b_mps` | days (Z/7) + mixed | 0–6 | 100 | 10 | NO-GO |
 | `llama32_3b_mps_days_n400_s16` | days (Z/7) | 3,4,5 | 400 | 16 | NO-GO |
 | `llama32_3b_mps_months` | months (Z/12) | 0–11 | 100 | 10 | MARGINAL |
+| `llama32_3b_mps_months_s16` | months (Z/12) | 0–11 | 100 | 16 | MARGINAL |
 | `gpt2_cpu_smoke` | days + mixed | 0–6 | 100 | 10 | NO-GO (pipeline smoke only) |
 
 All accuracies below are the **held-out stratum** (query operand never appears as a demo
@@ -38,17 +39,17 @@ profiles legible.
 | 2 | 0.72 (k=2) | 0.20 (k=5) |
 | 3 | 0.52 (k=3) | 0.32 (k=4) |
 
-**Months (Z/12), 10-shot:**
+**Months (Z/12)**, 10-shot and 16-shot:
 
-| \|m\| | forward (+m) | backward (−m) |
+| \|m\| | forward (+m) 10sh → 16sh | backward (−m) 10sh → 16sh |
 |---|---|---|
-| 0 | 1.00 | — |
-| 1 | 1.00 (k=1) | 1.00 (k=11) |
-| 2 | 1.00 (k=2) | 0.88 (k=10) |
-| 3 | 0.98 (k=3) | 0.76 (k=9) |
-| 4 | 0.62 (k=4) | 0.34 (k=8) |
-| 5 | 0.50 (k=5) | 0.56 (k=7) |
-| 6 | 0.90 (k=6, self-inverse) | — |
+| 0 | 1.00 → 1.00 | — |
+| 1 | 1.00 → 1.00 (k=1) | 1.00 → 1.00 (k=11) |
+| 2 | 1.00 → 1.00 (k=2) | 0.88 → 0.86 (k=10) |
+| 3 | 0.98 → 1.00 (k=3) | 0.76 → 0.80 (k=9) |
+| 4 | 0.62 → 0.76 (k=4) | 0.34 → **0.38** (k=8) |
+| 5 | 0.50 → 0.76 (k=5) | 0.56 → 0.70 (k=7) |
+| 6 | 0.90 → 0.98 (k=6, self-inverse) | — |
 
 Decay in |m| is real but **not monotone**, and the violation is structural rather than
 noise (§3).
@@ -58,7 +59,12 @@ noise (§3).
 Forward shifts beat backward shifts of the same magnitude, consistently, in both families:
 
 - days: +1 1.00 / −1 0.70, +2 0.72 / −2 0.20, +3 0.52 / −3 0.32
-- months: +2 1.00 / −2 0.88, +3 0.98 / −3 0.76, +4 0.62 / −4 0.34
+- months (10-shot): +2 1.00 / −2 0.88, +3 0.98 / −3 0.76, +4 0.62 / −4 0.34
+- months (16-shot): +2 1.00 / −2 0.86, +3 1.00 / −3 0.80, +4 0.76 / −4 **0.38**
+
+More shots do not close the asymmetry — they widen it at |m|=4, from +0.28 to **+0.38**,
+the largest gap anywhere in either family. Extra demonstrations help the forward direction
+substantially more than the backward one.
 
 This generalises Todd et al.'s observation that previous-item underperforms next-item:
 the effect is not confined to ±1, it holds across the whole cycle. The asymmetry closes at
@@ -163,3 +169,60 @@ in the backward direction.** k=5 ≡ −2 gained almost nothing and its CI still
 
 Shot count is therefore a live experimental variable, not a fixed cost — and it interacts
 with the direction asymmetry rather than uniformly lifting the curve.
+
+**Months at 16 shots (full k=0..11, n=100).** Verdict stays MARGINAL, with k=8 again the
+only cell below the GO threshold.
+
+| k | 10sh | 16sh | Δ | | k | 10sh | 16sh | Δ |
+|---|---|---|---|---|---|---|---|---|
+| 0 | 1.00 | 1.00 | +0.00 | | 6 | 0.90 | 0.98 | +0.08 |
+| 1 | 1.00 | 1.00 | +0.00 | | 7 | 0.56 | 0.70 | +0.14 |
+| 2 | 1.00 | 1.00 | +0.00 | | 8 | 0.34 | **0.38** | **+0.04** |
+| 3 | 0.98 | 1.00 | +0.02 | | 9 | 0.76 | 0.80 | +0.04 |
+| 4 | 0.62 | 0.76 | +0.14 | | 10 | 0.88 | 0.86 | −0.02 |
+| 5 | 0.50 | 0.76 | +0.26 | | 11 | 1.00 | 1.00 | +0.00 |
+
+Cells at ≥0.70 go from **8/12 to 11/12**; cells at ≥0.50 stay 11/12. The extra shots lifted
+the whole profile — most dramatically k=5 (+0.26) and k=4/k=7 (+0.14) — with **k=8 the sole
+non-responder**.
+
+## 7. The k=8 cell and which pre-registered branch fires
+
+`docs/preregistration.md` §4 was committed (`fa55b8e`) before this run was inspected. Its
+branches turn on whether k=8 clears 0.50, and if not, whether it improved.
+
+Observed: **k=8 = 0.38, Wilson 95% CI [0.26, 0.52]** — an interval that straddles *both* the
+0.50 GO threshold and the 0.30 NO-GO floor. So k=8 did not clear 0.50, and the registered
+weak-cell branch fires: extract FV(8) anyway, and run every geometry diagnostic twice — full
+n=12 and leave-one-out n=11 — reported side by side, claiming a result only where the two
+columns agree. Note per that section that Z/11 is prime, so the divisor test of §1 is
+undefined on the reduced set and must be read off the full n=12 column with k=8 flagged.
+
+**A registered ambiguity, recorded rather than resolved.** The branch condition reads
+"improves over its 10-shot value but stays below 0.50." k=8 moved 0.34 → 0.38, which
+satisfies that *literally*, but the change is not statistically distinguishable from zero
+(two-proportion z = 0.42, p = 0.68). The neighbouring branch — "fails to improve at all" —
+would escalate to NO-GO for months as primary. The registration did not operationalise
+"improves" with a significance criterion, so the two branches are not cleanly separated by
+this result.
+
+The literal reading is recorded as the one that fires, and the wording weakness is recorded
+here rather than patched into the frozen registration. Two considerations bearing on it,
+for the session that plans extraction:
+
+- **For the leave-one-out branch:** the rest of the family responded strongly (11/12 cells
+  ≥0.70). The NO-GO escalation branch was written for a family that is broadly weak, which
+  this is not. One isolated bad cell in an otherwise strong profile is precisely the case
+  the leave-one-out policy was designed for.
+- **Against it:** k=8 is not merely weak, it is the one cell that *did not respond to the
+  intervention that fixed every other cell*. That is a qualitative difference from "a bit
+  noisy," and it may indicate the shift-by-−4 task is not represented in the same way as
+  its neighbours — which is a substantive claim about the geometry, not a sampling issue.
+
+The k=8 error structure supports reading it as structural rather than noise: at 16 shots its
+mass splits **0.38 correct / 0.26 onto the sign-flip +4 / 0.26 onto the antipode 6**, with
+only 0.10 elsewhere. The antipode acts as an attractor — the same k=6 salience that makes
+k=6 itself the easiest mid-cycle shift (0.98) appears to be pulling k=8 predictions onto it.
+
+**A decision on that ambiguity is deferred to the extraction-planning session and is the
+user's to make; it is not resolved here.**
