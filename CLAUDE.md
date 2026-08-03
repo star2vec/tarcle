@@ -41,8 +41,12 @@ Full research brief: `docs/BRIEF.md`. Literature notes:
 
 ## Engineering constraints
 
-- Dev machine is a CPU-only Intel MacBook Air (16GB). Full runs happen on a rented
-  24GB CUDA GPU. Therefore:
+- Dev machine is a CPU-only Intel MacBook Air (16GB). Geometry-bearing runs happen on
+  the Ada box: **RTX 2000 Ada laptop, 8GB VRAM** (measured — not the 16GB desktop card
+  BRIEF §7 assumes; see `docs/decisions.md` D6). Llama-3.2-3B bf16 fits with ~0.9GB
+  headroom **only** with last-position logits (`logits_to_keep=1`); full-sequence
+  logits OOM the card. Any 8B-scale model or quantized-7B robustness check needs
+  different hardware and is out of scope on this box. Therefore:
   - everything runs with `--device cpu --model gpt2` end-to-end; that is the CI path
   - device/model/dtype live in one config, never hard-coded
   - activation capture via forward hooks on selected layers only; never cache full
