@@ -254,12 +254,20 @@ def main(argv: list[str] | None = None) -> None:
 
     plot_accuracy(table, items, args.run_dir / "accuracy_vs_k.png")
     variant = gate_variant(items)
-    plot_confusion(
-        shift_confusion(items, ks, variant),
-        ks,
-        args.run_dir / f"confusion_{variant}.png",
-        variant,
+    # The predicted-shift confusion matrix is only defined for a family whose
+    # parameter is a shift on a cycle. The ordinal and unrelated control families
+    # have no cycle — their parameter is a list position and a task label
+    # respectively — so there is no shift to confuse.
+    cyclic = variant in DOMAINS or (
+        variant in ("mixed", "days_months") and cycle_domain(items, variant) in DOMAINS
     )
+    if cyclic:
+        plot_confusion(
+            shift_confusion(items, ks, variant),
+            ks,
+            args.run_dir / f"confusion_{variant}.png",
+            variant,
+        )
 
     verdict = gate_verdict(table, ks, variant)
     (args.run_dir / "report.json").write_text(

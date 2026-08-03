@@ -46,6 +46,7 @@ class PilotConfig:
     operand_pool: dict = field(default_factory=dict)
     query_pool: dict = field(default_factory=dict)
     query_domain: str = ""
+    list_len: int = 12  # ordinal family only
 
 
 def load_config(path: Path, overrides: argparse.Namespace) -> PilotConfig:
@@ -86,11 +87,13 @@ def run(config: PilotConfig, backend=None) -> Path:
         extras["query_pool"] = config.query_pool
     if config.query_domain:
         extras["query_domain"] = config.query_domain
+    if "ordinal" in config.variants:
+        extras["list_len"] = config.list_len
     items = [
         item
         for variant in config.variants
         for k in config.ks
-        for item in P.make_prompt_set(
+        for item in P.build_prompt_set(
             variant, k, config.n_per_k, config.shots, config.seed, **extras
         )
     ]

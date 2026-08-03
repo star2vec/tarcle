@@ -1,0 +1,76 @@
+{
+  "model": "meta-llama/Llama-3.2-3B",
+  "gate": {
+    "verdict": "NO-GO",
+    "variant": "ordinal",
+    "per_k": {
+      "1": 1.0,
+      "2": 0.25,
+      "3": 0.26,
+      "4": 0.23,
+      "5": 0.33,
+      "6": 0.95
+    },
+    "below_go": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "at_floor": [
+      2,
+      3,
+      4
+    ]
+  },
+  "table": [
+    {
+      "variant": "ordinal",
+      "k": 1,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "ordinal",
+      "k": 2,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.25
+    },
+    {
+      "variant": "ordinal",
+      "k": 3,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.26
+    },
+    {
+      "variant": "ordinal",
+      "k": 4,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.23
+    },
+    {
+      "variant": "ordinal",
+      "k": 5,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.33
+    },
+    {
+      "variant": "ordinal",
+      "k": 6,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.95
+    }
+  ]
+}

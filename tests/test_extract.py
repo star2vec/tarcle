@@ -323,14 +323,14 @@ def test_recorded_prompt_hashes_reproduce():
         extras = {}
         if cfg.get("stratum"):
             extras["stratum"] = cfg["stratum"]
-        for key in ("operand_pool", "query_pool", "query_domain"):
+        for key in ("operand_pool", "query_pool", "query_domain", "list_len"):
             if cfg.get(key):
                 extras[key] = cfg[key]
         items = [
             it
             for variant in cfg["variants"]
             for k in cfg["ks"]
-            for it in P.make_prompt_set(
+            for it in P.build_prompt_set(
                 variant, k, cfg["n_per_k"], cfg["shots"], cfg["seed"], **extras
             )
         ]

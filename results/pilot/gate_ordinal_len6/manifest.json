@@ -1,0 +1,42 @@
+{
+  "config": {
+    "run_name": "gate_ordinal_len6",
+    "model": "meta-llama/Llama-3.2-3B",
+    "backend": "local_hf",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "variants": [
+      "ordinal"
+    ],
+    "ks": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "n_per_k": 100,
+    "shots": 16,
+    "seed": 0,
+    "batch_size": 8,
+    "results_dir": "results/pilot",
+    "base_url": "",
+    "stratum": "heldout",
+    "operand_pool": {},
+    "query_pool": {},
+    "query_domain": "",
+    "list_len": 6
+  },
+  "config_sha256": "762ee5ac373c7b489c6dc70d6393448a53c4c7657e26f29d9b370c56843d8f3f",
+  "prompts_sha256": "d7b5822387ee6a3b101b7582e696e1562121c8e935219323415b78572d7424b0",
+  "git_commit": "12ffc04eefc5b31290d0b3e60cbd3478c772f8b4",
+  "timestamp_utc": "2026-08-03T22:58:19.688919+00:00",
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "transformers": "4.57.6",
+    "numpy": "2.5.1"
+  }
+}

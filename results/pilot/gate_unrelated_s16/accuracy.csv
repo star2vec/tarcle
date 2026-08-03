@@ -1,0 +1,13 @@
+variant,k,stratum,domain,n,accuracy
+unrelated,0,heldout,all,100,1.0
+unrelated,1,heldout,all,100,1.0
+unrelated,2,heldout,all,100,1.0
+unrelated,3,heldout,all,100,1.0
+unrelated,4,heldout,all,100,1.0
+unrelated,5,heldout,all,100,1.0
+unrelated,6,heldout,all,100,0.89
+unrelated,7,heldout,all,100,1.0
+unrelated,8,heldout,all,100,1.0
+unrelated,9,heldout,all,100,1.0
+unrelated,10,heldout,all,100,1.0
+unrelated,11,heldout,all,100,1.0

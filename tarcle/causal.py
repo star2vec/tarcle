@@ -101,10 +101,46 @@ def forced_choice(
     ).argmax(axis=-1)
 
 
+def zero_shot_spec(family: str, cycle: str, k: int, queries: list[str] | None = None):
+    """(prompts, choice strings, correct index per prompt, query index per prompt).
+
+    Generalises the zero-shot evaluation over the three families. The query index
+    is the position of the operand within the candidate set, and exists only for
+    the cyclic families — it is what makes a *signed shift* definable. For the
+    unrelated-task family there is no cycle and no shift, so it is None and the
+    D18/D20 shift diagnostics do not apply.
+    """
+    if family == "unrelated":
+        from .tasks_unrelated import TASK_NAMES, UNRELATED_TASKS, task_choices
+
+        name = TASK_NAMES[k]
+        pairs = UNRELATED_TASKS[name]
+        if queries is not None:
+            pairs = [p for p in pairs if p[0] in set(queries)]
+        choices = task_choices(name)
+        idx = {c: i for i, c in enumerate(choices)}
+        return (
+            [f"Q: {a}\nA:" for a, _ in pairs],
+            choices,
+            np.array([idx[b] for _, b in pairs]),
+            None,
+        )
+
+    items = DOMAINS[cycle]  # candidate set is always the full cycle
+    asked = queries or items
+    idx = {x: i for i, x in enumerate(items)}
+    return (
+        zero_shot_prompts(cycle, asked),
+        items,
+        np.array([idx[shift(cycle, x, k)] for x in asked]),
+        np.array([idx[x] for x in asked]),
+    )
+
+
 def score_for_k(
     model, tok, arch, domain: str, k: int, batch_size: int,
     vector: torch.Tensor | None = None, layer: int = 0, mode: str = "add",
-    queries: list[str] | None = None,
+    queries: list[str] | None = None, family: str = "",
 ) -> dict:
     """Three efficacy measures over the complete operand cycle.
 
@@ -121,15 +157,13 @@ def score_for_k(
     - `margin` mean (logp[correct] - max logp[incorrect]) — positive iff the
                argmax is correct, and its magnitude says by how much
     """
-    items = DOMAINS[domain]  # candidate set is always the full cycle
-    asked = queries or items  # queries may be a subset (D18 transfer test)
-    prompts = zero_shot_prompts(domain, asked)
-    choice_ids = [first_token_id(tok, x) for x in items]
+    prompts, choices, correct, query_idx = zero_shot_spec(
+        family or domain, domain, k, queries
+    )
+    choice_ids = [first_token_id(tok, x) for x in choices]
     inject = None if vector is None else (arch, layer, vector, mode)
     lp = choice_logprobs(model, tok, prompts, choice_ids, batch_size, inject)
-    correct = np.array([items.index(shift(domain, x, k)) for x in asked])
-    query_idx = np.array([items.index(x) for x in asked])
-    rows = np.arange(len(asked))
+    rows = np.arange(len(prompts))
     lp_correct = lp[rows, correct]
     masked = lp.copy()
     masked[rows, correct] = -np.inf
@@ -143,7 +177,14 @@ def score_for_k(
         "correct_per_query": (lp.argmax(axis=-1) == correct),
         # Signed prediction shift (argmax - query) mod n: the D18 wrong-region
         # signature, which needs the distribution and not just its accuracy.
-        "pred_shift": ((lp.argmax(axis=-1) - query_idx) % len(items)).astype(np.int32),
+        # Signed shift is defined only where the parameter is a shift on a cycle.
+        # The unrelated-task family has no cycle, so this is empty rather than a
+        # meaningless difference of two arbitrary vocabulary indices.
+        "pred_shift": (
+            ((lp.argmax(axis=-1) - query_idx) % len(choices)).astype(np.int32)
+            if query_idx is not None
+            else np.zeros(0, dtype=np.int32)
+        ),
     }
 
 
@@ -157,15 +198,20 @@ def accuracy_for_k(
     )["acc"]
 
 
-def baseline_accuracy(model, tok, arch, domain: str, ks, batch_size: int) -> dict:
-    """Zero-shot scores per k with no injection. Expected: ~1.0 at k=0 (the
-    copy prior answers the identity task for free) and ~0 elsewhere."""
-    return {k: score_for_k(model, tok, arch, domain, k, batch_size) for k in ks}
+def baseline_accuracy(
+    model, tok, arch, domain: str, ks, batch_size: int, family: str = ""
+) -> dict:
+    """Zero-shot scores per k with no injection. For the shift families: ~1.0 at
+    k=0 (the copy prior answers the identity task for free) and ~0 elsewhere."""
+    return {
+        k: score_for_k(model, tok, arch, domain, k, batch_size, family=family)
+        for k in ks
+    }
 
 
 def sweep_injection(
     model, tok, arch, domain: str, vectors_at, ks,
-    batch_size: int, mode: str, scales, log=print,
+    batch_size: int, mode: str, scales, log=print, family: str = "",
 ) -> tuple[int, float, dict]:
     """Pick injection layer AND scale once, on the head-ID k subset, then freeze.
 
@@ -187,10 +233,10 @@ def sweep_injection(
         vectors = vectors_at(layer)
         for scale in scales:
             accs = [
-                accuracy_for_k(
+                score_for_k(
                     model, tok, arch, domain, k, batch_size,
-                    vectors[k] * scale, layer, mode,
-                )
+                    vectors[k] * scale, layer, mode, family=family,
+                )["acc"]
                 for k in ks
             ]
             grid[(layer, scale)] = float(np.mean(accs))
@@ -205,12 +251,13 @@ def sweep_injection(
 def efficacy(
     model, tok, arch, domain: str, vectors: dict[int, torch.Tensor], ks,
     layer: int, mode: str, batch_size: int, baseline: dict[int, float],
-    scale: float = 1.0,
+    scale: float = 1.0, family: str = "",
 ) -> dict:
     """Injected accuracy and lift over the no-injection baseline, per k."""
     s = {
         k: score_for_k(
-            model, tok, arch, domain, k, batch_size, vectors[k] * scale, layer, mode
+            model, tok, arch, domain, k, batch_size, vectors[k] * scale, layer, mode,
+            family=family,
         )
         for k in ks
     }

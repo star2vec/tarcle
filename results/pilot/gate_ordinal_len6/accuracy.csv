@@ -1,0 +1,7 @@
+variant,k,stratum,domain,n,accuracy
+ordinal,1,heldout,all,100,1.0
+ordinal,2,heldout,all,100,0.25
+ordinal,3,heldout,all,100,0.26
+ordinal,4,heldout,all,100,0.23
+ordinal,5,heldout,all,100,0.33
+ordinal,6,heldout,all,100,0.95

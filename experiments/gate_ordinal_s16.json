@@ -1,0 +1,29 @@
+{
+    "run_name":  "gate_ordinal_s16",
+    "model":  "meta-llama/Llama-3.2-3B",
+    "backend":  "local_hf",
+    "device":  "cuda",
+    "dtype":  "bfloat16",
+    "variants":  [
+                     "ordinal"
+                 ],
+    "ks":  [
+               1,
+               2,
+               3,
+               4,
+               5,
+               6,
+               7,
+               8,
+               9,
+               10,
+               11,
+               12
+           ],
+    "n_per_k":  100,
+    "shots":  16,
+    "seed":  0,
+    "batch_size":  8,
+    "stratum":  "heldout"
+}

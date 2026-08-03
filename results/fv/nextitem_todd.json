@@ -1,86 +1,123 @@
 [
   {
-    "run": "ctl_daysmonths_qmonths",
-    "condition": "mixed_daysmonths",
-    "pool_size": 12,
+    "run": "ctl_unrelated_12tasks",
+    "condition": "unrelated",
+    "pool_size": null,
     "method": "todd",
     "rows": [
       {
         "k": 0,
         "p_correct": 1.0,
-        "p_pm1": 0.0,
-        "top_shift": 0
+        "baseline": 1.0,
+        "lift": 0.0,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 1,
         "p_correct": 1.0,
-        "p_pm1": 1.0,
-        "top_shift": 1
+        "baseline": 1.0,
+        "lift": 0.0,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 2,
-        "p_correct": 0.9166666666666666,
-        "p_pm1": 0.08333333333333333,
-        "top_shift": 2
+        "p_correct": 0.9583333134651184,
+        "baseline": 0.7916666865348816,
+        "lift": 0.16666662693023682,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 3,
-        "p_correct": 1.0,
-        "p_pm1": 0.0,
-        "top_shift": 3
+        "p_correct": 0.8333333134651184,
+        "baseline": 0.0416666679084301,
+        "lift": 0.7916666269302368,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 4,
-        "p_correct": 0.6666666666666666,
-        "p_pm1": 0.0,
-        "top_shift": 4
+        "p_correct": 0.75,
+        "baseline": 0.0833333358168602,
+        "lift": 0.6666666865348816,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 5,
-        "p_correct": 0.6666666666666666,
-        "p_pm1": 0.08333333333333333,
-        "top_shift": 5
+        "p_correct": 0.4583333432674408,
+        "baseline": 0.0416666679084301,
+        "lift": 0.4166666865348816,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 6,
-        "p_correct": 0.4166666666666667,
-        "p_pm1": 0.3333333333333333,
-        "top_shift": 6
+        "p_correct": 0.875,
+        "baseline": 0.6666666865348816,
+        "lift": 0.2083333134651184,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 7,
-        "p_correct": 0.4166666666666667,
-        "p_pm1": 0.3333333333333333,
-        "top_shift": 7
+        "p_correct": 1.0,
+        "baseline": 0.9583333134651184,
+        "lift": 0.04166668653488159,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 8,
-        "p_correct": 0.4166666666666667,
-        "p_pm1": 0.0,
-        "top_shift": 10
+        "p_correct": 1.0,
+        "baseline": 0.2083333283662796,
+        "lift": 0.7916666865348816,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 9,
-        "p_correct": 0.6666666666666666,
-        "p_pm1": 0.3333333333333333,
-        "top_shift": 9
+        "p_correct": 0.9166666865348816,
+        "baseline": 0.7916666865348816,
+        "lift": 0.125,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 10,
-        "p_correct": 0.9166666666666666,
-        "p_pm1": 0.08333333333333333,
-        "top_shift": 10
+        "p_correct": 1.0,
+        "baseline": 0.9583333134651184,
+        "lift": 0.04166668653488159,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       },
       {
         "k": 11,
         "p_correct": 1.0,
-        "p_pm1": 1.0,
-        "top_shift": 11
+        "baseline": 0.9583333134651184,
+        "lift": 0.04166668653488159,
+        "informative": false,
+        "p_pm1": null,
+        "top_shift": null
       }
     ],
-    "p_correct_mid": 0.6759259259259259,
-    "p_pm1_mid": 0.1388888888888889,
-    "margin": 0.537037037037037,
+    "p_correct_mid": 0.6666666716337204,
+    "p_pm1_mid": null,
+    "margin": null,
+    "n_informative": 4,
     "verdict": "ENCODES TASK"
   }
 ]

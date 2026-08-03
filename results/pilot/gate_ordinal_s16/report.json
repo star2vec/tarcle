@@ -1,0 +1,143 @@
+{
+  "model": "meta-llama/Llama-3.2-3B",
+  "gate": {
+    "verdict": "NO-GO",
+    "variant": "ordinal",
+    "per_k": {
+      "1": 1.0,
+      "2": 0.08,
+      "3": 0.1,
+      "4": 0.08,
+      "5": 0.05,
+      "6": 0.09,
+      "7": 0.11,
+      "8": 0.08,
+      "9": 0.09,
+      "10": 0.22,
+      "11": 0.3,
+      "12": 0.91
+    },
+    "below_go": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "at_floor": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "table": [
+    {
+      "variant": "ordinal",
+      "k": 1,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "ordinal",
+      "k": 2,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.08
+    },
+    {
+      "variant": "ordinal",
+      "k": 3,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.1
+    },
+    {
+      "variant": "ordinal",
+      "k": 4,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.08
+    },
+    {
+      "variant": "ordinal",
+      "k": 5,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.05
+    },
+    {
+      "variant": "ordinal",
+      "k": 6,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.09
+    },
+    {
+      "variant": "ordinal",
+      "k": 7,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.11
+    },
+    {
+      "variant": "ordinal",
+      "k": 8,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.08
+    },
+    {
+      "variant": "ordinal",
+      "k": 9,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.09
+    },
+    {
+      "variant": "ordinal",
+      "k": 10,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.22
+    },
+    {
+      "variant": "ordinal",
+      "k": 11,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.3
+    },
+    {
+      "variant": "ordinal",
+      "k": 12,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.91
+    }
+  ]
+}

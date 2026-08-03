@@ -38,6 +38,42 @@ def analyse(run_dir: Path, method: str = "todd") -> dict | None:
     n = shifts.max() + 1 if shifts.size else 12
     n = 12
 
+    # Non-cyclic families (the unrelated tasks) have no signed shift, so the
+    # +/-1 attractor is undefined. The gate's purpose survives unchanged — a
+    # control whose FVs encode nothing is vacuous, and for the null control that
+    # vacuity would look like success — so it is read against chance instead.
+    if shifts.size == 0:
+        acc, base = z["efficacy_acc"], z["efficacy_baseline"]
+        # Raw injected accuracy cannot carry this gate: several of these tasks
+        # are answerable zero-shot ("Q: France / A:" -> Paris), so a task already
+        # at ceiling scores 1.00 whatever the FV does. Only the *lift* over each
+        # task's own baseline is evidence, and tasks whose baseline is already
+        # high are uninformative by construction -- the D2 ceiling caveat again.
+        CEILING = 0.50
+        rows = [{"k": int(k), "p_correct": float(acc[i]),
+                 "baseline": float(base[i]), "lift": float(acc[i] - base[i]),
+                 "informative": bool(base[i] < CEILING),
+                 "p_pm1": None, "top_shift": None}
+                for i, k in enumerate(ks)]
+        info = [r for r in rows if r["informative"]]
+        pc = float(np.mean([r["lift"] for r in info])) if info else float("nan")
+
+        print(f"\n{run_dir.name}  ({meta['condition']}, non-cyclic, {method})")
+        print(f"  {'task':>4} {'zero-shot':>10} {'injected':>9} {'lift':>7}")
+        for r in rows:
+            mark = "" if r["informative"] else "   (at ceiling zero-shot)"
+            print(f"  {r['k']:>4} {r['baseline']:>10.2f} {r['p_correct']:>9.2f} "
+                  f"{r['lift']:>+7.2f}{mark}")
+        verdict = "ENCODES TASK" if pc > 0.30 else "COLLAPSED / vacuous"
+        print(f"  mean lift over the {len(info)} tasks with baseline < {CEILING}: "
+              f"{pc:+.3f}")
+        print(f"  task-encoding gate (D20, non-cyclic form, mean lift > 0.30): "
+              f"{verdict}")
+        return {"run": run_dir.name, "condition": meta["condition"],
+                "pool_size": None, "method": method, "rows": rows,
+                "p_correct_mid": pc, "p_pm1_mid": None, "margin": None,
+                "n_informative": len(info), "verdict": verdict}
+
     rows = []
     for i, k in enumerate(ks):
         c = np.bincount(shifts[i], minlength=n).astype(float)

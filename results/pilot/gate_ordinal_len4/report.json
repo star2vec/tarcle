@@ -1,0 +1,52 @@
+{
+  "model": "meta-llama/Llama-3.2-3B",
+  "gate": {
+    "verdict": "MARGINAL",
+    "variant": "ordinal",
+    "per_k": {
+      "1": 1.0,
+      "2": 0.38,
+      "3": 0.36,
+      "4": 0.93
+    },
+    "below_go": [
+      2,
+      3
+    ],
+    "at_floor": []
+  },
+  "table": [
+    {
+      "variant": "ordinal",
+      "k": 1,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "ordinal",
+      "k": 2,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.38
+    },
+    {
+      "variant": "ordinal",
+      "k": 3,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.36
+    },
+    {
+      "variant": "ordinal",
+      "k": 4,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.93
+    }
+  ]
+}

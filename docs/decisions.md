@@ -860,6 +860,165 @@ it. That is behavioural evidence about competence, not a measurement of FV geome
 and the geometry claim still rests on the extraction now running under this condition
 — which must clear the D20 §1 task-encoding gate before anything is read from it.
 
+### D23. Negative controls: unrelated tasks GO, ordinal family blocked-by-gate
+
+Both are the controls that license the stage-2 diagnostics, so both verdicts are
+recorded before any Gram matrix exists.
+
+#### Unrelated tasks — GO
+
+Twelve tasks (`tarcle/tasks_unrelated.py`), 24 pairs each, 16 shots, held-out,
+n=100 per task. Held-out accuracy is **1.000 at eleven of twelve tasks** and 0.890 at
+the twelfth. The null control is fully performable and its extraction proceeds.
+
+Two construction constraints were set by findings earlier in this run, and both were
+violated by the first draft of the family:
+
+- **Operand vocabularies are disjoint across tasks.** The first draft had
+  antonym/comparative sharing 8 adjective operands, singular_verb/verb_noun sharing 10
+  verbs, and capital/currency sharing 8 countries. Shared operands couple FVs through
+  the operand distribution — the confound the months controls exist to exclude — and
+  would have manufactured similarity structure in the very control that must show
+  none. Max pairwise overlap is now 4 of 24.
+- **Demonstrations are sampled without replacement**, giving 16 distinct operands per
+  16-shot prompt. The first draft sampled with replacement and dropped to 7 on some
+  prompts, below the `docs/pilot_findings.md` §9 collapse threshold. A collapsed null
+  control would have *passed* — showing no structure because its FVs encode nothing —
+  which is a false negative that proves nothing while looking like success.
+
+**Task-encoding gate, non-cyclic form: PASS at +0.667 mean lift.** The D20 §1 gate is
+defined against the ±1 attractor, which does not exist without a cycle, so for this
+family it is read against each task's own zero-shot baseline.
+
+That distinction is not cosmetic. Raw injected accuracy would have scored this control
+at 0.899 and passed it for the wrong reason: **eight of the twelve tasks are already
+answerable zero-shot** (`Q: France\nA:` → Paris), at baselines 0.67–1.00, so their
+injected accuracy is at ceiling whatever the FV does. Only the four tasks with
+baseline < 0.50 can carry evidence:
+
+| task | zero-shot | injected | lift |
+|---|---|---|---|
+| currency | 0.04 | 0.83 | **+0.79** |
+| english_french | 0.08 | 0.75 | **+0.67** |
+| first_letter | 0.04 | 0.46 | **+0.42** |
+| plural | 0.21 | 1.00 | **+0.79** |
+
+**Limitation, recorded rather than buried:** the causal status of the other eight FVs
+is not established — not because they are weak, but because their tasks leave no room
+to measure. This does not undermine the control's purpose. The null control asks
+whether twelve unrelated tasks produce a circulant Gram matrix, and weak or unverified
+FVs add noise rather than manufacturing circulant structure; a false *positive* is what
+would void the run, and noise does not produce one. But no claim may be made about any
+individual unrelated task's FV outside the four above.
+
+#### Ordinal family — NO-GO, blocked-by-gate
+
+Extract-the-k-th-item of a list, fresh list per item, 16 shots, n=100. **NO-GO at
+12 positions**: only k=1 (1.00) and k=12 (0.91) clear; every middle position sits at
+or near chance (1/12 = 0.083) — k=2 0.08, k=5 0.05, k=8 0.08, k=11 0.30.
+
+Before blocking it, list length was tested as the possible cause. It is not:
+
+| list length | k=1 | middle positions | last |
+|---|---|---|---|
+| 12 | 1.00 | 0.05–0.30 | 0.91 |
+| 6 | 1.00 | 0.23–0.33 | 0.95 |
+| 4 | 1.00 | 0.36–0.38 | 0.93 |
+
+The deficit is **positional**. Primacy and recency are near-perfect at every length;
+middle positions improve as the list shortens but never reach 0.50, even at length 4
+where only two middle slots exist. There is no list length at which the family is
+performable across positions *and* large enough to support a Gram matrix. Per rule 5
+and D20 §3 the ordinal control is **blocked-by-gate** and no FVs are extracted for it.
+
+**What is lost, stated precisely.** The ordinal family was BRIEF §5's *shape* control:
+a genuinely ordinal parameter should trace an open curve (high Toeplitz, low
+circulant, closure ratio ≫ 1) rather than a closed loop, demonstrating on real model
+FVs that the diagnostics separate open from closed. That demonstration is now
+unavailable on this model.
+
+**What still covers it, partially.** `tarcle/synthetic.py`'s `arc` fixture is exactly
+this shape, and prereg §0 calibrates the diagnostics against it: arc scores toeplitz
+0.93 / circulant 0.21 / closure 4.04 against circle's 0.92 / 0.92 / 1.00. So the
+*diagnostics* are demonstrably able to make the distinction; what is missing is a
+demonstration that they make it on vectors extracted from this model. That gap must be
+stated wherever the open-vs-closed distinction is used, and the null control
+(unrelated tasks) carries no substitute for it — it tests for absence of structure,
+not for a different shape of structure.
+
+**Routes, none adopted:** an ordinal family the model can actually do across positions
+(alphabet position, calendar-quarter index) would need its own pilot and would not be
+list-retrieval; or accept the synthetic calibration alone and report the limitation.
+
+### D24. Headline cells LOCKED — the final stage-1 matrix
+
+**This entry closes stage 1. It is fixed before any Gram matrix of extracted function
+vectors has been computed or inspected.** D16 fixed the agreement criterion when the
+matrix was still hypothetical; this locks it against the matrix that actually exists,
+after four conditions were blocked or altered by their gates.
+
+#### The matrix as built
+
+| condition | behavioural gate | task-encoding gate | status |
+|---|---|---|---|
+| **primary** — months, full 12-operand pool | GO | +0.352 | **available** |
+| **polysemy leave-out** — 9 months | GO | +0.343 | **available** |
+| **mixed-domain** — days+months demos, month query | GO | +0.537 | **available** |
+| **unrelated tasks** — 12 tasks (null control) | GO | +0.667 lift | **available** |
+| operand partition — 4 and 6 operands | GO | −0.315 … −0.944 | **blocked** (D21) |
+| ordinal extract-k-th | NO-GO | — | **blocked** (D23) |
+
+Head sets, Todd only (Hendel is head-set-free and verified bit-identical across all
+three): canonical six-k, all-k, intersection-8.
+
+#### The locked headline cells
+
+Confirmatory, and nothing else is:
+
+> **Primary condition · full n=12 · canonical six-k head set · read off
+> `spectral_concentration` and `participation_ratio` against the prereg §2 thresholds.**
+> Reported once for Todd and once for Hendel. Two cells. That is the entire
+> confirmatory set.
+
+Unchanged from D16 §1, and deliberately so — the designation was made before any of
+the gates ran, and none of the blocking changed the primary condition. Every other
+cell (three head sets × two n × four conditions × two methods, minus what is blocked)
+is **exploratory**: numbers, no verdict language, no upgrading or downgrading of the
+headline.
+
+#### Evaluation order, which is now binding
+
+1. **The null control first.** Prereg §5: if the twelve unrelated tasks show circulant
+   structure, the pipeline is broken and the entire run is discarded. Nothing else is
+   read until this passes. Also report the circulant score under ≥20 random
+   permutations of the arbitrary task ordering — under the null there is nothing for a
+   permutation to destroy, so a permutation-sensitive score is itself a red flag.
+2. **The prereg §3 frequency control**, which is blocking for the months conditions.
+3. **The headline cells.**
+4. Everything else, as exploratory.
+
+#### What cannot be claimed, given what is blocked
+
+- **No hypothesis-C verdict.** The operand-partition control is structurally
+  unrunnable on Z/12 (D21). The mixed-domain control constrains operand inheritance
+  but does not test the vector-vs-operator question, which is what C is about.
+- **No real-model open-vs-closed demonstration.** The ordinal shape control is blocked
+  (D23). The synthetic `arc` fixture shows the diagnostics *can* separate the shapes;
+  nothing shows they do so on vectors from this model. Any closure/circulant claim
+  carries this caveat.
+- **No head-set-independent Todd claim** unless the three head sets agree by the D16 §2
+  criterion — cross-head-set difference within the measured split-half band, not merely
+  the same label. D15 showed 11/12 and 12/12 cells move beyond that band between head
+  sets, so this is a live risk, and Hendel arbitrates a split per D16 §3 with its own
+  registered limitation attached (it steers at only k ∈ {1,2,11}).
+
+#### Stage-1 artifacts are complete
+
+Every available condition has both extraction methods, split halves, per-query logp
+with SEs, per-head contributions over the 36-cell union superset, prompt SHA-256s, and
+a `head_set_source` hash. Stage 2 needs no GPU and no re-extraction, including for head
+sets not yet considered, provided they are subsets of the union.
+
 ---
 
 ## Conventions

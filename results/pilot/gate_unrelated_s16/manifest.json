@@ -1,0 +1,47 @@
+{
+  "config": {
+    "run_name": "gate_unrelated_s16",
+    "model": "meta-llama/Llama-3.2-3B",
+    "backend": "local_hf",
+    "device": "cuda",
+    "dtype": "bfloat16",
+    "variants": [
+      "unrelated"
+    ],
+    "ks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "n_per_k": 100,
+    "shots": 16,
+    "seed": 0,
+    "batch_size": 16,
+    "results_dir": "results/pilot",
+    "base_url": "",
+    "stratum": "heldout",
+    "operand_pool": {},
+    "query_pool": {},
+    "query_domain": ""
+  },
+  "config_sha256": "c4c379b8126ccb6977a9f4229d6860de26d5098179ac90388569bafca9af721b",
+  "prompts_sha256": "8c50f37be4a86d6794c0a01d43d119f47c8190466eba44ae41546fa0c8a8b81c",
+  "git_commit": "12ffc04eefc5b31290d0b3e60cbd3478c772f8b4",
+  "timestamp_utc": "2026-08-03T22:16:53.308287+00:00",
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "transformers": "4.57.6",
+    "numpy": "2.5.1"
+  }
+}

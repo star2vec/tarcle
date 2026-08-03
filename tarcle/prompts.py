@@ -166,6 +166,129 @@ def make_prompt_set(
     return items
 
 
+# Operand vocabulary for the ordinal family. The list is the operand; the task
+# parameter is a position in it, not a shift. Deliberately unrelated nouns with
+# no cyclic or alphabetical structure of their own.
+ORDINAL_WORDS: list[str] = [
+    "apple", "bridge", "candle", "dragon", "engine", "forest", "garden", "hammer",
+    "island", "jacket", "kettle", "ladder", "mirror", "needle", "orange", "pencil",
+    "rabbit", "silver", "tunnel", "violin", "window", "yellow", "anchor", "basket",
+    "copper", "dinner", "eagle", "flower", "guitar", "harbor", "insect", "jungle",
+    "kitten", "lantern", "market", "nectar", "onion", "planet", "quiver", "river",
+]
+
+
+def make_ordinal_prompt_set(
+    k: int, n: int, shots: int, seed: int, list_len: int = 12, stratum: str = "heldout"
+) -> list[PromptItem]:
+    """Extract-the-k-th-item, k = 1..list_len. BRIEF §5's ordinal control.
+
+    A genuinely ordinal family: the parameter indexes a position in a list, and
+    the ends are not identified with each other. Position 1 and position 12 are
+    maximally distant, so the expected geometry is an open curve — high Toeplitz
+    score, low circulant score, closure_ratio much greater than 1 — rather than
+    the closed loop a shift family would trace. It is the shape control for the
+    circulant test, as the unrelated tasks are the null control.
+
+    Each item's own list is the forced-choice candidate set, exactly as a query
+    month's cycle is for the shift family, so chance is 1/list_len either way.
+    """
+    if not 1 <= k <= list_len:
+        raise ValueError(f"ordinal k={k} outside 1..{list_len}")
+    rng = random.Random(child_seed(seed, f"ordinal|{list_len}|{stratum}", k))
+    items: list[PromptItem] = []
+    for _ in range(n):
+        demos: list[tuple[str, str, str]] = []
+        for _ in range(shots):
+            words = rng.sample(ORDINAL_WORDS, list_len)
+            demos.append(("ordinal", ", ".join(words), words[k - 1]))
+        query_words = rng.sample(ORDINAL_WORDS, list_len)
+        query = ", ".join(query_words)
+        items.append(
+            PromptItem(
+                prompt=render_prompt(demos, query),
+                target=query_words[k - 1],
+                variant="ordinal",
+                k=k,
+                domain="ordinal",
+                query=query,
+                query_in_demos=False,
+                choices=list(query_words),
+                demos=[list(d) for d in demos],
+            )
+        )
+    return items
+
+
+def make_unrelated_prompt_set(
+    task_index: int, n: int, shots: int, seed: int, stratum: str = "heldout"
+) -> list[PromptItem]:
+    """One of twelve unrelated tasks (tasks_unrelated.py), indexed 0..11.
+
+    `k` carries the task index purely so the rest of the pipeline — which is
+    written around a task parameter — can process it unchanged. The index is a
+    label with no structure, which is exactly what makes this the null control:
+    a circulant Gram matrix over these twelve voids the run (prereg §5).
+    """
+    from .tasks_unrelated import TASK_NAMES, UNRELATED_TASKS, task_choices
+
+    name = TASK_NAMES[task_index]
+    pairs = UNRELATED_TASKS[name]
+    choices = task_choices(name)
+    rng = random.Random(child_seed(seed, f"unrelated|{name}", task_index))
+    items: list[PromptItem] = []
+    for _ in range(n):
+        query, target = rng.choice(pairs)
+        pool = [p for p in pairs if p[0] != query] if stratum == "heldout" else pairs
+        # Sample without replacement: 24 pairs per task means every demonstration
+        # can carry a distinct operand, which keeps the prompt well clear of the
+        # collapse threshold in pilot_findings §9. Sampling with replacement
+        # occasionally dropped a 16-shot prompt to 7 distinct operands.
+        drawn = (
+            rng.sample(pool, shots) if shots <= len(pool)
+            else [rng.choice(pool) for _ in range(shots)]
+        )
+        demos = [("unrelated", a, b) for a, b in drawn]
+        items.append(
+            PromptItem(
+                prompt=render_prompt(demos, query),
+                target=target,
+                variant="unrelated",
+                k=task_index,
+                domain=name,
+                query=query,
+                query_in_demos=False,
+                choices=choices,
+                demos=[list(d) for d in demos],
+            )
+        )
+    return items
+
+
+def build_prompt_set(
+    variant: str, k: int, n: int, shots: int, seed: int, **kwargs
+) -> list[PromptItem]:
+    """Single entry point over the three families, so the pilot and the
+    extraction runner dispatch identically.
+
+    The shift families take operand-pool and query-domain restrictions; the two
+    control families have their own operand vocabularies and accept only
+    `stratum`, so unrelated keyword arguments are dropped rather than raising —
+    a config may legitimately carry pool settings that a control family ignores.
+    """
+    if variant == "ordinal":
+        return make_ordinal_prompt_set(
+            k, n, shots, seed,
+            list_len=kwargs.get("list_len", 12),
+            stratum=kwargs.get("stratum", "heldout"),
+        )
+    if variant == "unrelated":
+        return make_unrelated_prompt_set(
+            k, n, shots, seed, stratum=kwargs.get("stratum", "heldout")
+        )
+    return make_prompt_set(variant, k, n, shots, seed, **kwargs)
+
+
 def corrupt_labels(item: PromptItem, seed: int, index: int) -> PromptItem:
     """Todd-style shuffled-label version of a prompt: the demo targets are
     permuted among the demos, so no consistent shift-by-k is inferable, while

@@ -600,7 +600,11 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     if union:
         log(f"persisting per-head contributions for {len(union)} union cells")
 
-    cycle = config.query_domain or config.family  # the domain the FVs act on
+    # The domain the FVs act on. The unrelated-task family has no operand cycle:
+    # each task carries its own vocabulary, so causal scoring dispatches on the
+    # family rather than on a domain and `cycle` is only a label there.
+    cycle = config.query_domain or config.family
+    cyclic = cycle in P.DOMAINS
     pools = {}
     if config.operand_pool:
         pools["operand_pool"] = config.operand_pool
@@ -611,7 +615,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
 
     todd, hendel, prompt_shas = {}, {}, {}
     for k in config.ks:
-        items = P.make_prompt_set(
+        items = P.build_prompt_set(
             config.family, k, config.n_prompts, config.shots, config.seed,
             stratum="heldout", **pools,
         )
@@ -653,7 +657,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     }
     log("\ninjection-layer sweep (on the head-ID k subset, then frozen):")
     baseline = causal.baseline_accuracy(
-        model, tok, arch, cycle, config.ks, config.batch_size
+        model, tok, arch, cycle, config.ks, config.batch_size, config.family
     )
     log(f"  zero-shot baseline acc per k: "
         f"{ {k: round(v['acc'], 3) for k, v in baseline.items()} }")
@@ -669,6 +673,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         todd_layer, todd_scale, todd_layers = causal.sweep_injection(
             model, tok, arch, cycle, lambda _l: todd_vecs,
             config.head_id_ks, config.batch_size, "add", config.injection_scales, log,
+            config.family,
         )
     # Hendel replaces the hidden state rather than adding to it, so a scale
     # other than 1.0 would substitute a state of deliberately wrong magnitude —
@@ -687,12 +692,12 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
                 )
                 for k in config.ks
             },
-            config.head_id_ks, config.batch_size, "replace", [1.0], log,
+            config.head_id_ks, config.batch_size, "replace", [1.0], log, config.family,
         )
 
     todd_eff = causal.efficacy(
         model, tok, arch, cycle, todd_vecs, config.ks, todd_layer,
-        "add", config.batch_size, baseline, todd_scale,
+        "add", config.batch_size, baseline, todd_scale, config.family,
     )
     hendel_vecs = {
         k: torch.tensor(
@@ -702,11 +707,18 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     }
     hendel_eff = causal.efficacy(
         model, tok, arch, cycle, hendel_vecs, config.ks, hendel_layer,
-        "replace", config.batch_size, baseline, hendel_scale,
+        "replace", config.batch_size, baseline, hendel_scale, config.family,
     )
 
-    proxy = causal.frequency_proxy(model, tok, cycle, config.batch_size)
-    proxy_operand, proxy_target = empirical_proxy(config, proxy, **pools)
+    # The prereg §3 frequency control is about month-name token frequency and
+    # polysemy. It is defined only for a family with a single operand cycle; the
+    # unrelated tasks have twelve separate vocabularies and no such confound.
+    if cyclic:
+        proxy = causal.frequency_proxy(model, tok, cycle, config.batch_size)
+        proxy_operand, proxy_target = empirical_proxy(config, proxy, **pools)
+    else:
+        proxy = {}
+        proxy_operand = proxy_target = np.zeros(len(config.ks))
 
     common = {
         "ks": np.array(config.ks, dtype=np.int32),
@@ -729,8 +741,12 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         "condition": config.condition,
         "head_set_cells": [list(c) for c in cells],
         "head_set_excluded": [list(c) for c in excluded],
-        "operand_pool": config.operand_pool or {cycle: P.DOMAINS[cycle]},
-        "query_pool": config.query_pool or {cycle: P.DOMAINS[cycle]},
+        "operand_pool": config.operand_pool or (
+            {cycle: P.DOMAINS[cycle]} if cyclic else {cycle: []}
+        ),
+        "query_pool": config.query_pool or (
+            {cycle: P.DOMAINS[cycle]} if cyclic else {cycle: []}
+        ),
         "shots": config.shots, "stratum": "heldout",
         "n_prompts_per_k": config.n_prompts, "seed": config.seed,
         "prompt_sha256": prompt_shas,
