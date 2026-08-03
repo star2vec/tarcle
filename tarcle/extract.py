@@ -68,6 +68,30 @@ class ExtractConfig:
         default_factory=lambda: [0.5, 1.0, 2.0, 3.0, 4.0]
     )
 
+    # Head-set variation (D15/D16). `head_set_run` loads heads.npz from another
+    # run so the head set can be swapped while prompts, seed and protocol stay
+    # fixed; `head_set_exclude` drops cells from it, which is how the
+    # intersection-8 condition is built. `injection_frozen` pins (layer, scale)
+    # instead of re-sweeping, so the head set is the only variable.
+    head_set_run: str = ""
+    head_set_exclude: list[list[int]] = field(default_factory=list)
+    injection_frozen: dict = field(default_factory=dict)
+    condition: str = "primary"
+
+    # Runs whose stage-A shortlists are unioned and persisted as per-head
+    # residual-stream contributions in every FV .npz. Any head set that is a
+    # subset of the union — canonical, all-k, intersection-8, or one not yet
+    # invented — then becomes a stage-2 axis with no GPU and no re-extraction.
+    # ~6MB per condition. This permanently removes the failure mode where an
+    # alternative head set cannot be analysed from existing artifacts (D15).
+    persist_head_runs: list[str] = field(default_factory=list)
+
+    # Operand restrictions for the partition / polysemy controls: {domain: [...]}.
+    # Empty means the full cycle. Targets are never restricted — shift(operand, k)
+    # may leave the pool, which is what makes the transfer test meaningful.
+    operand_pool: dict = field(default_factory=dict)
+    query_pool: dict = field(default_factory=dict)
+
     results_dir: str = "results/fv"
 
 
@@ -550,26 +574,55 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     """
     from . import causal
 
-    heads_path = out_dir / "heads.npz"
+    heads_path = (
+        Path(config.results_dir) / config.head_set_run / "heads.npz"
+        if config.head_set_run else out_dir / "heads.npz"
+    )
     head_sha = hashlib.sha256(heads_path.read_bytes()).hexdigest()
     hz = np.load(heads_path)
     cells = [tuple(int(x) for x in c) for c in hz["head_set"]]
+    excluded = [tuple(c) for c in config.head_set_exclude]
+    if excluded:
+        cells = [c for c in cells if c not in excluded]
+        log(f"excluded {excluded} -> {len(cells)} heads")
     log(f"head set from {heads_path} (sha256 {head_sha[:12]}): {cells}")
+
+    union = sorted({
+        tuple(int(x) for x in c)
+        for run in (config.persist_head_runs or [])
+        for c in np.load(Path(config.results_dir) / run / "heads.npz")["shortlist"]
+    } | set(cells))
+    if union:
+        log(f"persisting per-head contributions for {len(union)} union cells")
+
+    pools = {}
+    if config.operand_pool:
+        pools["operand_pool"] = config.operand_pool
+    if config.query_pool:
+        pools["query_pool"] = config.query_pool
 
     todd, hendel, prompt_shas = {}, {}, {}
     for k in config.ks:
         items = P.make_prompt_set(
             config.family, k, config.n_prompts, config.shots, config.seed,
-            stratum="heldout",
+            stratum="heldout", **pools,
         )
         prompt_shas[k] = P.write_prompt_set(items, out_dir / f"prompts_k{k}.jsonl")
         prompts = [it.prompt for it in items]
 
-        acts = per_prompt_head_acts(model, tok, arch, prompts, cells, config.batch_size)
-        contrib = project_heads(arch, cells, acts)  # (n_prompts, H, d)
+        # Capture the union once and index the active head set out of it, so the
+        # extra cells cost no additional forward passes.
+        capture = union or cells
+        acts = per_prompt_head_acts(
+            model, tok, arch, prompts, capture, config.batch_size
+        )
+        contrib_all = project_heads(arch, capture, acts)  # (n_prompts, U, d)
+        take = [capture.index(c) for c in cells]
+        contrib = contrib_all[:, take, :]
         todd[k] = {
             "fv": summarize(contrib.sum(dim=-2)),
             "contrib": contrib.numpy().astype(np.float64).mean(axis=0),
+            "contrib_union": contrib_all.numpy().astype(np.float64).mean(axis=0),
         }
 
         hidden = per_prompt_hidden(
@@ -594,25 +647,40 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     baseline = causal.baseline_accuracy(
         model, tok, arch, config.family, config.ks, config.batch_size
     )
-    log(f"  zero-shot baseline per k: "
-        f"{ {k: round(v, 3) for k, v in baseline.items()} }")
+    log(f"  zero-shot baseline acc per k: "
+        f"{ {k: round(v['acc'], 3) for k, v in baseline.items()} }")
 
-    todd_layer, todd_scale, todd_layers = causal.sweep_injection(
-        model, tok, arch, config.family, lambda _l: todd_vecs,
-        config.head_id_ks, config.batch_size, "add", config.injection_scales, log,
-    )
+    frozen = config.injection_frozen
+    if frozen:
+        log(f"  injection protocol PINNED (not re-swept): {frozen}")
+    if "todd" in frozen:
+        todd_layer, todd_scale, todd_layers = (
+            int(frozen["todd"]["layer"]), float(frozen["todd"]["scale"]), {},
+        )
+    else:
+        todd_layer, todd_scale, todd_layers = causal.sweep_injection(
+            model, tok, arch, config.family, lambda _l: todd_vecs,
+            config.head_id_ks, config.batch_size, "add", config.injection_scales, log,
+        )
     # Hendel replaces the hidden state rather than adding to it, so a scale
     # other than 1.0 would substitute a state of deliberately wrong magnitude —
     # not a stronger push but a different, invalid state. Scale is not a free
     # hyperparameter for this method (D12).
-    hendel_layer, hendel_scale, hendel_layers = causal.sweep_injection(
-        model, tok, arch, config.family,
-        lambda l: {
-            k: torch.tensor(hendel[k]["fv"]["mean"][l], device=dev, dtype=torch.float32)
-            for k in config.ks
-        },
-        config.head_id_ks, config.batch_size, "replace", [1.0], log,
-    )
+    if "hendel" in frozen:
+        hendel_layer, hendel_scale, hendel_layers = (
+            int(frozen["hendel"]["layer"]), float(frozen["hendel"]["scale"]), {},
+        )
+    else:
+        hendel_layer, hendel_scale, hendel_layers = causal.sweep_injection(
+            model, tok, arch, config.family,
+            lambda l: {
+                k: torch.tensor(
+                    hendel[k]["fv"]["mean"][l], device=dev, dtype=torch.float32
+                )
+                for k in config.ks
+            },
+            config.head_id_ks, config.batch_size, "replace", [1.0], log,
+        )
 
     todd_eff = causal.efficacy(
         model, tok, arch, config.family, todd_vecs, config.ks, todd_layer,
@@ -630,14 +698,17 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     )
 
     proxy = causal.frequency_proxy(model, tok, config.family, config.batch_size)
-    proxy_operand, proxy_target = empirical_proxy(config, proxy)
+    proxy_operand, proxy_target = empirical_proxy(config, proxy, **pools)
 
     common = {
         "ks": np.array(config.ks, dtype=np.int32),
         "freq_proxy_operand": proxy_operand.astype(np.float32),
         "freq_proxy_target": proxy_target.astype(np.float32),
         "efficacy_baseline": np.array(
-            [baseline[k] for k in config.ks], dtype=np.float32
+            [baseline[k]["acc"] for k in config.ks], dtype=np.float32
+        ),
+        "efficacy_baseline_logp": np.array(
+            [baseline[k]["logp"] for k in config.ks], dtype=np.float32
         ),
     }
     meta_common = {
@@ -646,8 +717,12 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         "git_commit": git_commit(),
         "model": config.model, "dtype": config.dtype, "device": config.device,
         "attn_implementation": "sdpa",
-        "family": config.family, "n": len(config.ks), "condition": "primary",
-        "operand_pool": P.DOMAINS[config.family], "partition": "full",
+        "family": config.family, "n": len(config.ks),
+        "condition": config.condition,
+        "head_set_cells": [list(c) for c in cells],
+        "head_set_excluded": [list(c) for c in excluded],
+        "operand_pool": config.operand_pool or {config.family: P.DOMAINS[config.family]},
+        "query_pool": config.query_pool or {config.family: P.DOMAINS[config.family]},
         "shots": config.shots, "stratum": "heldout",
         "n_prompts_per_k": config.n_prompts, "seed": config.seed,
         "prompt_sha256": prompt_shas,
@@ -678,6 +753,10 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
                 "head_contrib": np.stack(
                     [src[k]["contrib"] for k in config.ks]
                 ).astype(np.float32),
+                "head_contrib_union": np.stack(
+                    [src[k]["contrib_union"] for k in config.ks]
+                ).astype(np.float32),
+                "head_union_cells": np.array(union or cells, dtype=np.int32),
             }
         else:
             X = np.stack([src[k]["fv"]["mean"][layer] for k in config.ks])
@@ -696,7 +775,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
             "injection_mode": mode, "injection_scale": float(scale),
             "injection_sweep": layers_acc,
         }
-        path = out_dir / f"fv_primary_{method}.npz"
+        path = out_dir / f"fv_{config.condition}_{method}.npz"
         np.savez(
             path,
             X=X.astype(np.float32),
@@ -715,6 +794,24 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
             efficacy_lift=np.array(
                 [eff["lift"][k] for k in config.ks], dtype=np.float32
             ),
+            efficacy_logp=np.array(
+                [eff["logp"][k] for k in config.ks], dtype=np.float32
+            ),
+            efficacy_logp_lift=np.array(
+                [eff["logp_lift"][k] for k in config.ks], dtype=np.float32
+            ),
+            efficacy_margin=np.array(
+                [eff["margin"][k] for k in config.ks], dtype=np.float32
+            ),
+            efficacy_logp_per_query=np.stack(
+                [eff["logp_per_query"][k] for k in config.ks]
+            ).astype(np.float32),
+            efficacy_logp_se=np.array(
+                [eff["logp_se"][k] for k in config.ks], dtype=np.float32
+            ),
+            efficacy_pred_shift=np.stack(
+                [eff["pred_shift"][k] for k in config.ks]
+            ).astype(np.int32),
             efficacy_n=np.array([eff["n"]] * len(config.ks), dtype=np.int32),
             **common, **extra,
             meta_json=json.dumps(meta, sort_keys=True),
@@ -734,7 +831,9 @@ def main(argv: list[str] | None = None) -> None:
 
     config = load_config(args.config)
     out_dir = Path(config.results_dir) / config.run_name
-    guard = out_dir / ("heads.npz" if args.stage == "heads" else "fv_primary_todd.npz")
+    guard = out_dir / (
+        "heads.npz" if args.stage == "heads" else f"fv_{config.condition}_todd.npz"
+    )
     if not args.calibrate and guard.exists():
         raise SystemExit(
             f"refusing to overwrite {guard}; rename the run dir or change "

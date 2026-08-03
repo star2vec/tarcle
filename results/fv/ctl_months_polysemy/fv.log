@@ -1,0 +1,23 @@
+model meta-llama/Llama-3.2-3B  device cuda  dtype bfloat16
+arch: 28 layers x 24 heads, head_dim 128, d_model 3072
+VRAM after load: 5.98 GiB of 8.00 GiB
+head set from results\fv\months_llama32_3b_ada\heads.npz (sha256 fe723a181871): [(14, 1), (12, 20), (14, 2), (14, 12), (12, 3), (26, 22), (14, 16), (20, 11), (14, 14), (18, 2)]
+persisting per-head contributions for 36 union cells
+  k= 0  todd |FV|    7.799   hendel |FV| (all layers)   17.665
+  k= 1  todd |FV|    7.906   hendel |FV| (all layers)   17.621
+  k= 2  todd |FV|    8.317   hendel |FV| (all layers)   17.424
+  k= 3  todd |FV|    8.139   hendel |FV| (all layers)   17.493
+  k= 4  todd |FV|    7.573   hendel |FV| (all layers)   17.352
+  k= 5  todd |FV|    7.500   hendel |FV| (all layers)   17.374
+  k= 6  todd |FV|    7.163   hendel |FV| (all layers)   17.294
+  k= 7  todd |FV|    7.516   hendel |FV| (all layers)   17.365
+  k= 8  todd |FV|    7.510   hendel |FV| (all layers)   17.357
+  k= 9  todd |FV|    7.887   hendel |FV| (all layers)   17.379
+  k=10  todd |FV|    7.979   hendel |FV| (all layers)   17.386
+  k=11  todd |FV|    8.132   hendel |FV| (all layers)   17.498
+
+injection-layer sweep (on the head-ID k subset, then frozen):
+  zero-shot baseline acc per k: {0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}
+  injection protocol PINNED (not re-swept): {'todd': {'layer': 8, 'scale': 3.0}, 'hendel': {'layer': 15, 'scale': 1.0}}
+wrote results\fv\ctl_months_polysemy\fv_polysemy_leaveout_todd.npz (sha256 3642622ea298)
+wrote results\fv\ctl_months_polysemy\fv_polysemy_leaveout_hendel.npz (sha256 a5d9ea3a90ee)

@@ -29,10 +29,14 @@ from .extract import Arch, encode, first_token_id
 from .prompts import DOMAINS, shift
 
 
-def zero_shot_prompts(domain: str) -> list[str]:
+def zero_shot_prompts(domain: str, queries: list[str] | None = None) -> list[str]:
     """The complete query space: one prompt per operand, same surface form as
-    the final line of an ICL prompt (prompts.render_prompt)."""
-    return [f"Q: {x}\nA:" for x in DOMAINS[domain]]
+    the final line of an ICL prompt (prompts.render_prompt).
+
+    `queries` restricts to a subset of operands — the hypothesis-C transfer test
+    evaluates a partition's FV on the *other* partition's operands (D18).
+    """
+    return [f"Q: {x}\nA:" for x in (queries or DOMAINS[domain])]
 
 
 class InjectResidual:
@@ -64,18 +68,18 @@ class InjectResidual:
 
 
 @torch.inference_mode()
-def forced_choice(
+def choice_logprobs(
     model, tok, prompts: list[str], choice_ids: list[int], batch_size: int,
     inject: tuple[Arch, int, torch.Tensor, str] | None = None,
 ) -> np.ndarray:
-    """(len(prompts),) index into choice_ids of the argmax choice.
+    """(len(prompts), len(choice_ids)) log-softmax over the candidate set.
 
     Every candidate is a single token for the months and days domains (checked:
     all 12 month names are one token as ' <Month>'), so one forward per prompt
     settles the whole forced choice at the final position.
     """
     ids = torch.tensor(choice_ids, device=model.device)
-    picks = []
+    rows = []
     for start in range(0, len(prompts), batch_size):
         enc = encode(tok, prompts[start : start + batch_size], model.device)
         if inject is None:
@@ -83,8 +87,64 @@ def forced_choice(
         else:
             with InjectResidual(*inject):
                 logits = model(**enc, logits_to_keep=1).logits[:, -1].float()
-        picks.append(logits[:, ids].argmax(dim=-1).cpu().numpy())
-    return np.concatenate(picks)
+        rows.append(torch.log_softmax(logits[:, ids], dim=-1).cpu().numpy())
+    return np.concatenate(rows)
+
+
+def forced_choice(
+    model, tok, prompts: list[str], choice_ids: list[int], batch_size: int,
+    inject: tuple[Arch, int, torch.Tensor, str] | None = None,
+) -> np.ndarray:
+    """(len(prompts),) index into choice_ids of the argmax choice."""
+    return choice_logprobs(
+        model, tok, prompts, choice_ids, batch_size, inject
+    ).argmax(axis=-1)
+
+
+def score_for_k(
+    model, tok, arch, domain: str, k: int, batch_size: int,
+    vector: torch.Tensor | None = None, layer: int = 0, mode: str = "add",
+    queries: list[str] | None = None,
+) -> dict:
+    """Three efficacy measures over the complete operand cycle.
+
+    The query space for months is exhaustively 12 prompts — one per operand —
+    so `acc` is a census, not a sample, and cannot be enlarged without varying
+    the prompt format, which docs/decisions.md D7 defers to stage 3. Its
+    resolution is therefore capped at 1/12, which is coarse for the D2 arbiter.
+
+    `logp` and `margin` recover resolution from the same 12 queries by scoring
+    the distribution rather than only its argmax:
+
+    - `logp`   mean log P(correct | the 12 candidates) — continuous, chance is
+               log(1/12) = -2.485
+    - `margin` mean (logp[correct] - max logp[incorrect]) — positive iff the
+               argmax is correct, and its magnitude says by how much
+    """
+    items = DOMAINS[domain]  # candidate set is always the full cycle
+    asked = queries or items  # queries may be a subset (D18 transfer test)
+    prompts = zero_shot_prompts(domain, asked)
+    choice_ids = [first_token_id(tok, x) for x in items]
+    inject = None if vector is None else (arch, layer, vector, mode)
+    lp = choice_logprobs(model, tok, prompts, choice_ids, batch_size, inject)
+    correct = np.array([items.index(shift(domain, x, k)) for x in asked])
+    query_idx = np.array([items.index(x) for x in asked])
+    rows = np.arange(len(asked))
+    lp_correct = lp[rows, correct]
+    masked = lp.copy()
+    masked[rows, correct] = -np.inf
+    return {
+        "acc": float(np.mean(lp.argmax(axis=-1) == correct)),
+        "logp": float(lp_correct.mean()),
+        "margin": float((lp_correct - masked.max(axis=-1)).mean()),
+        # Per-query values, so a standard error can be attached to the mean.
+        # D17 forbids claiming a logp verdict for a cell whose SE is unavailable.
+        "logp_per_query": lp_correct.astype(np.float64),
+        "correct_per_query": (lp.argmax(axis=-1) == correct),
+        # Signed prediction shift (argmax - query) mod n: the D18 wrong-region
+        # signature, which needs the distribution and not just its accuracy.
+        "pred_shift": ((lp.argmax(axis=-1) - query_idx) % len(items)).astype(np.int32),
+    }
 
 
 def accuracy_for_k(
@@ -92,19 +152,15 @@ def accuracy_for_k(
     vector: torch.Tensor | None = None, layer: int = 0, mode: str = "add",
 ) -> float:
     """Fraction of the complete operand cycle mapped to operand+k."""
-    items = DOMAINS[domain]
-    prompts = zero_shot_prompts(domain)
-    choice_ids = [first_token_id(tok, x) for x in items]
-    inject = None if vector is None else (arch, layer, vector, mode)
-    picks = forced_choice(model, tok, prompts, choice_ids, batch_size, inject)
-    correct = [items.index(shift(domain, x, k)) for x in items]
-    return float(np.mean(picks == np.array(correct)))
+    return score_for_k(
+        model, tok, arch, domain, k, batch_size, vector, layer, mode
+    )["acc"]
 
 
 def baseline_accuracy(model, tok, arch, domain: str, ks, batch_size: int) -> dict:
-    """Zero-shot accuracy per k with no injection. Expected: ~1.0 at k=0 (the
+    """Zero-shot scores per k with no injection. Expected: ~1.0 at k=0 (the
     copy prior answers the identity task for free) and ~0 elsewhere."""
-    return {k: accuracy_for_k(model, tok, arch, domain, k, batch_size) for k in ks}
+    return {k: score_for_k(model, tok, arch, domain, k, batch_size) for k in ks}
 
 
 def sweep_injection(
@@ -152,16 +208,25 @@ def efficacy(
     scale: float = 1.0,
 ) -> dict:
     """Injected accuracy and lift over the no-injection baseline, per k."""
-    acc = {
-        k: accuracy_for_k(
+    s = {
+        k: score_for_k(
             model, tok, arch, domain, k, batch_size, vectors[k] * scale, layer, mode
         )
         for k in ks
     }
+    n = len(s[ks[0]]["logp_per_query"])  # may be a query subset, not the cycle
     return {
-        "acc": acc,
-        "lift": {k: acc[k] - baseline[k] for k in ks},
-        "n": len(DOMAINS[domain]),
+        "acc": {k: s[k]["acc"] for k in ks},
+        "logp": {k: s[k]["logp"] for k in ks},
+        "margin": {k: s[k]["margin"] for k in ks},
+        "lift": {k: s[k]["acc"] - baseline[k]["acc"] for k in ks},
+        "logp_lift": {k: s[k]["logp"] - baseline[k]["logp"] for k in ks},
+        "logp_per_query": {k: s[k]["logp_per_query"] for k in ks},
+        "logp_se": {
+            k: float(s[k]["logp_per_query"].std(ddof=1) / np.sqrt(n)) for k in ks
+        },
+        "pred_shift": {k: s[k]["pred_shift"] for k in ks},
+        "n": n,
     }
 
 

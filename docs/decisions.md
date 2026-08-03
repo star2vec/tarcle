@@ -450,6 +450,234 @@ supported by re-running the battery under the alternative set, not by citing 8/1
 The canonical six-k set remains primary (D3, fixed before any AIE existed); the all-k
 set is carried as a parallel condition.
 
+### D16. Agreement criterion for the condition matrix — fixed before any Gram matrix exists
+
+**Status: written and committed before a single Gram matrix of extracted FVs has been
+computed.** The only inputs are the head-set and efficacy results already recorded
+above, none of which involve geometry.
+
+The matrix has grown: 2 extraction methods × (3 head sets for Todd, 1 for Hendel) ×
+{full n=12, leave-one-out n=11} × 5 operand conditions, plus the two structural
+controls. At that many cells, "a result is claimed only where the columns agree"
+(D1) and "divergence is itself the finding" become unfalsifiable unless *agree* is
+defined numerically in advance. This entry defines it.
+
+#### 1. The headline verdict is one designated cell per extraction method
+
+Confirmatory, and nothing else is:
+
+> **Primary operand condition, full n=12, canonical six-k head set, read off
+> `spectral_concentration` and `participation_ratio`** — the two separators the
+> pre-registration §0.2 identifies as the A-vs-D discriminators — against the
+> prereg §2 thresholds.
+
+Reported once for Todd and once for Hendel. Every other cell in the matrix is
+**exploratory**: reported with numbers, never with verdict language, and never used
+to upgrade or downgrade the headline.
+
+The canonical six-k head set is primary because D3 fixed it before any AIE existed.
+The all-k and intersection-8 sets are robustness conditions, not competitors.
+
+#### 2. What counts as "the same verdict" across head sets
+
+Two requirements, both necessary:
+
+- **(a) Same bucket.** The prereg §2 thresholds assign a label (A / A-multi / B / D /
+  Null). The label must be identical across head sets.
+- **(b) Difference within the noise band.** For each separator, the cross-head-set
+  difference must not exceed that diagnostic's own **split-half band**, defined as
+  |diagnostic(X_half_a) − diagnostic(X_half_b)| computed within the canonical
+  condition. `X_half_a` / `X_half_b` are already stored in every `.npz` for exactly
+  this purpose.
+
+The split-half band is the reference rather than an invented tolerance because it is
+measured, not chosen, and it is the same quantity stage 2 must already use as the
+ceiling for reading off-diagonal Gram entries. A cross-head-set difference smaller
+than the difference between two halves of the *same* extraction is not evidence of
+anything.
+
+Outcomes, all three reportable:
+
+| (a) bucket | (b) within band | reported as |
+|---|---|---|
+| same | yes | **agreement** — the verdict is claimed |
+| same | no | **same label, unstable magnitude** — verdict claimed, instability reported inline |
+| differs | either | **divergence** — no verdict claimed under Todd; see §3 |
+
+#### 3. Hendel arbitrates a Todd split, and cannot be overruled by it
+
+The Hendel extraction is **head-set-free** — a dummy-query hidden state involves no
+causal head selection at all. So if Todd's verdict diverges across head sets, the
+Todd result is reported as head-set-dependent with no verdict claimed, and the Hendel
+verdict stands as the single-method result, flagged method-specific per CLAUDE.md
+rule 1.
+
+Registered limitation, so it is not discovered later as a convenience: Hendel's FVs
+steer only at k ∈ {1, 2, 11} even at their own optimal layer and scale, with five
+mid-cycle cells at chance (D12). Its geometry is therefore being read off vectors
+whose causal status is established at only three of twelve k. **That weakness is
+recorded now and must accompany any Hendel arbitration**; it does not disqualify
+Hendel from arbitrating, because head-set-freedom is the property being relied on,
+but the two facts are reported together or not at all.
+
+#### 4. The intersection-8 condition is what isolates the dropped heads
+
+The all-k set differs from the canonical set by two removals *and* two additions, so
+a difference under it is unattributable. Intersection-8 (canonical minus L14H14 and
+L18H2) changes only the removals. Attribution rule fixed here:
+
+- canonical vs intersection-8 differ → the effect is the **dropped** heads;
+- intersection-8 vs all-k differ → the effect is the **added** heads;
+- canonical vs all-k differ while both pairwise comparisons agree → the effect is
+  joint and is reported as unresolved.
+
+#### 5. Gating, unchanged from the pre-registration
+
+The prereg §5 discard conditions still bind and are evaluated before any of the
+above: a positive circulant result on the n-unrelated-tasks control voids the run
+outright, prompt SHA-256 must reproduce, and no geometry-bearing run may sit below
+bf16. §3's month-frequency control remains blocking.
+
+### D17. The D2 arbiter metric changes from accuracy lift to logp — recorded as a post-hoc change
+
+**Recorded as a change made after seeing data, like D12.** D2 declared causal efficacy
+the arbiter for FV(8) and was written in terms of forced-choice accuracy lift. This
+entry replaces the metric, not the arbiter.
+
+**Why.** The query space is exhaustively 12 prompts (one per operand), so accuracy
+quantises to 1/12 = 0.083 — which is also chance. A cell cannot be distinguished from
+chance at any resolution finer than one query. That produced a concrete error: FV(8)
+under the all-k head set was reported as "0.08, exactly chance", when its
+mean log P(correct | 12 candidates) is **−2.332 against a chance of −2.485** — above
+chance by +0.15 nats, not at it. The vector was still raising P(correct); it had
+merely stopped winning the argmax.
+
+**Replacement metric.** `efficacy_logp` = mean over the 12 queries of
+log P(correct | candidate set), with chance fixed at log(1/12) = −2.485, plus
+`efficacy_logp_lift` against the no-injection baseline on the same queries. Accuracy
+and `margin` continue to be reported; they are no longer the arbiter.
+
+**Why this is not metric-shopping.** The change was forced by a ceiling in the old
+metric's resolution, not by an unwelcome verdict, and it moves the k=8 verdict in
+*both* directions depending on head set — it rescues all-k from "at chance" while
+leaving canonical's advantage intact (canonical +0.53 nats over chance vs all-k
++0.15, a 3.4× ratio). Every ordering established under accuracy survives: canonical >
+int-8 ≈ all-k at mid-cycle, and the D16 §4 attribution to the dropped heads.
+
+**Registered requirement, not yet satisfied.** +0.15 nats over 12 queries carries no
+verdict without an error bar. The per-query log-probabilities were **not persisted**
+in the runs completed before this entry — only their mean — so no standard error can
+be computed for `months_llama32_3b_ada_hs_{canon,int8,allk}` without re-scoring.
+`efficacy_logp_per_query` (n_k, n_queries) is added to the schema from this point on,
+and **no logp-based verdict may be claimed for a cell whose SE is unavailable.** The
+three head-set conditions are re-scored, or their logp differences are reported as
+point estimates explicitly marked as carrying no verdict.
+
+### D18. Hypothesis-C test criterion, in continuous terms — fixed before the operand-partition control runs
+
+Prereg §2-C defines the C test qualitatively: extract FV(k) from demonstrations whose
+operands are restricted to one partition, apply to queries from a disjoint partition,
+and ask whether steering efficacy drops on transfer. It does not fix a metric. This
+entry fixes one, **before the control is run**.
+
+**An accuracy-read C test would be uninterpretable**, and the run already shows why:
+mean `margin` is negative at every mid-cycle k under every head set, so the argmax at
+those cells is decided by a minority of queries clearing a boundary the average sits
+below. Differencing two such quantised, boundary-straddling numbers measures rounding.
+
+**Metric.** Per k, compare `logp_lift` on matched-partition queries against
+`logp_lift` on transferred queries:
+
+    Delta(k) = logp_lift(FV from A, queries from A) - logp_lift(FV from A, queries from B)
+
+averaged over both partition directions (A→B and B→A) to cancel any intrinsic
+difficulty difference between the two operand halves.
+
+**Lift, not raw logp**, because the two query sets are different operands with
+different baseline probabilities; subtracting each set's own no-injection baseline is
+what makes the two sides comparable.
+
+**Noise band.** Extract FV(k) from two disjoint halves of the *same* partition's
+prompts and compute the same Delta between them. That is the value Delta takes when
+nothing has changed but the prompt draw, and it is measured rather than assumed —
+the same principle D16 applies to the geometry diagnostics.
+
+**Criteria:**
+
+- **C true (transfer degrades):** mean Delta over k exceeds the split-half band, and
+  does so in the same direction at a majority of k.
+- **C false:** mean Delta within the split-half band.
+- **Ambiguous:** exceeds the band at fewer than half the k, reported as such with no
+  verdict.
+
+**Second, independent signature, reported regardless of the above.** C predicts not
+merely degradation but a *systematic wrong-region push* — a rotation applied at the
+wrong starting point lands somewhere predictable. For transferred queries, record the
+distribution of the signed prediction shift `(argmax_index − query_index) mod 12`. A
+push concentrated at a shift ≠ k is evidence for C even if Delta is within band;
+uniform degradation is not. This is the discriminating signature, since magnitude
+loss alone is also consistent with plain distribution shift.
+
+**Head sets.** The C test runs under the canonical head set. If the verdict lands
+within one split-half band of its threshold, the discriminating cells are re-run
+under all-k and intersection-8 before anything is claimed (minutes, per D15/D16).
+
+### D19. The pre-registration's example partitions are too small to carry the C test
+
+The prereg §2-C names *"e.g. {Jan..Apr}"* and *"{Sep..Dec}"* as the operand partitions
+for the hypothesis-C transfer test. Those were followed literally. **They do not work,
+and the reason is structural rather than statistical.**
+
+A 4-month operand pool under the held-out stratum leaves the demonstrations drawing
+from **3 distinct operands** — measured, not estimated: distinct demo operands per
+16-shot prompt is min 3, mean 3.0, max 3. Against 7.1 for the 9-month polysemy
+condition and 8.6 for the full 12-month primary. A typical prompt repeats
+`April → December` three times in its first four demonstrations.
+
+Consequence, measured on the matched (non-transferred) condition, where the FV is
+being applied to exactly the operands it was extracted from:
+
+| condition | P(correct) at mid-cycle k |
+|---|---|
+| primary, 12-operand pool | 0.36 |
+| partition, 4-operand pool, **matched** | **0.06** |
+
+The partition FVs barely encode shift-by-k *before any transfer happens*. What they
+encode instead is next-item: P(prediction lands on shift ±1) is **0.90 matched** and
+0.93 transferred, over k ∉ {0,1,11} where ±1 is wrong by construction.
+
+#### What survives and what does not
+
+- **Survives — the D18 Δlogp criterion fires, and cleanly.** Mean Δ = +0.516 nats
+  against a mean split-half band of 0.101, exceeding at **12/12 k**, not near
+  threshold. Matched and transferred are computed from the same degenerate prompts,
+  so the comparison is internally fair and transfer genuinely degrades.
+- **Does not survive — the wrong-region signature.** D18 registered it as the
+  *discriminating* evidence, on the grounds that magnitude loss alone is also
+  consistent with plain distribution shift. It does not discriminate here: the ±1
+  collapse is present in the matched condition too (0.90 vs 0.93). Recording the
+  matched distribution as a baseline is what revealed this; D18 as written only
+  required the transferred one, which would have licensed a wrong-region claim that
+  the data does not support.
+
+#### Consequence
+
+A C verdict is **not claimed** from this run. "A function vector that has already
+collapsed to next-item degrades further off-distribution" is far weaker than the
+prediction prereg §2-C was written to test, which presumes an FV that encodes the
+task in the matched condition.
+
+**Remedy, for the user's decision:** re-run the partitions as disjoint halves,
+{Jan..Jun} / {Jul..Dec}, giving 5 distinct demo operands instead of 3. This was
+considered at planning time and rejected in favour of the registration's literal
+example; that choice is now falsified by data. The cost is that contiguous halves are
+adjacent on the cycle, so shift-by-k can map partition A into partition B — a milder
+confound than measuring an FV that does not represent its task. The registration is
+not edited; this entry records that its §2-C example is unusable and why.
+
+The polysemy leave-out condition (9 operands, 7.1 distinct) is **not** affected and
+its artifacts stand.
+
 ---
 
 ## Conventions
