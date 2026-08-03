@@ -1021,6 +1021,11 @@ sets not yet considered, provided they are subsets of the union.
 
 ### D25. The discard rule in separator terms, and the permutation null
 
+> **§1 of this entry is SUPERSEDED by D26.** It omitted the `circulant_score ≥ 0.70`
+> gate that prereg §2 places first in both the A and A-multi definitions, which makes
+> it fire on non-circulant Gram matrices whose spectra are meaningless. §2 (the
+> permutation null) stands unchanged.
+
 **Fixed before the first Gram matrix of extracted function vectors is computed.**
 Both parts are free — they use machinery already built — and both correct a reading of
 the null control that D24 §"Evaluation order" would otherwise have licensed.
@@ -1092,6 +1097,145 @@ opposite: canonical ≈ permutations, because there is no meaningful ordering to
 A null control whose canonical score sits far above its own permutation distribution
 would mean the arbitrary alphabetical task ordering carries structure, which is a
 pipeline bug and voids the run independently of §1 above.
+
+### D26. Correction to D25 §1 — the circulant gate comes first. This changes VOID to PASS.
+
+**Recorded with maximum prejudice against myself, because this correction changes the
+run's verdict in the run's own favour.** D25 §1, committed one commit before the first
+Gram matrix was computed, produced **VOID THE RUN** on the null control. The corrected
+rule produces PASS. Anyone reading this should apply the scrutiny that reversal
+deserves; the git history holds the original.
+
+#### What the null control actually shows
+
+| | Todd | Hendel |
+|---|---|---|
+| **`circulant_score`** | **0.193** | **0.253** |
+| `spectral_concentration` | 0.377 | 0.314 |
+| `participation_ratio` | 6.85 | 5.81 |
+| permutation null | canonical 0.193 vs 0.191 ± 0.007, z = +0.21 | 0.253 vs 0.261 ± 0.016, z = −0.53 |
+
+D25 §1 said: void if concentration ≥ 0.25 and PR ∈ [1.5, 7]. Both hold. It fires.
+
+#### Why that rule is wrong
+
+**It omits the criterion prereg §2 lists first.** The registration defines the
+A-signature as:
+
+> A — circular: **`circulant_score` ≥ 0.70**; `spectral_concentration` ≥ 0.50 and
+> dominant pair f=1; `participation_ratio` ∈ [1.5, 3.5]
+
+and A-multi as "the same but with" different concentration and PR bands — *the same*
+including the circulant gate. D25 §1 set out to restate the discard rule in separator
+terms and dropped the gate while doing so. That is a defect in my restatement, not a
+judgement about this data.
+
+**And the omission is exactly the trap the project already documented.** prereg §0
+records it, and `tests/test_geometry.py::test_spectrum_meaningless_without_circulant_gate`
+asserts it — both committed in `ac4b195`, before any function vector existed:
+
+> A line's class-averaged profile happens to concentrate spectral power at f=1 —
+> reading the spectrum before the circulant gate would mislabel a linear code as a
+> circle. **The gate must come first.**
+
+`spectral_concentration` is computed from the DFT of the *circulant profile*, which
+averages `G` over the classes (i−j) mod n. When `G` is not circulant those classes do
+not describe it, so the profile is an artefact and its spectrum means nothing. At
+circulant 0.193 that is the situation. Reading 0.377 as "concentration in the helix
+band" is reading a number that has no referent.
+
+#### Corrected rule
+
+The run voids if and only if the null control shows the A-signature **as prereg §2
+defines it**:
+
+> `circulant_score` ≥ 0.70 **and** `spectral_concentration` ≥ 0.25 **and**
+> `participation_ratio` ∈ [1.5, 7]
+
+Pre-labelled outcomes, replacing the D25 §1 table:
+
+| null control shows | reading |
+|---|---|
+| circulant < 0.70 | **PASS** — not circulant; concentration and PR are uninterpretable and are not read |
+| circulant ≥ 0.70, concentration ≈ 0.167–0.25, PR ≥ 8 | **PASS** — simplex; the expected benign outcome D25 §1 correctly identified |
+| circulant ≥ 0.70, concentration ≥ 0.25, PR ∈ [1.5, 7] | **VOID** |
+| canonical circulant far above its own permutation null (z > 3) | **VOID** — arbitrary task ordering carries structure |
+
+#### Verdict under the corrected rule: PASS, on two independent grounds
+
+1. **Circulant 0.193 and 0.253, far below the 0.70 gate.** The twelve unrelated tasks
+   produce no circulant structure, which is precisely what CLAUDE.md rule 2 and prereg
+   §5 demand.
+2. **The permutation null agrees, and it needed no correction.** Canonical sits at
+   z = +0.21 (Todd) and −0.53 (Hendel) in its own permutation distribution — the
+   arbitrary alphabetical task ordering carries no structure whatever. This is the D25
+   §2 check, registered before any number existed and unaffected by the D25 §1 defect,
+   and it independently confirms the pass.
+
+The second ground is what makes me confident this is a correction rather than a rescue:
+a test I registered separately, that does not share the defect, returns the same
+verdict. Had the permutation null shown canonical ≫ permutations, the run would void
+under the corrected rule too, and it does not.
+
+#### Consequence for the stage-2 code
+
+`tarcle/stage2.py` gates on `circulant_score` before reading the spectrum, in both the
+void rule and the bucket classifier. A cell failing the gate is reported as
+"not circulant — spectrum not read" rather than assigned a bucket.
+
+### D27. Centered-Gram variant, registered as exploratory before computing
+
+**Registered after the raw-Gram headline was seen and before the centered variant is
+computed.** That ordering is stated plainly because it is the weakest kind of
+registration; what makes it more than a post-hoc rescue is that the motivation is on
+the record *before any Gram matrix existed*, in commit `3eac9d8`:
+
+> Both extractions carry a large shared offset (Todd 78.8%, Hendel 94.9% of mean
+> squared norm); centered cosines span the full range, so the k-structure is real but
+> **centering is not optional**.
+
+#### The problem
+
+Write X = c·u + Y, with c·u the component shared across all k and Y the k-dependent
+part. Then
+
+    G = |c|²·J  +  c·(u Yᵀ + Y uᵀ)  +  Y Yᵀ
+
+The first term is constant and harmless — `_class_score` removes the global mean. The
+**middle term is not**: it varies with i and with j separately, not with (i−j), so it
+is neither circulant nor Toeplitz, and it scales with |c| relative to |Y|. At 78.8%
+(Todd) and 94.9% (Hendel) of mean squared norm it dominates the raw Gram.
+
+This is consistent with what the raw numbers show and would otherwise be hard to
+reconcile: `circulant_score` **and** `toeplitz_score` are both low (0.09 / 0.16), i.e.
+raw similarity is not a function of parameter distance in any form — yet
+`spectral_concentration` sits at 0.68 on f=1 and the D25 §2 permutation null is at
+z = +8.5. Structure that the ordering demonstrably carries, invisible to the two
+class-based scores. A rank-2 offset contamination produces exactly that signature.
+
+The prereg §0 fixtures do carry an offset, but a smaller one: `circle(offset=0.8,
+radius=1.0)` puts 39% of squared norm in the shared component against the 79% and 95%
+measured here, and still scores circulant 0.92. The calibration does not cover this
+regime.
+
+#### What is run, and its status
+
+`diagnose(X − X.mean(axis=0))` for every cell already reported, alongside the raw
+values, never replacing them.
+
+- **The D24 headline remains the raw-Gram cell.** `diagnose()` uses `gram(X)` with no
+  centering, that is what the pre-registration's thresholds were calibrated against,
+  and the confirmatory verdict is read there.
+- The centered column is **exploratory** and may not upgrade or downgrade the headline.
+- Both columns are reported side by side wherever either is quoted, and the split-half
+  band is computed for both so "differs from raw" can be checked against noise.
+
+**Interpretation fixed in advance.** If the centered Gram is circulant (≥0.70) with the
+raw one not, the honest reading is *"the k-dependent component of these FVs carries
+cyclic structure, which is masked in the raw Gram by a shared offset carrying ~80-95%
+of the norm"* — not "the FVs are circular". The offset is part of the vector that
+actually gets injected and steers the model; a claim about task-space geometry that
+holds only after removing 80% of the vector must say so in those words.
 
 ---
 

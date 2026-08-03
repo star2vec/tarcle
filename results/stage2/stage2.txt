@@ -1,0 +1,213 @@
+﻿========================================================================
+STEP 1 — null control (prereg §5, read by the D25 §1 separator rule)
+========================================================================
+
+--- unrelated / todd ---
+  circulant 0.193   toeplitz 0.199   closure 1.00   norm_cv 0.167
+  spectral_concentration 0.377 (+/- 0.000 split-half)   PR 6.85 (+/- 0.03)
+  additivity 1.436   rotation: residual 0.461 order_err 0.398 wrap_err 0.385
+  freq pair shares (uniform = 0.167): f1:0.126 f2:0.127 f3:0.164 f4:0.377 f5:0.120 f6:0.087
+  permutation null: canonical 0.193 vs perm 0.191 +/- 0.007  (max 0.234, percentile 70.0, z +0.21)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 45.7% of mean squared norm; centered:
+      circulant 0.414  toeplitz 0.438  closure 1.00  conc 0.377 (+/-0.000)  PR 6.85 (+/-0.03)
+      wrap_err 0.385  order_err 0.398  additivity 1.436
+      freq: f1:0.126 f2:0.127 f3:0.164 f4:0.377 f5:0.120 f6:0.087
+      perm: canonical 0.414 vs 0.410 +/- 0.019 (z +0.19)
+      bucket: not circulant — spectrum not read
+  D25 §1 verdict: PASS
+
+--- unrelated / hendel ---
+  circulant 0.253   toeplitz 0.300   closure 0.89   norm_cv 0.027
+  spectral_concentration 0.314 (+/- 0.003 split-half)   PR 5.81 (+/- 0.00)
+  additivity 1.420   rotation: residual 0.467 order_err 0.636 wrap_err 0.370
+  freq pair shares (uniform = 0.167): f1:0.106 f2:0.106 f3:0.161 f4:0.314 f5:0.181 f6:0.132
+  permutation null: canonical 0.253 vs perm 0.261 +/- 0.016  (max 0.340, percentile 32.0, z -0.53)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 78.8% of mean squared norm; centered:
+      circulant 0.331  toeplitz 0.380  closure 0.89  conc 0.314 (+/-0.003)  PR 5.81 (+/-0.00)
+      wrap_err 0.370  order_err 0.636  additivity 1.420
+      freq: f1:0.106 f2:0.106 f3:0.161 f4:0.314 f5:0.181 f6:0.132
+      perm: canonical 0.331 vs 0.343 +/- 0.023 (z -0.52)
+      bucket: not circulant — spectrum not read
+  D25 §1 verdict: PASS
+
+========================================================================
+STEP 3 — D24 confirmatory cells (primary / full n=12 / canonical head set)
+========================================================================
+
+--- HEADLINE primary / todd ---
+  circulant 0.091   toeplitz 0.159   closure 2.42   norm_cv 0.054
+  spectral_concentration 0.682 (+/- 0.007 split-half)   PR 3.64 (+/- 0.01)
+  additivity 1.150   rotation: residual 0.580 order_err 1.040 wrap_err 1.541
+  freq pair shares (uniform = 0.167): f1:0.682 f2:0.181 f3:0.035 f4:0.019 f5:0.020 f6:0.062
+  permutation null: canonical 0.091 vs perm 0.064 +/- 0.003  (max 0.077, percentile 100.0, z +8.48)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 78.8% of mean squared norm; centered:
+      circulant 0.298  toeplitz 0.326  closure 2.42  conc 0.682 (+/-0.007)  PR 3.64 (+/-0.01)
+      wrap_err 1.541  order_err 1.040  additivity 1.150
+      freq: f1:0.682 f2:0.181 f3:0.035 f4:0.019 f5:0.020 f6:0.062
+      perm: canonical 0.298 vs 0.202 +/- 0.011 (z +8.83)
+      bucket: not circulant — spectrum not read
+
+--- HEADLINE primary / hendel ---
+  circulant 0.113   toeplitz 0.177   closure 2.49   norm_cv 0.012
+  spectral_concentration 0.745 (+/- 0.013 split-half)   PR 3.12 (+/- 0.02)
+  additivity 1.153   rotation: residual 0.637 order_err 1.112 wrap_err 1.699
+  freq pair shares (uniform = 0.167): f1:0.745 f2:0.148 f3:0.040 f4:0.021 f5:0.014 f6:0.032
+  permutation null: canonical 0.113 vs perm 0.076 +/- 0.005  (max 0.095, percentile 100.0, z +7.52)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 94.9% of mean squared norm; centered:
+      circulant 0.267  toeplitz 0.285  closure 2.49  conc 0.745 (+/-0.013)  PR 3.12 (+/-0.02)
+      wrap_err 1.699  order_err 1.112  additivity 1.153
+      freq: f1:0.745 f2:0.148 f3:0.040 f4:0.021 f5:0.014 f6:0.032
+      perm: canonical 0.267 vs 0.174 +/- 0.012 (z +7.76)
+      bucket: not circulant — spectrum not read
+
+========================================================================
+STEP 4 — exploratory (no verdict language)
+========================================================================
+
+--- polysemy / todd ---
+  circulant 0.090   toeplitz 0.164   closure 2.54   norm_cv 0.041
+  spectral_concentration 0.676 (+/- 0.011 split-half)   PR 3.50 (+/- 0.03)
+  additivity 1.133   rotation: residual 0.590 order_err 0.869 wrap_err 1.595
+  freq pair shares (uniform = 0.167): f1:0.676 f2:0.177 f3:0.042 f4:0.023 f5:0.029 f6:0.054
+  permutation null: canonical 0.090 vs perm 0.066 +/- 0.003  (max 0.077, percentile 100.0, z +7.81)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 80.0% of mean squared norm; centered:
+      circulant 0.271  toeplitz 0.298  closure 2.54  conc 0.676 (+/-0.011)  PR 3.50 (+/-0.03)
+      wrap_err 1.595  order_err 0.869  additivity 1.133
+      freq: f1:0.676 f2:0.177 f3:0.042 f4:0.023 f5:0.029 f6:0.054
+      perm: canonical 0.271 vs 0.192 +/- 0.010 (z +8.06)
+      bucket: not circulant — spectrum not read
+
+--- polysemy / hendel ---
+  circulant 0.108   toeplitz 0.176   closure 2.69   norm_cv 0.012
+  spectral_concentration 0.730 (+/- 0.027 split-half)   PR 3.10 (+/- 0.01)
+  additivity 1.148   rotation: residual 0.643 order_err 1.255 wrap_err 1.829
+  freq pair shares (uniform = 0.167): f1:0.730 f2:0.145 f3:0.048 f4:0.023 f5:0.021 f6:0.035
+  permutation null: canonical 0.108 vs perm 0.075 +/- 0.004  (max 0.091, percentile 100.0, z +7.76)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 95.4% of mean squared norm; centered:
+      circulant 0.251  toeplitz 0.266  closure 2.69  conc 0.730 (+/-0.027)  PR 3.10 (+/-0.01)
+      wrap_err 1.829  order_err 1.255  additivity 1.148
+      freq: f1:0.730 f2:0.145 f3:0.048 f4:0.023 f5:0.021 f6:0.035
+      perm: canonical 0.251 vs 0.170 +/- 0.010 (z +7.97)
+      bucket: not circulant — spectrum not read
+
+--- mixed_daysmonths / todd ---
+  circulant 0.075   toeplitz 0.158   closure 2.26   norm_cv 0.042
+  spectral_concentration 0.591 (+/- 0.001 split-half)   PR 3.66 (+/- 0.00)
+  additivity 1.131   rotation: residual 0.576 order_err 0.503 wrap_err 1.528
+  freq pair shares (uniform = 0.167): f1:0.591 f2:0.237 f3:0.044 f4:0.019 f5:0.036 f6:0.073
+  permutation null: canonical 0.075 vs perm 0.058 +/- 0.002  (max 0.068, percentile 100.0, z +7.36)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 78.7% of mean squared norm; centered:
+      circulant 0.268  toeplitz 0.288  closure 2.26  conc 0.591 (+/-0.001)  PR 3.66 (+/-0.00)
+      wrap_err 1.528  order_err 0.503  additivity 1.131
+      freq: f1:0.591 f2:0.237 f3:0.044 f4:0.019 f5:0.036 f6:0.073
+      perm: canonical 0.268 vs 0.200 +/- 0.009 (z +7.58)
+      bucket: not circulant — spectrum not read
+
+--- mixed_daysmonths / hendel ---
+  circulant 0.057   toeplitz 0.108   closure 2.67   norm_cv 0.010
+  spectral_concentration 0.606 (+/- 0.023 split-half)   PR 1.94 (+/- 0.02)
+  additivity 1.104   rotation: residual 0.936 order_err 1.124 wrap_err 2.211
+  freq pair shares (uniform = 0.167): f1:0.076 f2:0.606 f3:0.110 f4:0.033 f5:0.172 f6:0.003
+  permutation null: canonical 0.057 vs perm 0.051 +/- 0.004  (max 0.070, percentile 90.5, z +1.32)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 96.4% of mean squared norm; centered:
+      circulant 0.127  toeplitz 0.161  closure 2.67  conc 0.606 (+/-0.023)  PR 1.94 (+/-0.02)
+      wrap_err 2.211  order_err 1.124  additivity 1.104
+      freq: f1:0.076 f2:0.606 f3:0.110 f4:0.033 f5:0.172 f6:0.003
+      perm: canonical 0.127 vs 0.113 +/- 0.010 (z +1.32)
+      bucket: not circulant — spectrum not read
+
+--- headset_allk / todd ---
+  circulant 0.106   toeplitz 0.160   closure 2.47   norm_cv 0.064
+  spectral_concentration 0.677 (+/- 0.003 split-half)   PR 3.79 (+/- 0.04)
+  additivity 1.151   rotation: residual 0.578 order_err 0.324 wrap_err 1.513
+  freq pair shares (uniform = 0.167): f1:0.677 f2:0.177 f3:0.040 f4:0.021 f5:0.022 f6:0.065
+  permutation null: canonical 0.106 vs perm 0.075 +/- 0.003  (max 0.087, percentile 100.0, z +9.70)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 78.8% of mean squared norm; centered:
+      circulant 0.306  toeplitz 0.333  closure 2.47  conc 0.677 (+/-0.003)  PR 3.79 (+/-0.04)
+      wrap_err 1.513  order_err 0.324  additivity 1.151
+      freq: f1:0.677 f2:0.177 f3:0.040 f4:0.021 f5:0.022 f6:0.065
+      perm: canonical 0.306 vs 0.208 +/- 0.010 (z +10.11)
+      bucket: not circulant — spectrum not read
+
+--- headset_allk / hendel ---
+  circulant 0.113   toeplitz 0.177   closure 2.49   norm_cv 0.012
+  spectral_concentration 0.745 (+/- 0.013 split-half)   PR 3.12 (+/- 0.02)
+  additivity 1.153   rotation: residual 0.637 order_err 1.112 wrap_err 1.699
+  freq pair shares (uniform = 0.167): f1:0.745 f2:0.148 f3:0.040 f4:0.021 f5:0.014 f6:0.032
+  permutation null: canonical 0.113 vs perm 0.076 +/- 0.005  (max 0.095, percentile 100.0, z +7.52)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 94.9% of mean squared norm; centered:
+      circulant 0.267  toeplitz 0.285  closure 2.49  conc 0.745 (+/-0.013)  PR 3.12 (+/-0.02)
+      wrap_err 1.699  order_err 1.112  additivity 1.153
+      freq: f1:0.745 f2:0.148 f3:0.040 f4:0.021 f5:0.014 f6:0.032
+      perm: canonical 0.267 vs 0.174 +/- 0.012 (z +7.76)
+      bucket: not circulant — spectrum not read
+
+--- headset_int8 / todd ---
+  circulant 0.102   toeplitz 0.153   closure 2.46   norm_cv 0.069
+  spectral_concentration 0.664 (+/- 0.004 split-half)   PR 3.82 (+/- 0.03)
+  additivity 1.155   rotation: residual 0.576 order_err 0.445 wrap_err 1.528
+  freq pair shares (uniform = 0.167): f1:0.664 f2:0.184 f3:0.040 f4:0.021 f5:0.022 f6:0.069
+  permutation null: canonical 0.102 vs perm 0.073 +/- 0.003  (max 0.084, percentile 100.0, z +9.71)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 79.0% of mean squared norm; centered:
+      circulant 0.305  toeplitz 0.333  closure 2.46  conc 0.664 (+/-0.004)  PR 3.82 (+/-0.03)
+      wrap_err 1.528  order_err 0.445  additivity 1.155
+      freq: f1:0.664 f2:0.184 f3:0.040 f4:0.021 f5:0.022 f6:0.069
+      perm: canonical 0.305 vs 0.210 +/- 0.009 (z +10.12)
+      bucket: not circulant — spectrum not read
+
+--- headset_int8 / hendel ---
+  circulant 0.113   toeplitz 0.177   closure 2.49   norm_cv 0.012
+  spectral_concentration 0.745 (+/- 0.013 split-half)   PR 3.12 (+/- 0.02)
+  additivity 1.153   rotation: residual 0.637 order_err 1.112 wrap_err 1.699
+  freq pair shares (uniform = 0.167): f1:0.745 f2:0.148 f3:0.040 f4:0.021 f5:0.014 f6:0.032
+  permutation null: canonical 0.113 vs perm 0.076 +/- 0.005  (max 0.095, percentile 100.0, z +7.52)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 94.9% of mean squared norm; centered:
+      circulant 0.267  toeplitz 0.285  closure 2.49  conc 0.745 (+/-0.013)  PR 3.12 (+/-0.02)
+      wrap_err 1.699  order_err 1.112  additivity 1.153
+      freq: f1:0.745 f2:0.148 f3:0.040 f4:0.021 f5:0.014 f6:0.032
+      perm: canonical 0.267 vs 0.174 +/- 0.012 (z +7.76)
+      bucket: not circulant — spectrum not read
+
+  --- leave-one-out n=11, k=8 excluded (prereg §4) ---
+
+--- primary n=11 (no k=8) / todd ---
+  circulant 0.104   toeplitz 0.173   closure 2.29   norm_cv 0.055
+  spectral_concentration 0.708 (+/- 0.014 split-half)   PR 3.64 (+/- 0.01)
+  additivity 1.165   rotation: residual 0.591 order_err 1.056 wrap_err 1.396
+  freq pair shares (uniform = 0.167): f1:0.708 f2:0.172 f3:0.036 f4:0.020 f5:0.065
+  permutation null: canonical 0.104 vs perm 0.075 +/- 0.004  (max 0.088, percentile 100.0, z +8.17)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 77.6% of mean squared norm; centered:
+      circulant 0.320  toeplitz 0.342  closure 2.29  conc 0.708 (+/-0.014)  PR 3.64 (+/-0.01)
+      wrap_err 1.396  order_err 1.056  additivity 1.165
+      freq: f1:0.708 f2:0.172 f3:0.036 f4:0.020 f5:0.065
+      perm: canonical 0.320 vs 0.221 +/- 0.012 (z +8.53)
+      bucket: not circulant — spectrum not read
+
+--- primary n=11 (no k=8) / hendel ---
+  circulant 0.135   toeplitz 0.195   closure 2.35   norm_cv 0.012
+  spectral_concentration 0.763 (+/- 0.019 split-half)   PR 3.11 (+/- 0.03)
+  additivity 1.163   rotation: residual 0.655 order_err 0.194 wrap_err 1.547
+  freq pair shares (uniform = 0.167): f1:0.763 f2:0.143 f3:0.040 f4:0.019 f5:0.034
+  permutation null: canonical 0.135 vs perm 0.091 +/- 0.005  (max 0.111, percentile 100.0, z +8.49)
+  >>> bucket (RAW, registered): not circulant — spectrum not read
+  [exploratory D27] shared offset carries 94.6% of mean squared norm; centered:
+      circulant 0.288  toeplitz 0.302  closure 2.35  conc 0.763 (+/-0.019)  PR 3.11 (+/-0.03)
+      wrap_err 1.547  order_err 0.194  additivity 1.163
+      freq: f1:0.763 f2:0.143 f3:0.040 f4:0.019 f5:0.034
+      perm: canonical 0.288 vs 0.188 +/- 0.011 (z +8.78)
+      bucket: not circulant — spectrum not read
+
+wrote results\stage2\stage2.json

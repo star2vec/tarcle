@@ -1,0 +1,1032 @@
+{
+  "null_todd": {
+    "cell": "unrelated / todd",
+    "circulant_score": 0.19289161512453024,
+    "toeplitz_score": 0.19874771706536443,
+    "spectral_concentration": 0.37730882362570334,
+    "significant_frequencies": [
+      4
+    ],
+    "closure_ratio": 0.9959041469388866,
+    "rotation_residual": 0.4614919112425335,
+    "rotation_order_error": 0.39835249081406177,
+    "rotation_wraparound_error": 0.3851532566159684,
+    "rotation_rank": 11,
+    "norm_cv": 0.16714833694727013,
+    "additivity_residual": 1.436191705108853,
+    "participation_ratio": 6.850168965279318,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.19289161512453024,
+      "perm_mean": 0.1913998617787911,
+      "perm_std": 0.0070887700601698946,
+      "perm_max": 0.2335672958924805,
+      "percentile": 70.0,
+      "z": 0.21043895246665564,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.12553161754587538,
+      "2": 0.12676970939606988,
+      "3": 0.16401058936405238,
+      "4": 0.37730882362570334,
+      "5": 0.11962089925384002,
+      "6": 0.0867583608144591
+    },
+    "band_concentration": 0.00044351566722761193,
+    "band_pr": 0.02856084466292419,
+    "offset_share": 0.4571416899019313,
+    "centered": {
+      "circulant_score": 0.4141019968539372,
+      "toeplitz_score": 0.4376060092341185,
+      "spectral_concentration": 0.3773088236257033,
+      "significant_frequencies": [
+        4
+      ],
+      "closure_ratio": 0.9959041469388866,
+      "rotation_residual": 0.4614919112425335,
+      "rotation_order_error": 0.39835249081406193,
+      "rotation_wraparound_error": 0.3851532566159686,
+      "rotation_rank": 11,
+      "norm_cv": 0.12867464996883496,
+      "additivity_residual": 1.436191705108853,
+      "participation_ratio": 6.850168965279323,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.4141019968539372,
+        "perm_mean": 0.4104605689461438,
+        "perm_std": 0.018885047058847686,
+        "perm_max": 0.5280993991576517,
+        "percentile": 70.0,
+        "z": 0.1928206954659088,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.12553161754587544,
+        "2": 0.12676970939607005,
+        "3": 0.1640105893640523,
+        "4": 0.3773088236257033,
+        "5": 0.11962089925384006,
+        "6": 0.08675836081445908
+      },
+      "band_concentration": 0.00044351566722777847,
+      "band_pr": 0.028560844662920637
+    },
+    "voids": false
+  },
+  "null_hendel": {
+    "cell": "unrelated / hendel",
+    "circulant_score": 0.25264713096781366,
+    "toeplitz_score": 0.3001277211790354,
+    "spectral_concentration": 0.31358367045791535,
+    "significant_frequencies": [],
+    "closure_ratio": 0.8929487478176928,
+    "rotation_residual": 0.4666177306720927,
+    "rotation_order_error": 0.6364490960863548,
+    "rotation_wraparound_error": 0.3702607415917051,
+    "rotation_rank": 11,
+    "norm_cv": 0.027360671292771668,
+    "additivity_residual": 1.4198969663215069,
+    "participation_ratio": 5.814908844974658,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.25264713096781366,
+      "perm_mean": 0.26129649831201573,
+      "perm_std": 0.016448952714308993,
+      "perm_max": 0.34025588183301747,
+      "percentile": 32.0,
+      "z": -0.5258308838518311,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.10560831573249829,
+      "2": 0.10628842122365009,
+      "3": 0.16112700919429043,
+      "4": 0.31358367045791535,
+      "5": 0.18115999062460988,
+      "6": 0.1322325927670359
+    },
+    "band_concentration": 0.002858695210859852,
+    "band_pr": 0.002715060424590021,
+    "offset_share": 0.7876278743902373,
+    "centered": {
+      "circulant_score": 0.33062793809673363,
+      "toeplitz_score": 0.3795965146018392,
+      "spectral_concentration": 0.3135836704579149,
+      "significant_frequencies": [],
+      "closure_ratio": 0.8929487478176928,
+      "rotation_residual": 0.4666177306720928,
+      "rotation_order_error": 0.636449096086357,
+      "rotation_wraparound_error": 0.3702607415917046,
+      "rotation_rank": 11,
+      "norm_cv": 0.13555699284890615,
+      "additivity_residual": 1.4198969663215069,
+      "participation_ratio": 5.814908844974656,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.33062793809673363,
+        "perm_mean": 0.3429026335905118,
+        "perm_std": 0.023479737603312102,
+        "perm_max": 0.4578419699813445,
+        "percentile": 32.0,
+        "z": -0.522778222702399,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.10560831573249842,
+        "2": 0.1062884212236504,
+        "3": 0.16112700919429004,
+        "4": 0.3135836704579149,
+        "5": 0.18115999062460994,
+        "6": 0.13223259276703633
+      },
+      "band_concentration": 0.0028586952108595187,
+      "band_pr": 0.002715060424588245
+    },
+    "voids": false
+  },
+  "headline_todd": {
+    "cell": "HEADLINE primary / todd",
+    "circulant_score": 0.09114966794479173,
+    "toeplitz_score": 0.15911833245662277,
+    "spectral_concentration": 0.6824595288640606,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.416613962453545,
+    "rotation_residual": 0.5803618537768004,
+    "rotation_order_error": 1.04021629891248,
+    "rotation_wraparound_error": 1.5408051698254976,
+    "rotation_rank": 7,
+    "norm_cv": 0.05381824864174701,
+    "additivity_residual": 1.1497579405288891,
+    "participation_ratio": 3.6449026120224133,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.09114966794479173,
+      "perm_mean": 0.06433769560354341,
+      "perm_std": 0.0031631644772101767,
+      "perm_max": 0.07661174523571135,
+      "percentile": 100.0,
+      "z": 8.476313051193513,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.6824595288640606,
+      "2": 0.18057474510802285,
+      "3": 0.035366451248253446,
+      "4": 0.019037071647760067,
+      "5": 0.02019593840681334,
+      "6": 0.0623662647250898
+    },
+    "band_concentration": 0.007059384913570832,
+    "band_pr": 0.008588608411788545,
+    "offset_share": 0.7875177695736802,
+    "centered": {
+      "circulant_score": 0.2979179067210743,
+      "toeplitz_score": 0.3255516016323944,
+      "spectral_concentration": 0.6824595288640598,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.416613962453545,
+      "rotation_residual": 0.5803618537768003,
+      "rotation_order_error": 1.0402162989124846,
+      "rotation_wraparound_error": 1.5408051698254983,
+      "rotation_rank": 7,
+      "norm_cv": 0.46024498258465985,
+      "additivity_residual": 1.1497579405288891,
+      "participation_ratio": 3.644902612022412,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.2979179067210743,
+        "perm_mean": 0.20190054425369014,
+        "perm_std": 0.010870687979520966,
+        "perm_max": 0.24465229987360937,
+        "percentile": 100.0,
+        "z": 8.832684982612788,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.6824595288640598,
+        "2": 0.18057474510802296,
+        "3": 0.035366451248253744,
+        "4": 0.019037071647760074,
+        "5": 0.020195938406813423,
+        "6": 0.06236626472509005
+      },
+      "band_concentration": 0.007059384913570499,
+      "band_pr": 0.008588608411789433
+    }
+  },
+  "headline_hendel": {
+    "cell": "HEADLINE primary / hendel",
+    "circulant_score": 0.1131651543604758,
+    "toeplitz_score": 0.17701498685054606,
+    "spectral_concentration": 0.7454800428362504,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.4948157369214488,
+    "rotation_residual": 0.6366765764313771,
+    "rotation_order_error": 1.1123312922395414,
+    "rotation_wraparound_error": 1.699140662254389,
+    "rotation_rank": 6,
+    "norm_cv": 0.011510561137428585,
+    "additivity_residual": 1.1530272917643296,
+    "participation_ratio": 3.11596685833402,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.1131651543604758,
+      "perm_mean": 0.07607033379212909,
+      "perm_std": 0.004931876796803803,
+      "perm_max": 0.09493758591785639,
+      "percentile": 100.0,
+      "z": 7.5214410449966485,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.7454800428362504,
+      "2": 0.1480988522407374,
+      "3": 0.0399485209202998,
+      "4": 0.020541915683493145,
+      "5": 0.013920406222432543,
+      "6": 0.032010262096786694
+    },
+    "band_concentration": 0.01261007792988944,
+    "band_pr": 0.01549785652497171,
+    "offset_share": 0.9488166327312569,
+    "centered": {
+      "circulant_score": 0.26666309526826204,
+      "toeplitz_score": 0.2854766251519726,
+      "spectral_concentration": 0.7454800428362484,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.4948157369214488,
+      "rotation_residual": 0.6366765764313772,
+      "rotation_order_error": 1.1123312922395425,
+      "rotation_wraparound_error": 1.6991406622543903,
+      "rotation_rank": 6,
+      "norm_cv": 0.4836474374554779,
+      "additivity_residual": 1.1530272917643296,
+      "participation_ratio": 3.1159668583340188,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.26666309526826204,
+        "perm_mean": 0.17350415465865585,
+        "perm_std": 0.012005698653221973,
+        "perm_max": 0.2199445200056498,
+        "percentile": 100.0,
+        "z": 7.759560130605569,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.7454800428362484,
+        "2": 0.14809885224073926,
+        "3": 0.03994852092030076,
+        "4": 0.0205419156834932,
+        "5": 0.013920406222432062,
+        "6": 0.03201026209678656
+      },
+      "band_concentration": 0.01261007792989055,
+      "band_pr": 0.015497856524972597
+    }
+  },
+  "polysemy_todd": {
+    "cell": "polysemy / todd",
+    "circulant_score": 0.08972178735196656,
+    "toeplitz_score": 0.16350964267192825,
+    "spectral_concentration": 0.6762008636421293,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.5426147158781887,
+    "rotation_residual": 0.5902451388122569,
+    "rotation_order_error": 0.868682965679998,
+    "rotation_wraparound_error": 1.595040338024511,
+    "rotation_rank": 7,
+    "norm_cv": 0.04149329998663223,
+    "additivity_residual": 1.1334109906122931,
+    "participation_ratio": 3.502571003048524,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.08972178735196656,
+      "perm_mean": 0.0655938239535104,
+      "perm_std": 0.003090777696421433,
+      "perm_max": 0.07729158340985842,
+      "percentile": 100.0,
+      "z": 7.806437656901698,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.6762008636421293,
+      "2": 0.1766141167060741,
+      "3": 0.04165858149709306,
+      "4": 0.023010768746286926,
+      "5": 0.028809627583642302,
+      "6": 0.053706041824774266
+    },
+    "band_concentration": 0.010948070694600243,
+    "band_pr": 0.02586948471136319,
+    "offset_share": 0.8000240071381884,
+    "centered": {
+      "circulant_score": 0.27143863233815346,
+      "toeplitz_score": 0.2980838632558558,
+      "spectral_concentration": 0.6762008636421292,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.5426147158781887,
+      "rotation_residual": 0.5902451388122565,
+      "rotation_order_error": 0.8686829656799945,
+      "rotation_wraparound_error": 1.5950403380245104,
+      "rotation_rank": 7,
+      "norm_cv": 0.4909532836852896,
+      "additivity_residual": 1.1334109906122931,
+      "participation_ratio": 3.502571003048523,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.27143863233815346,
+        "perm_mean": 0.19217853166776963,
+        "perm_std": 0.009838194466746974,
+        "perm_max": 0.2298214010227071,
+        "percentile": 100.0,
+        "z": 8.056366535372156,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.6762008636421292,
+        "2": 0.17661411670607396,
+        "3": 0.04165858149709309,
+        "4": 0.023010768746287068,
+        "5": 0.028809627583642375,
+        "6": 0.053706041824774294
+      },
+      "band_concentration": 0.01094807069460102,
+      "band_pr": 0.025869484711364077
+    }
+  },
+  "polysemy_hendel": {
+    "cell": "polysemy / hendel",
+    "circulant_score": 0.10791825251888065,
+    "toeplitz_score": 0.17629372677456034,
+    "spectral_concentration": 0.7296709557134251,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.690398804340179,
+    "rotation_residual": 0.6429059873090067,
+    "rotation_order_error": 1.255478939465234,
+    "rotation_wraparound_error": 1.8293004604111867,
+    "rotation_rank": 6,
+    "norm_cv": 0.011506472675796993,
+    "additivity_residual": 1.1475695918920958,
+    "participation_ratio": 3.096202070540871,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.10791825251888065,
+      "perm_mean": 0.07511318047462383,
+      "perm_std": 0.004230047047998189,
+      "perm_max": 0.09053446168812562,
+      "percentile": 100.0,
+      "z": 7.755249923232264,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.7296709557134251,
+      "2": 0.14456769971967612,
+      "3": 0.047531780045407375,
+      "4": 0.022841159648729462,
+      "5": 0.020633633240971054,
+      "6": 0.034754771631790846
+    },
+    "band_concentration": 0.02676789462057405,
+    "band_pr": 0.01291939128835251,
+    "offset_share": 0.9543937977908203,
+    "centered": {
+      "circulant_score": 0.25063638468144156,
+      "toeplitz_score": 0.26612084748938836,
+      "spectral_concentration": 0.7296709557134226,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.690398804340179,
+      "rotation_residual": 0.6429059873090066,
+      "rotation_order_error": 1.2554789394652324,
+      "rotation_wraparound_error": 1.8293004604111858,
+      "rotation_rank": 6,
+      "norm_cv": 0.5175630766183378,
+      "additivity_residual": 1.1475695918920958,
+      "participation_ratio": 3.0962020705408726,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.25063638468144156,
+        "perm_mean": 0.16965562509553547,
+        "perm_std": 0.010164511513798383,
+        "perm_max": 0.2070347694040371,
+        "percentile": 100.0,
+        "z": 7.967009479597149,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.7296709557134226,
+        "2": 0.14456769971967726,
+        "3": 0.04753178004540868,
+        "4": 0.022841159648729334,
+        "5": 0.020633633240971377,
+        "6": 0.034754771631790735
+      },
+      "band_concentration": 0.02676789462056961,
+      "band_pr": 0.012919391288356064
+    }
+  },
+  "mixed_daysmonths_todd": {
+    "cell": "mixed_daysmonths / todd",
+    "circulant_score": 0.0750630125882884,
+    "toeplitz_score": 0.15779996608537827,
+    "spectral_concentration": 0.5907698198996691,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.2591722648555526,
+    "rotation_residual": 0.5759426279928512,
+    "rotation_order_error": 0.5026313244132928,
+    "rotation_wraparound_error": 1.5278743710611158,
+    "rotation_rank": 7,
+    "norm_cv": 0.042079416394472664,
+    "additivity_residual": 1.1314930939867105,
+    "participation_ratio": 3.6595554607696674,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.0750630125882884,
+      "perm_mean": 0.057569796723403836,
+      "perm_std": 0.0023772120965516873,
+      "perm_max": 0.06784451980067496,
+      "percentile": 100.0,
+      "z": 7.358710604855032,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.5907698198996691,
+      "2": 0.23742213862652,
+      "3": 0.04415383124325964,
+      "4": 0.019004768636591743,
+      "5": 0.03589339008309319,
+      "6": 0.07275605151086617
+    },
+    "band_concentration": 0.001045590114973849,
+    "band_pr": 0.0024855303853215105,
+    "offset_share": 0.7868565655290639,
+    "centered": {
+      "circulant_score": 0.2684470547777503,
+      "toeplitz_score": 0.28805607970734937,
+      "spectral_concentration": 0.5907698198996679,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.2591722648555526,
+      "rotation_residual": 0.5759426279928511,
+      "rotation_order_error": 0.5026313244132918,
+      "rotation_wraparound_error": 1.5278743710611156,
+      "rotation_rank": 7,
+      "norm_cv": 0.46699547605355385,
+      "additivity_residual": 1.1314930939867105,
+      "participation_ratio": 3.6595554607696656,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.2684470547777503,
+        "perm_mean": 0.19987886381210485,
+        "perm_std": 0.009051698217817336,
+        "perm_max": 0.23954290358501662,
+        "percentile": 100.0,
+        "z": 7.575174217659628,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.5907698198996679,
+        "2": 0.23742213862652076,
+        "3": 0.04415383124325982,
+        "4": 0.019004768636591757,
+        "5": 0.0358933900830935,
+        "6": 0.07275605151086631
+      },
+      "band_concentration": 0.0010455901149732938,
+      "band_pr": 0.0024855303853223987
+    }
+  },
+  "mixed_daysmonths_hendel": {
+    "cell": "mixed_daysmonths / hendel",
+    "circulant_score": 0.057163413342888436,
+    "toeplitz_score": 0.1081199688613872,
+    "spectral_concentration": 0.606341164996834,
+    "significant_frequencies": [
+      2
+    ],
+    "closure_ratio": 2.6704160131859864,
+    "rotation_residual": 0.9356373211431648,
+    "rotation_order_error": 1.1241343418955827,
+    "rotation_wraparound_error": 2.211491557042952,
+    "rotation_rank": 6,
+    "norm_cv": 0.010336004568876312,
+    "additivity_residual": 1.1037054018789423,
+    "participation_ratio": 1.9396652545484256,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.057163413342888436,
+      "perm_mean": 0.05129013704785509,
+      "perm_std": 0.004443470721669668,
+      "perm_max": 0.07014489472914665,
+      "percentile": 90.5,
+      "z": 1.3217767513108356,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.07601314753112468,
+      "2": 0.606341164996834,
+      "3": 0.10972244583951031,
+      "4": 0.03261149725469328,
+      "5": 0.17206580320607504,
+      "6": 0.0032459411717626905
+    },
+    "band_concentration": 0.022998021409382008,
+    "band_pr": 0.015593932241838804,
+    "offset_share": 0.9644755210950379,
+    "centered": {
+      "circulant_score": 0.12671490430515298,
+      "toeplitz_score": 0.16119421327346928,
+      "spectral_concentration": 0.6063411649968357,
+      "significant_frequencies": [
+        2
+      ],
+      "closure_ratio": 2.6704160131859864,
+      "rotation_residual": 0.9356373211431653,
+      "rotation_order_error": 1.12413434189558,
+      "rotation_wraparound_error": 2.211491557042952,
+      "rotation_rank": 6,
+      "norm_cv": 0.612750634181515,
+      "additivity_residual": 1.1037054018789423,
+      "participation_ratio": 1.939665254548426,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.12671490430515298,
+        "perm_mean": 0.11325867886440813,
+        "perm_std": 0.010214283357015507,
+        "perm_max": 0.15698930482803142,
+        "percentile": 90.5,
+        "z": 1.3173930045226978,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.07601314753112495,
+        "2": 0.6063411649968357,
+        "3": 0.10972244583951049,
+        "4": 0.03261149725469252,
+        "5": 0.17206580320607334,
+        "6": 0.0032459411717630075
+      },
+      "band_concentration": 0.022998021409382674,
+      "band_pr": 0.01559393224183947
+    }
+  },
+  "headset_allk_todd": {
+    "cell": "headset_allk / todd",
+    "circulant_score": 0.10606167854136417,
+    "toeplitz_score": 0.16036803103701314,
+    "spectral_concentration": 0.6765802076295727,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.4742800680458474,
+    "rotation_residual": 0.5779328705022412,
+    "rotation_order_error": 0.32355196545158377,
+    "rotation_wraparound_error": 1.5128281256458025,
+    "rotation_rank": 7,
+    "norm_cv": 0.06447160881595561,
+    "additivity_residual": 1.151427778739537,
+    "participation_ratio": 3.790361456954382,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.10606167854136417,
+      "perm_mean": 0.07518314273504084,
+      "perm_std": 0.0031841784512213053,
+      "perm_max": 0.08689843031908484,
+      "percentile": 100.0,
+      "z": 9.69748909470816,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.6765802076295727,
+      "2": 0.1766360156825536,
+      "3": 0.03952616982833759,
+      "4": 0.0210391021684296,
+      "5": 0.021568178238485898,
+      "6": 0.06465032645262045
+    },
+    "band_concentration": 0.0027366265421754354,
+    "band_pr": 0.04474140891812528,
+    "offset_share": 0.7883658494243226,
+    "centered": {
+      "circulant_score": 0.3055118414195934,
+      "toeplitz_score": 0.33293080678826525,
+      "spectral_concentration": 0.6765802076295725,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.4742800680458474,
+      "rotation_residual": 0.5779328705022412,
+      "rotation_order_error": 0.32355196545158166,
+      "rotation_wraparound_error": 1.512828125645803,
+      "rotation_rank": 7,
+      "norm_cv": 0.46194153276423894,
+      "additivity_residual": 1.151427778739537,
+      "participation_ratio": 3.7903614569543818,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.3055118414195934,
+        "perm_mean": 0.20817778098029494,
+        "perm_std": 0.009628965798632316,
+        "perm_max": 0.24398556751315315,
+        "percentile": 100.0,
+        "z": 10.108464654960523,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.6765802076295725,
+        "2": 0.17663601568255352,
+        "3": 0.03952616982833792,
+        "4": 0.02103910216842944,
+        "5": 0.02156817823848603,
+        "6": 0.06465032645262077
+      },
+      "band_concentration": 0.002736626542174325,
+      "band_pr": 0.04474140891812439
+    }
+  },
+  "headset_allk_hendel": {
+    "cell": "headset_allk / hendel",
+    "circulant_score": 0.1131651543604758,
+    "toeplitz_score": 0.17701498685054606,
+    "spectral_concentration": 0.7454800428362504,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.4948157369214488,
+    "rotation_residual": 0.6366765764313771,
+    "rotation_order_error": 1.1123312922395414,
+    "rotation_wraparound_error": 1.699140662254389,
+    "rotation_rank": 6,
+    "norm_cv": 0.011510561137428585,
+    "additivity_residual": 1.1530272917643296,
+    "participation_ratio": 3.11596685833402,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.1131651543604758,
+      "perm_mean": 0.07607033379212909,
+      "perm_std": 0.004931876796803803,
+      "perm_max": 0.09493758591785639,
+      "percentile": 100.0,
+      "z": 7.5214410449966485,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.7454800428362504,
+      "2": 0.1480988522407374,
+      "3": 0.0399485209202998,
+      "4": 0.020541915683493145,
+      "5": 0.013920406222432543,
+      "6": 0.032010262096786694
+    },
+    "band_concentration": 0.01261007792988944,
+    "band_pr": 0.01549785652497171,
+    "offset_share": 0.9488166327312569,
+    "centered": {
+      "circulant_score": 0.26666309526826204,
+      "toeplitz_score": 0.2854766251519726,
+      "spectral_concentration": 0.7454800428362484,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.4948157369214488,
+      "rotation_residual": 0.6366765764313772,
+      "rotation_order_error": 1.1123312922395425,
+      "rotation_wraparound_error": 1.6991406622543903,
+      "rotation_rank": 6,
+      "norm_cv": 0.4836474374554779,
+      "additivity_residual": 1.1530272917643296,
+      "participation_ratio": 3.1159668583340188,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.26666309526826204,
+        "perm_mean": 0.17350415465865585,
+        "perm_std": 0.012005698653221973,
+        "perm_max": 0.2199445200056498,
+        "percentile": 100.0,
+        "z": 7.759560130605569,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.7454800428362484,
+        "2": 0.14809885224073926,
+        "3": 0.03994852092030076,
+        "4": 0.0205419156834932,
+        "5": 0.013920406222432062,
+        "6": 0.03201026209678656
+      },
+      "band_concentration": 0.01261007792989055,
+      "band_pr": 0.015497856524972597
+    }
+  },
+  "headset_int8_todd": {
+    "cell": "headset_int8 / todd",
+    "circulant_score": 0.10153227265589959,
+    "toeplitz_score": 0.15342113380057953,
+    "spectral_concentration": 0.6636260188083594,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.4633705119176614,
+    "rotation_residual": 0.5760882443225946,
+    "rotation_order_error": 0.4448080119591563,
+    "rotation_wraparound_error": 1.527768528971376,
+    "rotation_rank": 7,
+    "norm_cv": 0.06904198651459346,
+    "additivity_residual": 1.1549976324376698,
+    "participation_ratio": 3.8239238581886403,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.10153227265589959,
+      "perm_mean": 0.07272590382378963,
+      "perm_std": 0.0029652738766503,
+      "perm_max": 0.08374086424222582,
+      "percentile": 100.0,
+      "z": 9.714572761370315,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.6636260188083594,
+      "2": 0.18410061117907625,
+      "3": 0.04041718223801187,
+      "4": 0.02147334070263543,
+      "5": 0.021730018056605092,
+      "6": 0.06865282901531196
+    },
+    "band_concentration": 0.0039915496725135835,
+    "band_pr": 0.03282389244919237,
+    "offset_share": 0.7904702970952255,
+    "centered": {
+      "circulant_score": 0.3046708436664838,
+      "toeplitz_score": 0.3328950595740271,
+      "spectral_concentration": 0.6636260188083584,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.4633705119176614,
+      "rotation_residual": 0.5760882443225944,
+      "rotation_order_error": 0.4448080119591603,
+      "rotation_wraparound_error": 1.5277685289713772,
+      "rotation_rank": 7,
+      "norm_cv": 0.4634027209887495,
+      "additivity_residual": 1.1549976324376698,
+      "participation_ratio": 3.823923858188642,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.3046708436664838,
+        "perm_mean": 0.20984213281703964,
+        "perm_std": 0.00936598643567536,
+        "perm_max": 0.24501709518313697,
+        "percentile": 100.0,
+        "z": 10.12479694485125,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.6636260188083584,
+        "2": 0.184100611179077,
+        "3": 0.04041718223801191,
+        "4": 0.02147334070263558,
+        "5": 0.021730018056605124,
+        "6": 0.06865282901531211
+      },
+      "band_concentration": 0.0039915496725133615,
+      "band_pr": 0.03282389244919237
+    }
+  },
+  "headset_int8_hendel": {
+    "cell": "headset_int8 / hendel",
+    "circulant_score": 0.1131651543604758,
+    "toeplitz_score": 0.17701498685054606,
+    "spectral_concentration": 0.7454800428362504,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.4948157369214488,
+    "rotation_residual": 0.6366765764313771,
+    "rotation_order_error": 1.1123312922395414,
+    "rotation_wraparound_error": 1.699140662254389,
+    "rotation_rank": 6,
+    "norm_cv": 0.011510561137428585,
+    "additivity_residual": 1.1530272917643296,
+    "participation_ratio": 3.11596685833402,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.1131651543604758,
+      "perm_mean": 0.07607033379212909,
+      "perm_std": 0.004931876796803803,
+      "perm_max": 0.09493758591785639,
+      "percentile": 100.0,
+      "z": 7.5214410449966485,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.7454800428362504,
+      "2": 0.1480988522407374,
+      "3": 0.0399485209202998,
+      "4": 0.020541915683493145,
+      "5": 0.013920406222432543,
+      "6": 0.032010262096786694
+    },
+    "band_concentration": 0.01261007792988944,
+    "band_pr": 0.01549785652497171,
+    "offset_share": 0.9488166327312569,
+    "centered": {
+      "circulant_score": 0.26666309526826204,
+      "toeplitz_score": 0.2854766251519726,
+      "spectral_concentration": 0.7454800428362484,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.4948157369214488,
+      "rotation_residual": 0.6366765764313772,
+      "rotation_order_error": 1.1123312922395425,
+      "rotation_wraparound_error": 1.6991406622543903,
+      "rotation_rank": 6,
+      "norm_cv": 0.4836474374554779,
+      "additivity_residual": 1.1530272917643296,
+      "participation_ratio": 3.1159668583340188,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.26666309526826204,
+        "perm_mean": 0.17350415465865585,
+        "perm_std": 0.012005698653221973,
+        "perm_max": 0.2199445200056498,
+        "percentile": 100.0,
+        "z": 7.759560130605569,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.7454800428362484,
+        "2": 0.14809885224073926,
+        "3": 0.03994852092030076,
+        "4": 0.0205419156834932,
+        "5": 0.013920406222432062,
+        "6": 0.03201026209678656
+      },
+      "band_concentration": 0.01261007792989055,
+      "band_pr": 0.015497856524972597
+    }
+  },
+  "loo_todd": {
+    "cell": "primary n=11 (no k=8) / todd",
+    "circulant_score": 0.1043203184350242,
+    "toeplitz_score": 0.17286699367052472,
+    "spectral_concentration": 0.7075634482868183,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.286145365727325,
+    "rotation_residual": 0.590684699403518,
+    "rotation_order_error": 1.0561200943959956,
+    "rotation_wraparound_error": 1.3955486809462736,
+    "rotation_rank": 7,
+    "norm_cv": 0.054698011221471124,
+    "additivity_residual": 1.1652648649269712,
+    "participation_ratio": 3.643890834257481,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.1043203184350242,
+      "perm_mean": 0.0750220861087443,
+      "perm_std": 0.0035846659493755308,
+      "perm_max": 0.08847158113314013,
+      "percentile": 100.0,
+      "z": 8.173211322908298,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.7075634482868183,
+      "2": 0.17209318131011492,
+      "3": 0.03589590102193872,
+      "4": 0.019923429235619117,
+      "5": 0.064524040145509
+    },
+    "band_concentration": 0.013512760330445017,
+    "band_pr": 0.011216448738446516,
+    "offset_share": 0.7763206986298513,
+    "centered": {
+      "circulant_score": 0.3201271119199227,
+      "toeplitz_score": 0.342241247263964,
+      "spectral_concentration": 0.7075634482868182,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.286145365727325,
+      "rotation_residual": 0.5906846994035179,
+      "rotation_order_error": 1.056120094395998,
+      "rotation_wraparound_error": 1.3955486809462723,
+      "rotation_rank": 7,
+      "norm_cv": 0.4209066032523272,
+      "additivity_residual": 1.1652648649269712,
+      "participation_ratio": 3.6438908342574803,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.3201271119199227,
+        "perm_mean": 0.2207806949563485,
+        "perm_std": 0.011642005725817839,
+        "perm_max": 0.26507506555503524,
+        "percentile": 100.0,
+        "z": 8.533445121338422,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.7075634482868182,
+        "2": 0.17209318131011458,
+        "3": 0.03589590102193863,
+        "4": 0.01992342923561929,
+        "5": 0.06452404014550923
+      },
+      "band_concentration": 0.013512760330444351,
+      "band_pr": 0.01121644873844696
+    }
+  },
+  "loo_hendel": {
+    "cell": "primary n=11 (no k=8) / hendel",
+    "circulant_score": 0.1351906964613364,
+    "toeplitz_score": 0.19497536938107218,
+    "spectral_concentration": 0.7634097782219196,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.347151890342325,
+    "rotation_residual": 0.6549782779525359,
+    "rotation_order_error": 0.19392448263894804,
+    "rotation_wraparound_error": 1.5470141119958085,
+    "rotation_rank": 6,
+    "norm_cv": 0.01200679812466137,
+    "additivity_residual": 1.1632715677166625,
+    "participation_ratio": 3.10844207030155,
+    "bucket": "not circulant \u2014 spectrum not read",
+    "permutation": {
+      "canonical": 0.1351906964613364,
+      "perm_mean": 0.09143818699927046,
+      "perm_std": 0.005154259448073568,
+      "perm_max": 0.1113537482412792,
+      "percentile": 100.0,
+      "z": 8.488612166859136,
+      "n_perm": 200
+    },
+    "freq_shares": {
+      "1": 0.7634097782219196,
+      "2": 0.14295760500324486,
+      "3": 0.04008518247549491,
+      "4": 0.01910905539090215,
+      "5": 0.0344383789084384
+    },
+    "band_concentration": 0.01911244756890884,
+    "band_pr": 0.02519589415384793,
+    "offset_share": 0.9455933196099265,
+    "centered": {
+      "circulant_score": 0.28784192018123334,
+      "toeplitz_score": 0.30240698063584937,
+      "spectral_concentration": 0.7634097782219176,
+      "significant_frequencies": [
+        1
+      ],
+      "closure_ratio": 2.347151890342325,
+      "rotation_residual": 0.6549782779525359,
+      "rotation_order_error": 0.19392448263894996,
+      "rotation_wraparound_error": 1.5470141119958067,
+      "rotation_rank": 6,
+      "norm_cv": 0.4433148028466494,
+      "additivity_residual": 1.1632715677166625,
+      "participation_ratio": 3.1084420703015514,
+      "bucket": "not circulant \u2014 spectrum not read",
+      "permutation": {
+        "canonical": 0.28784192018123334,
+        "perm_mean": 0.18835351405043518,
+        "perm_std": 0.011325481419970059,
+        "perm_max": 0.2326170048029721,
+        "percentile": 100.0,
+        "z": 8.784474799929624,
+        "n_perm": 200
+      },
+      "freq_shares": {
+        "1": 0.7634097782219176,
+        "2": 0.14295760500324567,
+        "3": 0.0400851824754952,
+        "4": 0.019109055390902678,
+        "5": 0.03443837890843914
+      },
+      "band_concentration": 0.019112447568904956,
+      "band_pr": 0.02519589415384793
+    }
+  }
+}
