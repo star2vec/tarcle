@@ -1,0 +1,25 @@
+model meta-llama/Llama-3.2-3B  device cuda  dtype bfloat16
+arch: 28 layers x 24 heads, head_dim 128, d_model 3072
+VRAM after load: 5.98 GiB of 8.00 GiB
+head set from results\fv\months_llama32_3b_ada\heads.npz (sha256 fe723a181871): [(14, 1), (12, 20), (14, 2), (14, 12), (12, 3), (26, 22), (14, 16), (20, 11), (14, 14), (18, 2)]
+  k= 0  todd |FV|    7.487   hendel |FV| (all layers)   17.598
+  k= 1  todd |FV|    7.948   hendel |FV| (all layers)   17.539
+  k= 2  todd |FV|    8.277   hendel |FV| (all layers)   17.333
+  k= 3  todd |FV|    8.338   hendel |FV| (all layers)   17.375
+  k= 4  todd |FV|    7.373   hendel |FV| (all layers)   17.259
+  k= 5  todd |FV|    7.373   hendel |FV| (all layers)   17.294
+  k= 6  todd |FV|    6.931   hendel |FV| (all layers)   17.160
+  k= 7  todd |FV|    7.348   hendel |FV| (all layers)   17.252
+  k= 8  todd |FV|    7.397   hendel |FV| (all layers)   17.240
+  k= 9  todd |FV|    7.936   hendel |FV| (all layers)   17.266
+  k=10  todd |FV|    7.991   hendel |FV| (all layers)   17.257
+  k=11  todd |FV|    7.923   hendel |FV| (all layers)   17.389
+
+injection-layer sweep (on the head-ID k subset, then frozen):
+  zero-shot baseline per k: {0: 1.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0}
+  add: best injection layer L12 (mean acc 0.500 over k=[1, 2, 3, 6, 9, 11])
+  top layers: L12=0.500, L13=0.361, L14=0.333, L11=0.319, L15=0.319
+  replace: best injection layer L15 (mean acc 0.444 over k=[1, 2, 3, 6, 9, 11])
+  top layers: L15=0.444, L14=0.389, L16=0.306, L17=0.306, L18=0.181
+wrote results\fv\months_llama32_3b_ada\fv_primary_todd.npz (sha256 56300fa2373e)
+wrote results\fv\months_llama32_3b_ada\fv_primary_hendel.npz (sha256 430fac066231)
