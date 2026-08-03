@@ -1019,6 +1019,80 @@ with SEs, per-head contributions over the 36-cell union superset, prompt SHA-256
 a `head_set_source` hash. Stage 2 needs no GPU and no re-extraction, including for head
 sets not yet considered, provided they are subsets of the union.
 
+### D25. The discard rule in separator terms, and the permutation null
+
+**Fixed before the first Gram matrix of extracted function vectors is computed.**
+Both parts are free — they use machinery already built — and both correct a reading of
+the null control that D24 §"Evaluation order" would otherwise have licensed.
+
+#### 1. A high circulant score on the null control does NOT void the run
+
+CLAUDE.md rule 2 and prereg §5 say the unrelated-tasks control "must show NO circulant
+structure", and a positive there discards everything. Taken at face value that is a
+**trap**, for a reason prereg §0 already documented and D24 failed to carry through:
+
+> `circulant_score` alone cannot separate A from D. Simplex scores **0.79**.
+
+Twelve unrelated tasks are expected to give near-orthogonal FVs — that is what
+unrelated means — and near-orthogonal vectors have Gram ≈ identity + constant, which is
+*trivially circulant*. Weak or noisy FVs push in the same direction. So a circulant
+score around 0.8 on the null is the **expected benign outcome**, not evidence of a
+pipeline bug. Discarding the run on it would throw away a correct pipeline for
+behaving correctly.
+
+**The permutation check cannot rescue the naive reading either.** A simplex Gram is
+I + c·J, which is invariant under simultaneous row/column permutation, so permuting the
+task order leaves its circulant score unchanged. A permutation-stable high circulant
+score is the D signature, not a red flag.
+
+**Restated discard rule.** The run voids if and only if the null control shows the
+**A-signature**:
+
+> `spectral_concentration` ≥ 0.25 (the circle/helix band) **and**
+> `participation_ratio` ∈ [1.5, 7]
+
+Pre-labelled outcomes, so neither can be argued after the fact:
+
+| null control shows | reading |
+|---|---|
+| circulant ≈ 0.7–0.9, concentration ≈ 0.17–0.20, PR ≈ 10–11 | **PASS** — textbook simplex; the pipeline is behaving |
+| circulant low, concentration anything, PR ≥ 8 | **PASS** — no structure at all |
+| concentration ≥ 0.25 **and** PR ∈ [1.5, 7] | **VOID** — the diagnostics find a circle in unrelated tasks; discard everything |
+| concentration ≥ 0.50 with a dominant frequency pair | **VOID**, emphatically |
+
+The uniform non-DC power share at n=12 is 1/6 = **0.167**; a concentration at that
+value is exactly "no distinguished frequency".
+
+#### 2. Permutation null on the primary — exploratory, logged before computing
+
+Registered now, before the number exists.
+
+Months has a canonical ordering; a simplex does not care about ordering. So comparing
+the **canonical** circulant score against the distribution of circulant scores under
+≥20 random permutations of the k-ordering is a direct A-vs-D discriminator, built from
+the same machinery as the null-control permutation check:
+
+- **canonical ≫ permutation distribution** → the structure depends on the specific
+  cyclic ordering. A simplex cannot produce this. Evidence for A / A-multi.
+- **canonical ≈ permutation distribution** → the score is ordering-independent, i.e.
+  it comes from near-equidistance rather than from cyclic structure. Evidence for D.
+
+Reported as a percentile: where the canonical score falls in the permutation null.
+Run on both extraction methods, all available conditions, and both head-set columns.
+
+**Status: exploratory.** It is not among the D24 confirmatory cells and cannot upgrade
+or downgrade them — the headline remains `spectral_concentration` and
+`participation_ratio` on the primary/full-n=12/canonical cell. It is registered because
+it is a genuine discriminator that the pre-registration did not think of, and
+registering it now is what keeps it from being a post-hoc rescue if the primary
+separators land ambiguously.
+
+**The same permutation test is run on the null control**, where the prediction is the
+opposite: canonical ≈ permutations, because there is no meaningful ordering to destroy.
+A null control whose canonical score sits far above its own permutation distribution
+would mean the arbitrary alphabetical task ordering carries structure, which is a
+pipeline bug and voids the run independently of §1 above.
+
 ---
 
 ## Conventions
