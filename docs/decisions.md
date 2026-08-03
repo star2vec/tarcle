@@ -266,6 +266,85 @@ and fail thresholds in §3 are untouched.
 
 ---
 
+## 2026-08-03 — After the first primary extraction, before the control matrix
+
+### D12. Injection scale is a swept hyperparameter, not a constant — and this was changed after seeing a null
+
+**Recorded as a post-hoc protocol change, because that is what it is.**
+
+The first primary extraction fixed `injection_scale = 1.0` and produced a near-total
+efficacy null: under the Todd extraction, lift was +1.00 at k=1, +0.92 at k=2, +1.00
+at k=11, **+0.08 at k=3**, and exactly 0.00 at every other k — including k=6, whose
+held-out ICL accuracy is 0.98.
+
+Per CLAUDE.md's style rule the extraction code was suspected first. It was cleared:
+split-half reliability is 0.980–0.9998, the head→residual projection is verified
+against the attention block's real output in `tests/test_extract.py`, and injection
+demonstrably moves predictions. So the two remaining *protocol* suspects were swept
+directly (`tarcle/diagnose_efficacy.py`):
+
+- **Layer**: not the problem. At scale 1.0 no layer in 0–27 rescues k=3, 6 or 8; the
+  frozen L12 was already each k's best or tied-best.
+- **Scale**: decisive. At ×2.0 the Todd FV takes **k=3 from 0.08 to 1.00**, k=6 from
+  0.00 to 0.25, k=8 from 0.00 to 0.17.
+
+So the scale-1.0 null was substantially an artefact of injection strength, not a
+property of the vectors. Reporting it as a finding would have been wrong.
+
+**Change:** injection layer and scale are now swept **jointly** over
+`injection_scales = [0.5, 1, 2, 3, 4]` × 28 layers, chosen on the head-ID k subset
+{1,2,3,6,9,11} only, and frozen for every k and every condition thereafter.
+
+Why this does not launder a post-hoc choice into the out-of-sample cells:
+
+- The grid is optimised on the **in-sweep k only** — the same six k that already
+  chose the head set and the layer. k ∈ {0,4,5,7,8,10}, including the k=8 cell the
+  D2 arbiter turns on, remain untouched by the tuning.
+- One (layer, scale) pair is frozen across all k. Tuning per k would fit the protocol
+  to each task and destroy cross-k comparability, which is exactly what D2 needs.
+- The scale grid was fixed before re-running, not widened until k=8 responded. Note
+  that k=8 does **not** clear at any scale (max 0.17), so the change does not rescue
+  the cell whose status is under test — it rescues k=3, an in-sweep cell.
+
+**Hendel is excluded from the scale sweep and stays at 1.0.** That method *replaces*
+the residual stream rather than adding to it, so a scale ≠ 1 substitutes a state of
+deliberately wrong magnitude — not a stronger push but a different and invalid state.
+The measured behaviour agrees: Hendel efficacy degrades monotonically away from 1.0
+(k=2: 0.75 → 0.25 at ×2, → 0.08 at ×4). This is a real asymmetry between the two
+extractions and is reported, not harmonised away (CLAUDE.md rule 1).
+
+The scale-1.0 run is archived untouched at
+`results/fv/months_llama32_3b_ada/` alongside `efficacy_diagnosis.json`, which holds
+the full scale × layer grids that motivated the change. The re-run under the joint
+sweep is the canonical primary extraction.
+
+### D13. The D4 escalation trigger is uninformative on this data, and that is not a pass
+
+D4 pre-registered a test: regress per-k efficacy lift on that k's ICL accuracy using
+the in-sweep k, and fire if the out-of-sweep k sit systematically below the fit.
+
+Computed on the scale-1.0 run it **did not fire** under either extraction. That verdict
+should not be reported as reassurance, because the fit is degenerate:
+
+- The in-sweep k have almost no variance in the regressor — ICL accuracies 1.00, 1.00,
+  1.00, 0.98, 0.80, 1.00. The slope is determined almost entirely by k=9.
+- The out-of-sweep k extend to ICL 0.38, so the test **extrapolates** a fit built on
+  x ∈ [0.80, 1.00] down to x = 0.38.
+- At that extrapolation the fitted line predicts a lift of −1.48 for k=8, which is not
+  merely wrong but impossible: lift is bounded below by −baseline = 0. k=8's residual
+  of +1.48 — the largest of any cell, and the one most responsible for the
+  "does not fire" verdict — is therefore a pure artefact of the extrapolation.
+
+The weakness is in the trigger's construction, fixed in D4 before any efficacy score
+existed, and it is recorded here rather than silently reinterpreted. **The trigger is
+reported with its residual spread and this caveat attached, and no confidence is
+placed in either verdict.** The substantive question it was meant to answer — whether
+the head set is biased toward the strong k — is left to the direct comparison it
+should have used: head-set overlap between the six-k and all-twelve-k sweeps, which
+costs ~1.3 GPU-hours and remains available.
+
+---
+
 ## Conventions
 
 - Entries are append-only. A superseded decision is struck through with a pointer to

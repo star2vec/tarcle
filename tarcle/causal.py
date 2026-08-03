@@ -107,47 +107,54 @@ def baseline_accuracy(model, tok, arch, domain: str, ks, batch_size: int) -> dic
     return {k: accuracy_for_k(model, tok, arch, domain, k, batch_size) for k in ks}
 
 
-def sweep_injection_layer(
+def sweep_injection(
     model, tok, arch, domain: str, vectors_at, ks,
-    batch_size: int, mode: str, log=print,
-) -> tuple[int, dict[int, float]]:
-    """Pick the injection layer once, on the head-ID k subset, then freeze it.
+    batch_size: int, mode: str, scales, log=print,
+) -> tuple[int, float, dict]:
+    """Pick injection layer AND scale once, on the head-ID k subset, then freeze.
 
     `vectors_at(layer) -> {k: vector}` so the two methods can differ in what
-    they inject: a Todd FV is one vector injected at whichever layer works best,
-    while a Hendel state is layer-specific and layer L's state is injected at
-    layer L.
+    they inject: a Todd FV is one vector added at whichever layer works best,
+    while a Hendel state is layer-specific and layer L's state replaces layer
+    L's.
 
-    Returns (best layer, mean accuracy per layer). Sweeping per k would fit the
-    layer to each task and make cross-k efficacy incomparable, which is exactly
-    what the arbiter in D2 needs to avoid.
+    Both hyperparameters are chosen on the in-sweep k only and frozen for every
+    k and every condition. Tuning either per k would fit the protocol to each
+    task and make cross-k efficacy incomparable, which is precisely what the
+    docs/decisions.md D2 arbiter must avoid.
+
+    Scale matters more than it looks: at scale 1.0 the Todd FV moved shift-by-3
+    to 0.08, and at 2.0 to 1.00. See D12.
     """
-    per_layer = {}
+    grid = {}
     for layer in range(arch.n_layers):
         vectors = vectors_at(layer)
-        accs = [
-            accuracy_for_k(
-                model, tok, arch, domain, k, batch_size, vectors[k], layer, mode
-            )
-            for k in ks
-        ]
-        per_layer[layer] = float(np.mean(accs))
-    best = max(per_layer, key=per_layer.get)
-    log(f"  {mode}: best injection layer L{best} "
-        f"(mean acc {per_layer[best]:.3f} over k={list(ks)})")
-    top = sorted(per_layer.items(), key=lambda kv: -kv[1])[:5]
-    log("  top layers: " + ", ".join(f"L{l}={a:.3f}" for l, a in top))
-    return best, per_layer
+        for scale in scales:
+            accs = [
+                accuracy_for_k(
+                    model, tok, arch, domain, k, batch_size,
+                    vectors[k] * scale, layer, mode,
+                )
+                for k in ks
+            ]
+            grid[(layer, scale)] = float(np.mean(accs))
+    best_layer, best_scale = max(grid, key=grid.get)
+    log(f"  {mode}: best injection L{best_layer} scale x{best_scale} "
+        f"(mean acc {grid[(best_layer, best_scale)]:.3f} over k={list(ks)})")
+    top = sorted(grid.items(), key=lambda kv: -kv[1])[:5]
+    log("  top: " + ", ".join(f"L{l}x{s}={a:.3f}" for (l, s), a in top))
+    return best_layer, best_scale, {f"L{l}_x{s}": a for (l, s), a in grid.items()}
 
 
 def efficacy(
     model, tok, arch, domain: str, vectors: dict[int, torch.Tensor], ks,
     layer: int, mode: str, batch_size: int, baseline: dict[int, float],
+    scale: float = 1.0,
 ) -> dict:
     """Injected accuracy and lift over the no-injection baseline, per k."""
     acc = {
         k: accuracy_for_k(
-            model, tok, arch, domain, k, batch_size, vectors[k], layer, mode
+            model, tok, arch, domain, k, batch_size, vectors[k] * scale, layer, mode
         )
         for k in ks
     }

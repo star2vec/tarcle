@@ -62,6 +62,12 @@ class ExtractConfig:
     head_id_confirm_n_prompts: int = 40
     top_heads: int = 10
 
+    # Injection strength grid, swept jointly with the layer on the head-ID k
+    # subset and then frozen for every k (docs/decisions.md D12).
+    injection_scales: list[float] = field(
+        default_factory=lambda: [0.5, 1.0, 2.0, 3.0, 4.0]
+    )
+
     results_dir: str = "results/fv"
 
 
@@ -591,22 +597,26 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     log(f"  zero-shot baseline per k: "
         f"{ {k: round(v, 3) for k, v in baseline.items()} }")
 
-    todd_layer, todd_layers = causal.sweep_injection_layer(
+    todd_layer, todd_scale, todd_layers = causal.sweep_injection(
         model, tok, arch, config.family, lambda _l: todd_vecs,
-        config.head_id_ks, config.batch_size, "add", log,
+        config.head_id_ks, config.batch_size, "add", config.injection_scales, log,
     )
-    hendel_layer, hendel_layers = causal.sweep_injection_layer(
+    # Hendel replaces the hidden state rather than adding to it, so a scale
+    # other than 1.0 would substitute a state of deliberately wrong magnitude —
+    # not a stronger push but a different, invalid state. Scale is not a free
+    # hyperparameter for this method (D12).
+    hendel_layer, hendel_scale, hendel_layers = causal.sweep_injection(
         model, tok, arch, config.family,
         lambda l: {
             k: torch.tensor(hendel[k]["fv"]["mean"][l], device=dev, dtype=torch.float32)
             for k in config.ks
         },
-        config.head_id_ks, config.batch_size, "replace", log,
+        config.head_id_ks, config.batch_size, "replace", [1.0], log,
     )
 
     todd_eff = causal.efficacy(
         model, tok, arch, config.family, todd_vecs, config.ks, todd_layer,
-        "add", config.batch_size, baseline,
+        "add", config.batch_size, baseline, todd_scale,
     )
     hendel_vecs = {
         k: torch.tensor(
@@ -616,7 +626,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     }
     hendel_eff = causal.efficacy(
         model, tok, arch, config.family, hendel_vecs, config.ks, hendel_layer,
-        "replace", config.batch_size, baseline,
+        "replace", config.batch_size, baseline, hendel_scale,
     )
 
     proxy = causal.frequency_proxy(model, tok, config.family, config.batch_size)
@@ -655,9 +665,9 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         ),
     }
 
-    for method, eff, layer, mode, layers_acc in (
-        ("todd", todd_eff, todd_layer, "add", todd_layers),
-        ("hendel", hendel_eff, hendel_layer, "replace", hendel_layers),
+    for method, eff, layer, mode, layers_acc, scale in (
+        ("todd", todd_eff, todd_layer, "add", todd_layers, todd_scale),
+        ("hendel", hendel_eff, hendel_layer, "replace", hendel_layers, hendel_scale),
     ):
         src = todd if method == "todd" else hendel
         if method == "todd":
@@ -683,8 +693,8 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         sel = (lambda a: a) if method == "todd" else (lambda a: a[layer])
         meta = {
             **meta_common, "method": method, "injection_layer": int(layer),
-            "injection_mode": mode, "injection_scale": 1.0,
-            "injection_layer_sweep": layers_acc,
+            "injection_mode": mode, "injection_scale": float(scale),
+            "injection_sweep": layers_acc,
         }
         path = out_dir / f"fv_primary_{method}.npz"
         np.savez(
