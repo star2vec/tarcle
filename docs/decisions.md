@@ -318,6 +318,55 @@ The scale-1.0 run is archived untouched at
 the full scale × layer grids that motivated the change. The re-run under the joint
 sweep is the canonical primary extraction.
 
+#### Exactly how ×3.0 was selected
+
+- **Swept:** the full outer product of 28 layers (0–27) × 5 scales
+  {0.5, 1.0, 2.0, 3.0, 4.0}, i.e. 140 candidate protocols.
+- **On which k:** the head-ID subset {1, 2, 3, 6, 9, 11} only — the same six k that
+  chose the head set (D3). k ∈ {0, 4, 5, 7, 8, 10} played no part.
+- **Optimising:** the unweighted mean, over those six k, of injected forced-choice
+  accuracy on the complete 12-month query cycle. No other objective was computed, and
+  the grid was not revisited after the out-of-sweep cells were seen.
+- **Result:** L8 × 3.0, mean 0.806. Runners-up: L12 × 2.0 (0.764), L7 × 3.0 (0.764),
+  L9 × 3.0 (0.736). Note the previously frozen L12 × 1.0 scored ~0.50.
+- **Frozen** for every k and every condition thereafter, recorded in each `.npz` as
+  `injection_layer` / `injection_scale`.
+
+#### Stability of the D2 arbiter verdict (`scale_stability.json`)
+
+FV(8) at the frozen L8, by scale: 0.00 at ×0.25/×0.5/×1.0/×2.0, **0.42 at ×3.0**,
+0.25 at ×4.0, 0.17 at ×6.0. So the verdict does depend on scale, and that must be
+stated plainly. Three things qualify it:
+
+1. **The ×3.0 threshold is family-wide, not a k=8 spike.** Every mid-cycle k — 4, 5,
+   6, 7, 8, 9 — is exactly 0.00 at ×2.0 and jumps at ×3.0. Only the easy k (1, 2, 3,
+   11) respond at ×2.0. The pattern is a difficulty-graded threshold on injection
+   strength, not a resonance at one cell.
+2. **k=8 ranks mid-to-high among the mid-cycle k at every scale where anything
+   responds** — 3rd of 6 at ×3.0 (behind k=9 and k=5), tied 2nd at ×4.0, tied 1st at
+   ×6.0. Its verdict never depends on being the single cell that happened to fire.
+3. **The frozen protocol is already k=8's global optimum.** Searching all 28 × 7
+   layer × scale combinations, k=8's best achievable accuracy is 0.42, attained at
+   exactly L8 × 3.0. The figure is an upper bound, not a favourable draw. By contrast
+   the frozen choice *costs* k=4 (0.17 frozen vs 0.50 at L10 × 3.0) and k=5
+   (0.50 vs 0.58 at L12 × 2.0) — per-k tuning would raise other cells, not k=8, and
+   is refused anyway because it would destroy cross-k comparability.
+
+#### Hendel's ±1 confinement is a property of the method, not of scale 1.0
+
+Checked against the same full 28 layers × 7 scales grid, taking each k's best
+achievable accuracy anywhere on it:
+
+| k | 1 | 2 | 11 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| best over grid | 1.00 | 0.75 | 0.92 | 0.17 | 0.08 | 0.08 | 0.17 | 0.08 | 0.08 | 0.08 | 0.33 |
+
+Chance is 1/12 = 0.083. Five mid-cycle cells (4, 5, 7, 8, 9) sit **at chance even at
+their own optimal layer and scale**. No choice of injection strength rescues them, so
+the confinement to ±1 and +2 is a fact about the Hendel dummy-query state, not about
+the value it was pinned to. This is the sharpest cross-method disagreement in the run
+and is reported as a finding about FV extraction (CLAUDE.md rule 1), not resolved.
+
 ### D13. The D4 escalation trigger is uninformative on this data, and that is not a pass
 
 D4 pre-registered a test: regress per-k efficacy lift on that k's ICL accuracy using
@@ -342,6 +391,64 @@ placed in either verdict.** The substantive question it was meant to answer — 
 the head set is biased toward the strong k — is left to the direct comparison it
 should have used: head-set overlap between the six-k and all-twelve-k sweeps, which
 costs ~1.3 GPU-hours and remains available.
+
+### D14. The all-k head sweep replaces D4's regression, which is uninformative by construction
+
+D4 pre-registered a regression test for head-set bias: fit efficacy lift against ICL
+accuracy on the in-sweep k, fire if the out-of-sweep k sit below the fit. **That test
+cannot answer the question it was written for, and this is a defect of construction,
+not of the data** — it was knowable when D4 was written and was not noticed:
+
+- The regressor has almost no variance on the in-sweep k (ICL 1.00, 1.00, 1.00, 0.98,
+  0.80, 1.00), so the slope rests on k=9 alone.
+- The out-of-sweep k reach ICL 0.38, so the test extrapolates far outside its fitted
+  range, and the fitted line predicts lifts below the hard floor of 0.
+- It is an *indirect* proxy: it infers head-set bias from an efficacy pattern that
+  depends on the injection protocol, the FV assembly and the task difficulty all at
+  once.
+
+**Replacement, run directly:** identify the head set a second time over
+k = 1..11 and compare it to the canonical six-k set — top-10 membership overlap, AIE
+rank correlation, and whether L14 H1 retains its dominance. That measures head-set
+bias with no proxy and no extrapolation. Run `months_llama32_3b_ada_allk`.
+
+**k=0 is excluded from the all-k sweep too.** The check varies the one thing under
+test — the breadth of the k subset — and holds everything else fixed. Adding k=0 would
+introduce the induction/copy-head contamination D3 exists to prevent, so a change in
+the head set could not be attributed to breadth rather than to that contamination. The
+sweep is therefore k = 1..11 (eleven values, every non-identity shift), not twelve.
+
+D4's regression continues to be computed and reported, with its residual spread and
+this caveat attached, but no inference is drawn from either verdict.
+
+### D15. AIE rank and FV contribution are decoupled — head-set overlap is the wrong robustness metric
+
+Found while running the D14 check. Recorded because it changes how head-set
+robustness must be reported, and because it qualifies D8.
+
+The all-k sweep returns 8/10 membership overlap with the canonical six-k set, which
+reads as reassuring. It is not, because **a Todd-style FV is a raw sum of mean head
+activations, not an AIE-weighted sum.** A head can be causally negligible and still
+supply a large share of the vector. Measured on the canonical extraction:
+
+- The two heads the all-k sweep drops (L14H14, L18H2) carry ~3% of the head set's AIE
+  each, but **28% of the FV norm on average** — 0.12–0.15 at k ∈ {0,1,11}, rising to
+  0.32–0.38 at k ∈ {4..9}.
+- Removing them rotates the FV by cos 0.926–0.992, minimum at k=6. **The split-half
+  noise ceiling is 0.9946**, so every mid-cycle k moves by more than measurement noise.
+- The disturbance is largest precisely at the mid-cycle k where the geometry question
+  is most delicate, and smallest at the ±1 cells where it is least interesting.
+
+**This qualifies D8.** L14 H1 carries ~56% of the head set's summed AIE but only
+**32.6%** of the FV norm. "Dominant" is true causally and false geometrically, and the
+D8 decomposition obligation (whole set / L14H1 / other nine) must be reported in norm
+terms as well as AIE terms so the two are not conflated.
+
+**Consequence for reporting:** head-set robustness is not established by membership
+overlap. Any claim that a geometry result survives the choice of head set must be
+supported by re-running the battery under the alternative set, not by citing 8/10.
+The canonical six-k set remains primary (D3, fixed before any AIE existed); the all-k
+set is carried as a parallel condition.
 
 ---
 

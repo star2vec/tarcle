@@ -226,3 +226,46 @@ k=6 itself the easiest mid-cycle shift (0.98) appears to be pulling k=8 predicti
 
 **A decision on that ambiguity is deferred to the extraction-planning session and is the
 user's to make; it is not resolved here.**
+
+## 8. The k=6 triple anomaly (pre-geometry observation, added 2026-08-03)
+
+*Appended after stage-1 extraction, before any Gram matrix exists. Recorded here so it
+cannot be recalled selectively once the spectrum is known.*
+
+k=6 is anomalous in three independent measurements that point in opposite directions:
+
+| measurement | k=6 value | context |
+|---|---|---|
+| held-out ICL accuracy, 16-shot | **0.98** | above both neighbours (k=5 0.76, k=7 0.70); the easiest mid-cycle shift |
+| L14 H1 causal AIE (dominant FV head) | **+0.0454** | its *minimum* across the swept k; mean +0.099, k=1 +0.148 |
+| FV injection efficacy, Todd, frozen protocol | **0.33** | below k=5 (0.50), k=9 (0.58), k=10 (0.83), k=8 (0.42) |
+| FV \|·\| norm, Todd | **6.931** | the *smallest* norm of all twelve k |
+
+So the shift the model performs best in context is the one its dominant function-vector
+head contributes least to, whose function vector is the shortest, and which steers
+worst. Behavioural competence and function-vector strength dissociate at exactly this
+cell.
+
+k=6 is the order-2 self-inverse element of Z/12 — the unique shift where forward and
+backward coincide, and where the sign-flip error mode that dominates every other cell
+(§2) is definitionally unavailable. It is also a salient corpus idiom ("six months
+later"). §3 already flagged it as an antipodal landmark, and §7 records it acting as an
+attractor for k=8's errors.
+
+Two readings, neither adopted here:
+
+- **k=6 is solved by a different mechanism** that does not route through the FV head
+  set — consistent with all four measurements at once, and with the antipode's special
+  status.
+- **AIE saturation**: patching helps least where the corrupted baseline is already most
+  recoverable. Checked and found insufficient rather than absent — the per-k corrupted
+  baselines run 0.048–0.070 with k=6 highest at 0.0699, giving
+  corr(baseline, L14H1 AIE) = −0.38, but the baselines' relative spread (0.36) is a
+  third of the AIE's (1.03). See `docs/decisions.md` D9.
+
+**Bearing on the pre-registered divisor test.** `docs/preregistration.md` §1 predicts
+Gram-spectrum power at frequencies with gcd(f,12) > 1, and f=6 is the order-2
+character. If the DFT later shows anomalous power at f=6, these four measurements are
+*prior and independent* evidence that k=6 is mechanistically special. If it shows
+nothing at f=6, the disagreement between behaviour/causality and geometry at this cell
+is itself the reportable result. Fixed now, before the spectrum is computed.
