@@ -1,0 +1,78 @@
+model meta-llama/Llama-3.2-3B  device cuda  dtype bfloat16
+arch: 28 layers x 24 heads, head_dim 128, d_model 3072
+VRAM after load: 5.98 GiB of 8.00 GiB
+  k= 1 mean p(target | corrupted) = 0.0621
+  k= 2 mean p(target | corrupted) = 0.0516
+  k= 3 mean p(target | corrupted) = 0.0662
+  k= 4 mean p(target | corrupted) = 0.0969
+  k= 5 mean p(target | corrupted) = 0.0804
+  k= 6 mean p(target | corrupted) = 0.0699
+  k= 7 mean p(target | corrupted) = 0.0531
+  k= 8 mean p(target | corrupted) = 0.0532
+  k= 9 mean p(target | corrupted) = 0.0616
+  k=10 mean p(target | corrupted) = 0.0611
+  k=11 mean p(target | corrupted) = 0.0481
+  layer  0/27  0.84s/forward  eta 49.9 min
+  layer  1/27  0.84s/forward  eta 48.1 min
+  layer  2/27  0.84s/forward  eta 46.3 min
+  layer  3/27  0.84s/forward  eta 44.5 min
+  layer  4/27  0.84s/forward  eta 42.6 min
+  layer  5/27  0.84s/forward  eta 40.8 min
+  layer  6/27  0.84s/forward  eta 38.9 min
+  layer  7/27  0.84s/forward  eta 37.1 min
+  layer  8/27  0.84s/forward  eta 35.2 min
+  layer  9/27  0.84s/forward  eta 33.3 min
+  layer 10/27  0.84s/forward  eta 31.5 min
+  layer 11/27  0.84s/forward  eta 29.6 min
+  layer 12/27  0.84s/forward  eta 27.8 min
+  layer 13/27  0.84s/forward  eta 25.9 min
+  layer 14/27  0.84s/forward  eta 24.1 min
+  layer 15/27  0.84s/forward  eta 22.2 min
+  layer 16/27  0.84s/forward  eta 20.4 min
+  layer 17/27  0.84s/forward  eta 18.5 min
+  layer 18/27  0.84s/forward  eta 16.7 min
+  layer 19/27  0.84s/forward  eta 14.8 min
+  layer 20/27  0.84s/forward  eta 13.0 min
+  layer 21/27  0.84s/forward  eta 11.1 min
+  layer 22/27  0.84s/forward  eta 9.3 min
+  layer 23/27  0.84s/forward  eta 7.4 min
+  layer 24/27  0.84s/forward  eta 5.6 min
+  layer 25/27  0.84s/forward  eta 3.7 min
+  layer 26/27  0.84s/forward  eta 1.9 min
+  layer 27/27  0.84s/forward  eta 0.0 min
+
+stage A done in 52.0 min; confirming 30 cells
+  confirm baselines: mean p(target | corrupted) = 0.0600
+  confirm 1/30  L14 H1  AIE +0.0817 ± 0.0028
+  confirm 2/30  L14 H12  AIE +0.0121 ± 0.0006
+  confirm 3/30  L12 H20  AIE +0.0117 ± 0.0010
+  confirm 4/30  L14 H2  AIE +0.0131 ± 0.0006
+  confirm 5/30  L26 H22  AIE +0.0045 ± 0.0003
+  confirm 6/30  L12 H3  AIE +0.0037 ± 0.0003
+  confirm 7/30  L20 H11  AIE +0.0035 ± 0.0003
+  confirm 8/30  L14 H14  AIE +0.0022 ± 0.0003
+  confirm 9/30  L14 H16  AIE +0.0031 ± 0.0002
+  confirm 10/30  L10 H22  AIE +0.0007 ± 0.0005
+  confirm 11/30  L19 H19  AIE +0.0027 ± 0.0003
+  confirm 12/30  L14 H6  AIE +0.0024 ± 0.0003
+  confirm 13/30  L26 H19  AIE +0.0008 ± 0.0001
+  confirm 14/30  L12 H16  AIE +0.0011 ± 0.0002
+  confirm 15/30  L25 H6  AIE +0.0012 ± 0.0002
+  confirm 16/30  L14 H22  AIE +0.0014 ± 0.0002
+  confirm 17/30  L16 H15  AIE +0.0009 ± 0.0002
+  confirm 18/30  L9 H19  AIE +0.0008 ± 0.0002
+  confirm 19/30  L21 H12  AIE +0.0009 ± 0.0002
+  confirm 20/30  L18 H1  AIE +0.0014 ± 0.0002
+  confirm 21/30  L13 H18  AIE +0.0010 ± 0.0001
+  confirm 22/30  L27 H1  AIE +0.0003 ± 0.0001
+  confirm 23/30  L17 H15  AIE +0.0015 ± 0.0002
+  confirm 24/30  L15 H4  AIE +0.0006 ± 0.0002
+  confirm 25/30  L19 H18  AIE +0.0001 ± 0.0005
+  confirm 26/30  L13 H23  AIE +0.0009 ± 0.0002
+  confirm 27/30  L22 H9  AIE +0.0003 ± 0.0001
+  confirm 28/30  L18 H9  AIE +0.0008 ± 0.0002
+  confirm 29/30  L15 H3  AIE +0.0015 ± 0.0002
+  confirm 30/30  L17 H9  AIE +0.0008 ± 0.0001
+
+wrote results\fv\months_llama32_3b_ada_allk\heads.npz (sha256 c30bb94a1826)
+head set: [[14, 1], [14, 2], [14, 12], [12, 20], [26, 22], [12, 3], [20, 11], [14, 16], [19, 19], [14, 6]]
