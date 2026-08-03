@@ -235,6 +235,35 @@ runs differ only in that the second is provenance-clean, so any disagreement is
 measurement noise in the AIE estimate and bounds how much confidence the head ranking
 can carry.
 
+### D11. The prereg's §3 Test-1 rationale is wrong; the test is implemented so it has content
+
+`docs/preregistration.md` §3 Test 1 motivates the token-frequency artefact control
+with: *"target = operand + k, so the target distribution is a shifted copy of the
+operand distribution and its mean proxy varies with k even under uniform operand
+sampling."*
+
+**The final clause is false.** Over the full Z/12 cycle a shift is a bijection on the
+operand set, so the mean frequency proxy of the targets is *identical* for every k.
+Implemented literally against the idealised cycle, Test 1 would compare a constant
+against `norm_profile(X)` and return a meaningless correlation — it would pass
+trivially, for the wrong reason, and the blocking control would be vacuous.
+
+The registration is frozen and is not edited. The test is implemented so that it does
+what §3 evidently intends — detect norms tracking token frequency — by computing the
+proxy over the operands and targets **actually drawn** in each k's prompt set rather
+than over the idealised cycle. That has genuine variation with k for two reasons:
+
+- finite prompt sets (100 prompts × 16 shots) do not sample operands exactly
+  uniformly, so realised means differ across k;
+- under a restricted operand pool — the partition controls and the polysemy
+  leave-out — shifting genuinely moves mass onto different target tokens, which is
+  where the confound would actually bite.
+
+Both the operand-side and target-side means are stored per k in every FV `.npz`
+(`freq_proxy_operand`, `freq_proxy_target`) so stage 2 can run the registered
+correlation against `norm_profile(X)` either way and report which was used. The pass
+and fail thresholds in §3 are untouched.
+
 ---
 
 ## Conventions

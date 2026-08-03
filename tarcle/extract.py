@@ -400,6 +400,98 @@ def confirm_cells(model, tok, arch, config, cells, log=print):
     return out
 
 
+@torch.inference_mode()
+def per_prompt_head_acts(model, tok, arch, prompts, cells, batch_size):
+    """(n_prompts, len(cells), head_dim) head activations at the last position.
+
+    Kept per prompt rather than pre-averaged so the FV, its standard error and
+    the two split halves all come out of one pass. 100 prompts x 10 heads x 128
+    is 0.5MB.
+    """
+    out = []
+    for start in range(0, len(prompts), batch_size):
+        enc = encode(tok, prompts[start : start + batch_size], model.device)
+        with LastPositionHeads(arch) as cap:
+            model(**enc, logits_to_keep=1)
+        acts = cap.stacked().float()  # (B, n_layers, n_heads, head_dim)
+        out.append(torch.stack([acts[:, l, h] for l, h in cells], dim=1).cpu())
+    return torch.cat(out)
+
+
+def project_heads(arch: Arch, cells, acts: torch.Tensor) -> torch.Tensor:
+    """Head activations -> residual-stream contributions: (..., len(cells), d).
+
+    Head (l,h)'s slice of the o_proj input, pushed through the matching columns
+    of W_O, is that head's additive contribution to the residual stream. A
+    Todd-style FV is the sum of these over the head set (verified against the
+    attention block's actual output in tests/test_extract.py).
+
+    no_grad, not inference_mode: w_out requires grad, and multiplying it by an
+    inference tensor raises.
+    """
+    with torch.no_grad():
+        parts = []
+        for i, (layer, head) in enumerate(cells):
+            w = arch.w_out[layer][
+                :, head * arch.head_dim : (head + 1) * arch.head_dim
+            ].float().cpu()
+            parts.append(acts[..., i, :] @ w.T)
+        return torch.stack(parts, dim=-2)
+
+
+@torch.inference_mode()
+def per_prompt_hidden(model, tok, arch, prompts, batch_size):
+    """(n_prompts, n_layers, d) residual stream at the last position.
+
+    The Hendel-style capture: whatever the prompt has compressed into the
+    sentinel position, taken at every layer so the layer choice can be redone at
+    stage 2 without a GPU.
+    """
+    out = []
+    for start in range(0, len(prompts), batch_size):
+        enc = encode(tok, prompts[start : start + batch_size], model.device)
+        caught = {}
+        handles = [
+            arch.blocks[i].register_forward_hook(
+                lambda _m, _a, o, i=i: caught.__setitem__(
+                    i, (o[0] if isinstance(o, tuple) else o)[:, -1, :].detach()
+                )
+            )
+            for i in range(arch.n_layers)
+        ]
+        try:
+            model(**enc, logits_to_keep=1)
+        finally:
+            for h in handles:
+                h.remove()
+        out.append(
+            torch.stack([caught[i] for i in range(arch.n_layers)], dim=1).float().cpu()
+        )
+    return torch.cat(out)
+
+
+def dummy_query_prompts(items, dummy: str = "x") -> list[str]:
+    """Hendel-style: same demonstrations, query replaced by a placeholder that
+    belongs to no domain, so the captured state cannot encode a real operand."""
+    return [
+        P.render_prompt([tuple(d) for d in it.demos], dummy) for it in items
+    ]
+
+
+def summarize(per_prompt: torch.Tensor) -> dict:
+    """Mean, standard error and the two split halves of a per-prompt stack."""
+    x = per_prompt.numpy().astype(np.float64)
+    n = len(x)
+    half = n // 2
+    return {
+        "mean": x.mean(axis=0),
+        "se": x.std(axis=0, ddof=1) / np.sqrt(n),
+        "half_a": x[:half].mean(axis=0),
+        "half_b": x[half : 2 * half].mean(axis=0),
+        "n": n,
+    }
+
+
 def _single_head_hook(arch: Arch, head: int, patch: torch.Tensor):
     def hook(_module, args):
         x = args[0]
@@ -411,9 +503,220 @@ def _single_head_hook(arch: Arch, head: int, patch: torch.Tensor):
     return hook
 
 
+def empirical_proxy(config: ExtractConfig, proxy: dict[str, float], **kwargs):
+    """Mean token-frequency proxy over the operands and targets *actually drawn*
+    for each k. Returns two (n_k,) arrays.
+
+    The pre-registration (§3 Test 1) motivates this control by saying the target
+    distribution 'is a shifted copy of the operand distribution and its mean
+    proxy varies with k even under uniform operand sampling'. That last clause
+    is false: over the full cycle a shift is a bijection, so the mean proxy of
+    the targets is *identical* for every k and the test would be vacuous. It has
+    content for two reasons the prereg's phrasing misses, and both need the
+    empirical draw rather than the idealised cycle:
+
+    - finite prompt sets do not sample operands exactly uniformly, so the
+      realised means do vary with k;
+    - under a restricted operand pool (the partition and polysemy-leave-out
+      conditions) shifting genuinely moves mass onto different target tokens.
+
+    See docs/decisions.md D11.
+    """
+    operand, target = [], []
+    for k in config.ks:
+        items = P.make_prompt_set(
+            config.family, k, config.n_prompts, config.shots, config.seed,
+            stratum="heldout", **kwargs,
+        )
+        ops = [d[1] for it in items for d in it.demos]
+        tgts = [d[2] for it in items for d in it.demos]
+        operand.append(np.mean([proxy[x] for x in ops if x in proxy]))
+        target.append(np.mean([proxy[x] for x in tgts if x in proxy]))
+    return np.array(operand), np.array(target)
+
+
+def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) -> None:
+    """Extract both FV families for every k, score them, and write the .npz pair.
+
+    The head set is loaded from heads.npz and its SHA-256 is stamped into every
+    output, so 'the same head set was used for all k' is checkable from the
+    artifacts rather than asserted.
+    """
+    from . import causal
+
+    heads_path = out_dir / "heads.npz"
+    head_sha = hashlib.sha256(heads_path.read_bytes()).hexdigest()
+    hz = np.load(heads_path)
+    cells = [tuple(int(x) for x in c) for c in hz["head_set"]]
+    log(f"head set from {heads_path} (sha256 {head_sha[:12]}): {cells}")
+
+    todd, hendel, prompt_shas = {}, {}, {}
+    for k in config.ks:
+        items = P.make_prompt_set(
+            config.family, k, config.n_prompts, config.shots, config.seed,
+            stratum="heldout",
+        )
+        prompt_shas[k] = P.write_prompt_set(items, out_dir / f"prompts_k{k}.jsonl")
+        prompts = [it.prompt for it in items]
+
+        acts = per_prompt_head_acts(model, tok, arch, prompts, cells, config.batch_size)
+        contrib = project_heads(arch, cells, acts)  # (n_prompts, H, d)
+        todd[k] = {
+            "fv": summarize(contrib.sum(dim=-2)),
+            "contrib": contrib.numpy().astype(np.float64).mean(axis=0),
+        }
+
+        hidden = per_prompt_hidden(
+            model, tok, arch, dummy_query_prompts(items), config.batch_size
+        )
+        hendel[k] = {
+            "fv": summarize(hidden),  # (n_layers, d) per statistic
+            "real_query": per_prompt_hidden(
+                model, tok, arch, prompts, config.batch_size
+            ).numpy().astype(np.float64).mean(axis=0),
+        }
+        log(f"  k={k:>2}  todd |FV| {np.linalg.norm(todd[k]['fv']['mean']):8.3f}   "
+            f"hendel |FV| (all layers) "
+            f"{np.linalg.norm(hendel[k]['fv']['mean'], axis=-1).mean():8.3f}")
+
+    dev = model.device
+    todd_vecs = {
+        k: torch.tensor(todd[k]["fv"]["mean"], device=dev, dtype=torch.float32)
+        for k in config.ks
+    }
+    log("\ninjection-layer sweep (on the head-ID k subset, then frozen):")
+    baseline = causal.baseline_accuracy(
+        model, tok, arch, config.family, config.ks, config.batch_size
+    )
+    log(f"  zero-shot baseline per k: "
+        f"{ {k: round(v, 3) for k, v in baseline.items()} }")
+
+    todd_layer, todd_layers = causal.sweep_injection_layer(
+        model, tok, arch, config.family, lambda _l: todd_vecs,
+        config.head_id_ks, config.batch_size, "add", log,
+    )
+    hendel_layer, hendel_layers = causal.sweep_injection_layer(
+        model, tok, arch, config.family,
+        lambda l: {
+            k: torch.tensor(hendel[k]["fv"]["mean"][l], device=dev, dtype=torch.float32)
+            for k in config.ks
+        },
+        config.head_id_ks, config.batch_size, "replace", log,
+    )
+
+    todd_eff = causal.efficacy(
+        model, tok, arch, config.family, todd_vecs, config.ks, todd_layer,
+        "add", config.batch_size, baseline,
+    )
+    hendel_vecs = {
+        k: torch.tensor(
+            hendel[k]["fv"]["mean"][hendel_layer], device=dev, dtype=torch.float32
+        )
+        for k in config.ks
+    }
+    hendel_eff = causal.efficacy(
+        model, tok, arch, config.family, hendel_vecs, config.ks, hendel_layer,
+        "replace", config.batch_size, baseline,
+    )
+
+    proxy = causal.frequency_proxy(model, tok, config.family, config.batch_size)
+    proxy_operand, proxy_target = empirical_proxy(config, proxy)
+
+    common = {
+        "ks": np.array(config.ks, dtype=np.int32),
+        "freq_proxy_operand": proxy_operand.astype(np.float32),
+        "freq_proxy_target": proxy_target.astype(np.float32),
+        "efficacy_baseline": np.array(
+            [baseline[k] for k in config.ks], dtype=np.float32
+        ),
+    }
+    meta_common = {
+        "config": dataclasses.asdict(config),
+        "config_sha256": config_sha(config),
+        "git_commit": git_commit(),
+        "model": config.model, "dtype": config.dtype, "device": config.device,
+        "attn_implementation": "sdpa",
+        "family": config.family, "n": len(config.ks), "condition": "primary",
+        "operand_pool": P.DOMAINS[config.family], "partition": "full",
+        "shots": config.shots, "stratum": "heldout",
+        "n_prompts_per_k": config.n_prompts, "seed": config.seed,
+        "prompt_sha256": prompt_shas,
+        "head_set_source": {"path": str(heads_path), "sha256": head_sha},
+        "frequency_proxy": proxy,
+        "platform": platform.platform(),
+        "versions": {
+            "torch": torch.__version__,
+            "transformers": __import__("transformers").__version__,
+            "numpy": np.__version__,
+        },
+        "peak_vram_bytes": (
+            int(torch.cuda.max_memory_allocated())
+            if config.device.startswith("cuda") else 0
+        ),
+    }
+
+    for method, eff, layer, mode, layers_acc in (
+        ("todd", todd_eff, todd_layer, "add", todd_layers),
+        ("hendel", hendel_eff, hendel_layer, "replace", hendel_layers),
+    ):
+        src = todd if method == "todd" else hendel
+        if method == "todd":
+            X = np.stack([src[k]["fv"]["mean"] for k in config.ks])
+            extra = {
+                "head_set": np.array(cells, dtype=np.int32),
+                "head_aie": hz["aie"],
+                "head_contrib": np.stack(
+                    [src[k]["contrib"] for k in config.ks]
+                ).astype(np.float32),
+            }
+        else:
+            X = np.stack([src[k]["fv"]["mean"][layer] for k in config.ks])
+            extra = {
+                "X_all_layers": np.stack(
+                    [src[k]["fv"]["mean"] for k in config.ks]
+                ).astype(np.float32),
+                "X_real_query": np.stack(
+                    [src[k]["real_query"][layer] for k in config.ks]
+                ).astype(np.float32),
+            }
+        halves = ("half_a", "half_b")
+        sel = (lambda a: a) if method == "todd" else (lambda a: a[layer])
+        meta = {
+            **meta_common, "method": method, "injection_layer": int(layer),
+            "injection_mode": mode, "injection_scale": 1.0,
+            "injection_layer_sweep": layers_acc,
+        }
+        path = out_dir / f"fv_primary_{method}.npz"
+        np.savez(
+            path,
+            X=X.astype(np.float32),
+            norms=np.linalg.norm(X, axis=1).astype(np.float32),
+            X_half_a=np.stack(
+                [sel(src[k]["fv"][halves[0]]) for k in config.ks]
+            ).astype(np.float32),
+            X_half_b=np.stack(
+                [sel(src[k]["fv"][halves[1]]) for k in config.ks]
+            ).astype(np.float32),
+            X_se=np.stack([sel(src[k]["fv"]["se"]) for k in config.ks]).astype(np.float32),
+            n_prompts=np.array(
+                [src[k]["fv"]["n"] for k in config.ks], dtype=np.int32
+            ),
+            efficacy_acc=np.array([eff["acc"][k] for k in config.ks], dtype=np.float32),
+            efficacy_lift=np.array(
+                [eff["lift"][k] for k in config.ks], dtype=np.float32
+            ),
+            efficacy_n=np.array([eff["n"]] * len(config.ks), dtype=np.int32),
+            **common, **extra,
+            meta_json=json.dumps(meta, sort_keys=True),
+        )
+        log(f"wrote {path} "
+            f"(sha256 {hashlib.sha256(path.read_bytes()).hexdigest()[:12]})")
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("config", type=Path)
+    parser.add_argument("--stage", choices=("heads", "fv"), default="heads")
     parser.add_argument("--calibrate", action="store_true",
                         help="time one layer and exit without sweeping")
     parser.add_argument("--layers", default=None, help="subset, e.g. 0,1,2 (testing)")
@@ -421,13 +724,14 @@ def main(argv: list[str] | None = None) -> None:
 
     config = load_config(args.config)
     out_dir = Path(config.results_dir) / config.run_name
-    if not args.calibrate and (out_dir / "heads.npz").exists():
+    guard = out_dir / ("heads.npz" if args.stage == "heads" else "fv_primary_todd.npz")
+    if not args.calibrate and guard.exists():
         raise SystemExit(
-            f"refusing to overwrite {out_dir / 'heads.npz'}; rename the run dir or "
-            "change run_name (CLAUDE.md: results are never overwritten)"
+            f"refusing to overwrite {guard}; rename the run dir or change "
+            "run_name (CLAUDE.md: results are never overwritten)"
         )
     out_dir.mkdir(parents=True, exist_ok=True)
-    log_path = out_dir / "heads.log"
+    log_path = out_dir / f"{args.stage}.log"
     lines: list[str] = []
 
     def log(msg: str) -> None:
@@ -443,6 +747,10 @@ def main(argv: list[str] | None = None) -> None:
     if config.device.startswith("cuda"):
         log(f"VRAM after load: {torch.cuda.memory_allocated() / 2**30:.2f} GiB "
             f"of {torch.cuda.get_device_properties(0).total_memory / 2**30:.2f} GiB")
+
+    if args.stage == "fv":
+        run_fv(model, tok, arch, config, out_dir, log=log)
+        return
 
     layers = (
         [int(x) for x in args.layers.split(",")] if args.layers

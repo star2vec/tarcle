@@ -1,0 +1,54 @@
+{
+  "run_a": "months_llama32_3b_ada_precommit",
+  "run_b": "months_llama32_3b_ada",
+  "git_a": "08217aa0fd437cfac190a1f3f63e0a14c68c94d4",
+  "git_b": "00b8e674d6e8682f5bad661a5baefe66ce6ab82b",
+  "overlap": 10,
+  "overlap_cells": [
+    [
+      12,
+      3
+    ],
+    [
+      12,
+      20
+    ],
+    [
+      14,
+      1
+    ],
+    [
+      14,
+      2
+    ],
+    [
+      14,
+      12
+    ],
+    [
+      14,
+      14
+    ],
+    [
+      14,
+      16
+    ],
+    [
+      18,
+      2
+    ],
+    [
+      20,
+      11
+    ],
+    [
+      26,
+      22
+    ]
+  ],
+  "a_only": [],
+  "b_only": [],
+  "spearman_all": 1.0,
+  "pearson_all": 1.0,
+  "spearman_top40": 1.0
+}

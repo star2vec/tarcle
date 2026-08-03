@@ -157,6 +157,146 @@ def test_sweep_runs_end_to_end(loaded):
 
 
 # --------------------------------------------------------------------------
+# FV assembly and injection
+# --------------------------------------------------------------------------
+
+
+def test_project_heads_matches_the_summed_attention_contribution(loaded):
+    from tarcle.extract import per_prompt_head_acts, project_heads
+
+    model, tok, arch = loaded
+    prompts = ["Q: Monday\nA: Tuesday\n\nQ: Friday\nA:"]
+    cells = [(3, h) for h in range(arch.n_heads)]
+    acts = per_prompt_head_acts(model, tok, arch, prompts, cells, 4)
+    contrib = project_heads(arch, cells, acts)
+    assert contrib.shape == (1, arch.n_heads, arch.d_model)
+
+    captured = {}
+    handle = arch.attn_out[3].register_forward_hook(
+        lambda m, a, out: captured.update(out=out)
+    )
+    with torch.inference_mode():
+        model(**encode(tok, prompts, "cpu"), logits_to_keep=1)
+    handle.remove()
+    with torch.no_grad():
+        reference = captured["out"][0, -1].clone() - arch.attn_out[3].bias
+    assert torch.allclose(contrib[0].sum(0), reference, atol=1e-4)
+
+
+def test_summarize_halves_are_disjoint_and_average_to_the_mean():
+    from tarcle.extract import summarize
+
+    x = torch.arange(40, dtype=torch.float32).view(10, 4)
+    s = summarize(x)
+    assert s["n"] == 10
+    assert np.allclose(s["mean"], x.numpy().mean(axis=0))
+    assert np.allclose((s["half_a"] + s["half_b"]) / 2, s["mean"])
+    assert not np.allclose(s["half_a"], s["half_b"])
+
+
+def test_dummy_query_prompts_keep_demos_and_drop_the_operand():
+    from tarcle.extract import dummy_query_prompts
+
+    items = P.make_prompt_set("months", 3, 4, 4, 0, stratum="heldout")
+    dummies = dummy_query_prompts(items)
+    for item, dummy in zip(items, dummies):
+        assert dummy.endswith("Q: x\nA:")
+        assert item.query not in dummy.rsplit("Q:", 1)[-1]
+        assert dummy.count("Q:") == item.prompt.count("Q:")
+
+
+def _catch_block_output(arch, layer, store, key):
+    """A forward hook must return None or it *replaces* the module output. A
+    lambda whose body evaluates to a tensor (dict.setdefault does) silently
+    swaps a block's (hidden, ...) tuple for a bare tensor, and the next block
+    then receives a 2D input. Hence a def with a bare statement."""
+
+    def hook(_m, _a, out):
+        store[key] = (out[0] if isinstance(out, tuple) else out).clone()
+
+    return arch.blocks[layer].register_forward_hook(hook)
+
+
+def test_injection_changes_the_prediction(loaded):
+    from tarcle.causal import InjectResidual, zero_shot_prompts
+
+    model, tok, arch = loaded
+    prompts = zero_shot_prompts("months")[:4]
+    enc = encode(tok, prompts, "cpu")
+    with torch.inference_mode():
+        clean = model(**enc, logits_to_keep=1).logits[:, -1].float()
+    # NOT torch.ones: a constant vector lies along the all-ones direction, which
+    # is exactly what the downstream LayerNorm subtracts off. Steering along it
+    # is close to a no-op, and a test using it would pass on broken code too.
+    v = torch.Generator().manual_seed(0)
+    big = torch.randn(arch.d_model, generator=v) * 20.0
+    with InjectResidual(arch, 6, big, "add"), torch.inference_mode():
+        hacked = model(**enc, logits_to_keep=1).logits[:, -1].float()
+    assert not torch.allclose(clean, hacked)
+
+
+def test_injection_touches_only_the_last_position(loaded):
+    """A steering vector that leaked into earlier positions would be editing the
+    demonstrations, not the query, and every efficacy number would be wrong."""
+    from tarcle.causal import InjectResidual
+
+    model, tok, arch = loaded
+    enc = encode(tok, ["Q: January\nA: April\n\nQ: July\nA:"], "cpu")
+    caught = {}
+    handle = _catch_block_output(arch, 8, caught, "h")
+    with torch.inference_mode():
+        model(**enc, logits_to_keep=1)
+    before = caught.pop("h")
+    v = torch.randn(arch.d_model, generator=torch.Generator().manual_seed(1)) * 20.0
+    with InjectResidual(arch, 7, v, "add"), torch.inference_mode():
+        model(**enc, logits_to_keep=1)
+    after = caught["h"]
+    handle.remove()
+    assert torch.allclose(before[:, :-1], after[:, :-1], atol=1e-4)
+    assert not torch.allclose(before[:, -1], after[:, -1], atol=1e-4)
+
+
+def test_replace_mode_overwrites_rather_than_adds(loaded):
+    from tarcle.causal import InjectResidual
+
+    model, tok, arch = loaded
+    enc = encode(tok, ["Q: January\nA:"], "cpu")
+    v = torch.randn(arch.d_model, generator=torch.Generator().manual_seed(2))
+    caught = {}
+    # Order matters: forward hooks on the same module fire in registration
+    # order, each seeing the previous one's output. The observer has to be
+    # registered *after* the injector or it captures the pre-injection value.
+    with InjectResidual(arch, 5, v, "replace"):
+        handle = _catch_block_output(arch, 5, caught, "h")
+        try:
+            with torch.inference_mode():
+                model(**enc, logits_to_keep=1)
+        finally:
+            handle.remove()
+    assert torch.allclose(caught["h"][0, -1], v, atol=1e-5)
+
+
+def test_zero_shot_baseline_is_the_complete_operand_cycle(loaded):
+    from tarcle.causal import accuracy_for_k, zero_shot_prompts
+
+    model, tok, arch = loaded
+    assert len(zero_shot_prompts("months")) == 12
+    acc = accuracy_for_k(model, tok, arch, "months", 0, 8)
+    assert 0.0 <= acc <= 1.0
+    # a census of the 12 operands, not a sample: accuracy lands on a 12th
+    assert abs(acc * 12 - round(acc * 12)) < 1e-9
+
+
+def test_frequency_proxy_covers_every_operand(loaded):
+    from tarcle.causal import frequency_proxy
+
+    model, tok, _ = loaded
+    proxy = frequency_proxy(model, tok, "months", 4)
+    assert set(proxy) == set(P.DOMAINS["months"])
+    assert all(v < 0 for v in proxy.values())  # logprobs
+
+
+# --------------------------------------------------------------------------
 # prompt-set extensions
 # --------------------------------------------------------------------------
 
