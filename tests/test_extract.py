@@ -301,22 +301,37 @@ def test_frequency_proxy_covers_every_operand(loaded):
 # --------------------------------------------------------------------------
 
 
-def test_legacy_prompt_hashes_unchanged():
-    """prereg §5 discards a run whose prompt SHA-256 fails to reproduce. The new
-    keyword arguments must not disturb the RNG stream of the recorded pilots."""
+def test_recorded_prompt_hashes_reproduce():
+    """prereg §5 discards a run whose prompt SHA-256 fails to reproduce.
+
+    Every recorded pilot run is regenerated from its own manifest — including
+    the per-condition fields (stratum, operand_pool, query_pool, query_domain)
+    that D20 §3 added, which is why the config is read rather than assumed. Runs
+    predating those fields exercise the legacy defaults and must still match
+    byte for byte, which is the guarantee the keyword-only extensions were
+    written to preserve.
+    """
     import hashlib
     import json
     from pathlib import Path
 
-    for run in Path("results/pilot").iterdir():
+    runs = sorted(Path("results/pilot").iterdir())
+    assert runs, "no recorded pilot runs to check"
+    for run in runs:
         manifest = json.loads((run / "manifest.json").read_text())
         cfg = manifest["config"]
+        extras = {}
+        if cfg.get("stratum"):
+            extras["stratum"] = cfg["stratum"]
+        for key in ("operand_pool", "query_pool", "query_domain"):
+            if cfg.get(key):
+                extras[key] = cfg[key]
         items = [
             it
             for variant in cfg["variants"]
             for k in cfg["ks"]
             for it in P.make_prompt_set(
-                variant, k, cfg["n_per_k"], cfg["shots"], cfg["seed"]
+                variant, k, cfg["n_per_k"], cfg["shots"], cfg["seed"], **extras
             )
         ]
         sha = hashlib.sha256(P.serialize_items(items).encode()).hexdigest()
