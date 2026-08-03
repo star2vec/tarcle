@@ -263,9 +263,73 @@ Two readings, neither adopted here:
   corr(baseline, L14H1 AIE) = −0.38, but the baselines' relative spread (0.36) is a
   third of the AIE's (1.03). See `docs/decisions.md` D9.
 
-**Bearing on the pre-registered divisor test.** `docs/preregistration.md` §1 predicts
+**Bearing on the pre-registered divisor test — see §9 first for a result about
+extraction that constrains how any of this may be gated.** `docs/preregistration.md` §1 predicts
 Gram-spectrum power at frequencies with gcd(f,12) > 1, and f=6 is the order-2
 character. If the DFT later shows anomalous power at f=6, these four measurements are
 *prior and independent* evidence that k=6 is mechanistically special. If it shows
 nothing at f=6, the disagreement between behaviour/causality and geometry at this cell
 is itself the reportable result. Fixed now, before the spectrum is computed.
+
+## 9. ICL accuracy does not gate function-vector quality (added 2026-08-04)
+
+*A standalone result. It emerged while repairing the operand-partition control, but it
+is not about that control — it is about the gating practice the whole field uses, and
+it stands whatever happens to hypothesis C.*
+
+Function vectors were extracted from months Z/12 at 16 shots under six operand pools
+of decreasing size, everything else held fixed: same model, same seed, same prompt
+format, same head set, same frozen injection protocol (L8, ×3.0, add). Two independent
+measurements were taken on each.
+
+**Behavioural**: held-out forced-choice ICL accuracy — the CLAUDE.md rule 5 / Todd-style
+gate. **FV task-encoding**: on zero-shot injection, P(prediction lands on the correct
+shift) − P(prediction lands on shift ±1), averaged over k ∉ {0,1,11} where ±1 is the
+correct answer and collapse cannot be distinguished from success.
+
+| operand pool | distinct demo operands / 16-shot prompt | behavioural gate | FV encoding margin |
+|---|---|---|---|
+| 12 (full) | 8.6 | GO | **+0.352** |
+| 9 (polysemy leave-out) | 7.1 | GO | **+0.343** |
+| 6 (Jan–Jun) | 5 | GO — every k ≥ 0.83 | **−0.315** |
+| 6 (Jul–Dec) | 5 | GO | **−0.463** |
+| 4 (Jan–Apr) | 3.0 | GO — every k ≥ 0.50 | **−0.704** |
+| 4 (Sep–Dec) | 3.0 | GO | **−0.944** |
+
+Three things follow.
+
+1. **The behavioural gate passes everywhere and is completely uninformative about FV
+   quality.** All six pools return GO. The two columns do not merely differ in
+   sensitivity — they move in *opposite directions*. Shrinking the operand pool makes
+   the in-context task **easier** (k=8 rises from 0.38 in the full pool to 0.87 at six
+   operands, because there are fewer candidates to confuse and the demonstrations
+   cover more of the operand space) while making the extracted vector **worse**.
+2. **The FV curve is monotone in pool size with a threshold between 6 and 9.** Above
+   it, FVs encode shift-by-k; below it, they collapse to next-item — steering toward
+   ±1 regardless of k, at P(±1) up to 0.95.
+3. **The failure is silent.** A collapsed FV is a well-formed vector with high
+   split-half reliability (≥0.99) and a large causal effect on the model's output. It
+   simply implements a different function from the one it was extracted for. Nothing
+   short of measuring *which* function it implements detects this.
+
+**Why this matters beyond this repo.** Standard FV practice gates extraction on task
+accuracy — CLAUDE.md rule 5 states it, and it follows Todd et al.'s protocol of
+extracting from tasks the model demonstrably performs. This shows that gate can pass
+while the extracted vector encodes a different task, and that the discrepancy is
+driven by a property of the prompt *distribution* (operand diversity) that accuracy
+does not see. Any FV result on a task family with few distinct operands — and many
+standard FV benchmark tasks have few — inherits this risk.
+
+**Practical remedy, cheap.** The task-encoding check costs nothing beyond recording the
+argmax of each injected prediction: compare P(correct shift) against P(±1), or more
+generally against whatever degenerate default the family admits. It is implemented in
+`tarcle/nextitem.py` and runs from saved `.npz` with no GPU. Registered as a blocking
+gate in `docs/decisions.md` D20.
+
+**Scope limits, stated.** One model (Llama-3.2-3B), one family (months Z/12), one
+prompt format, one extraction method for the encoding column (Todd causal-head
+averaging; the Hendel dummy-query FVs steer at only k ∈ {1,2,11} even in the full pool
+and cannot resolve this curve). The ±1 attractor is specific to families with a strong
+adjacency prior; the general claim is that accuracy-gating misses *some* degenerate
+attractor, not that it is always next-item. Six pool sizes on one cycle do not locate
+the threshold precisely — only that it lies between 6 and 9 distinct operands.

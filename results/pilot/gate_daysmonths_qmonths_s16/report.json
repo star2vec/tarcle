@@ -1,0 +1,121 @@
+{
+  "model": "meta-llama/Llama-3.2-3B",
+  "gate": {
+    "verdict": "GO",
+    "variant": "days_months",
+    "per_k": {
+      "0": 1.0,
+      "1": 1.0,
+      "2": 1.0,
+      "3": 1.0,
+      "4": 0.79,
+      "5": 0.85,
+      "6": 0.97,
+      "7": 0.77,
+      "8": 0.56,
+      "9": 0.86,
+      "10": 0.81,
+      "11": 0.91
+    },
+    "below_go": [],
+    "at_floor": []
+  },
+  "table": [
+    {
+      "variant": "days_months",
+      "k": 0,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "days_months",
+      "k": 1,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "days_months",
+      "k": 2,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "days_months",
+      "k": 3,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "days_months",
+      "k": 4,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.79
+    },
+    {
+      "variant": "days_months",
+      "k": 5,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.85
+    },
+    {
+      "variant": "days_months",
+      "k": 6,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.97
+    },
+    {
+      "variant": "days_months",
+      "k": 7,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.77
+    },
+    {
+      "variant": "days_months",
+      "k": 8,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.56
+    },
+    {
+      "variant": "days_months",
+      "k": 9,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.86
+    },
+    {
+      "variant": "days_months",
+      "k": 10,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.81
+    },
+    {
+      "variant": "days_months",
+      "k": 11,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 0.91
+    }
+  ]
+}

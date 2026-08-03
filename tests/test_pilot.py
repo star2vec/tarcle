@@ -105,8 +105,29 @@ def test_gate_variant_selection():
     assert gate_variant(items(["days", "mixed"])) == "days"
     assert gate_variant(items(["months"])) == "months"
     assert gate_variant(items(["months", "mixed"])) == "months"
-    with pytest.raises(ValueError, match="no single-domain variant"):
-        gate_variant(items(["mixed"]))
+    # A single-domain variant always wins: alongside one, "mixed" stays a control.
+    # Alone it is the condition being gated -- D20 §3 makes each condition gate
+    # itself, and the D5 ladder's mixed rung pins the query domain so the run has
+    # a well-defined cycle.
+    assert gate_variant(items(["mixed"])) == "mixed"
+    with pytest.raises(ValueError, match="no variant to gate on"):
+        gate_variant(items([]))
+
+
+def test_cycle_domain_needs_a_pinned_query_domain():
+    """A mixed run whose queries span domains has no single cycle length, so a
+    predicted-shift confusion matrix would silently mix Z/7 with Z/12."""
+    from tarcle.pilot_report import cycle_domain
+
+    pinned = [{"variant": "mixed", "domain": "months"} for _ in range(3)]
+    assert cycle_domain(pinned, "mixed") == "months"
+    assert cycle_domain([{"variant": "days", "domain": "days"}], "days") == "days"
+    spanning = [
+        {"variant": "mixed", "domain": "months"},
+        {"variant": "mixed", "domain": "days"},
+    ]
+    with pytest.raises(ValueError, match="single cycle length"):
+        cycle_domain(spanning, "mixed")
 
 
 class OracleBackend:

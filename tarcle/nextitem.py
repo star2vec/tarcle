@@ -51,7 +51,8 @@ def analyse(run_dir: Path, method: str = "todd") -> dict | None:
     mid = [r for r in rows if r["k"] not in TRIVIAL_K]
     pc = float(np.mean([r["p_correct"] for r in mid]))
     pm1 = float(np.mean([r["p_pm1"] for r in mid]))
-    pool = len(meta["operand_pool"][meta["family"]])
+    cycle = meta.get("cycle_domain", meta["family"])
+    pool = len(meta["operand_pool"].get(cycle, next(iter(meta["operand_pool"].values()))))
 
     print(f"\n{run_dir.name}  ({meta['condition']}, {pool}-operand pool, "
           f"{method})")

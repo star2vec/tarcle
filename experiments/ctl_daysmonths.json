@@ -1,0 +1,23 @@
+{
+  "run_name": "ctl_daysmonths_qmonths",
+  "model": "meta-llama/Llama-3.2-3B",
+  "device": "cuda",
+  "dtype": "bfloat16",
+  "batch_size": 24,
+  "family": "days_months",
+  "query_domain": "months",
+  "ks": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  "shots": 16,
+  "n_prompts": 100,
+  "seed": 0,
+  "head_id_ks": [1, 2, 3, 6, 9, 11],
+  "top_heads": 10,
+  "condition": "mixed_daysmonths",
+  "head_set_run": "months_llama32_3b_ada",
+  "persist_head_runs": ["months_llama32_3b_ada", "months_llama32_3b_ada_allk"],
+  "injection_frozen": {
+    "todd": {"layer": 8, "scale": 3.0},
+    "hendel": {"layer": 15, "scale": 1.0}
+  },
+  "results_dir": "results/fv"
+}

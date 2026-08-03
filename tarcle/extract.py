@@ -91,6 +91,11 @@ class ExtractConfig:
     # may leave the pool, which is what makes the transfer test meaningful.
     operand_pool: dict = field(default_factory=dict)
     query_pool: dict = field(default_factory=dict)
+    # For multi-domain variants (prompts.DOMAIN_GROUPS) the demonstrations span
+    # several cycles while the query is pinned to one. `family` then names the
+    # prompt variant and `query_domain` names the cycle that injection, efficacy
+    # and the frequency proxy are all defined over.
+    query_domain: str = ""
 
     results_dir: str = "results/fv"
 
@@ -595,11 +600,14 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     if union:
         log(f"persisting per-head contributions for {len(union)} union cells")
 
+    cycle = config.query_domain or config.family  # the domain the FVs act on
     pools = {}
     if config.operand_pool:
         pools["operand_pool"] = config.operand_pool
     if config.query_pool:
         pools["query_pool"] = config.query_pool
+    if config.query_domain:
+        pools["query_domain"] = config.query_domain
 
     todd, hendel, prompt_shas = {}, {}, {}
     for k in config.ks:
@@ -645,7 +653,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
     }
     log("\ninjection-layer sweep (on the head-ID k subset, then frozen):")
     baseline = causal.baseline_accuracy(
-        model, tok, arch, config.family, config.ks, config.batch_size
+        model, tok, arch, cycle, config.ks, config.batch_size
     )
     log(f"  zero-shot baseline acc per k: "
         f"{ {k: round(v['acc'], 3) for k, v in baseline.items()} }")
@@ -659,7 +667,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         )
     else:
         todd_layer, todd_scale, todd_layers = causal.sweep_injection(
-            model, tok, arch, config.family, lambda _l: todd_vecs,
+            model, tok, arch, cycle, lambda _l: todd_vecs,
             config.head_id_ks, config.batch_size, "add", config.injection_scales, log,
         )
     # Hendel replaces the hidden state rather than adding to it, so a scale
@@ -672,7 +680,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         )
     else:
         hendel_layer, hendel_scale, hendel_layers = causal.sweep_injection(
-            model, tok, arch, config.family,
+            model, tok, arch, cycle,
             lambda l: {
                 k: torch.tensor(
                     hendel[k]["fv"]["mean"][l], device=dev, dtype=torch.float32
@@ -683,7 +691,7 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         )
 
     todd_eff = causal.efficacy(
-        model, tok, arch, config.family, todd_vecs, config.ks, todd_layer,
+        model, tok, arch, cycle, todd_vecs, config.ks, todd_layer,
         "add", config.batch_size, baseline, todd_scale,
     )
     hendel_vecs = {
@@ -693,11 +701,11 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         for k in config.ks
     }
     hendel_eff = causal.efficacy(
-        model, tok, arch, config.family, hendel_vecs, config.ks, hendel_layer,
+        model, tok, arch, cycle, hendel_vecs, config.ks, hendel_layer,
         "replace", config.batch_size, baseline, hendel_scale,
     )
 
-    proxy = causal.frequency_proxy(model, tok, config.family, config.batch_size)
+    proxy = causal.frequency_proxy(model, tok, cycle, config.batch_size)
     proxy_operand, proxy_target = empirical_proxy(config, proxy, **pools)
 
     common = {
@@ -717,12 +725,12 @@ def run_fv(model, tok, arch, config: ExtractConfig, out_dir: Path, log=print) ->
         "git_commit": git_commit(),
         "model": config.model, "dtype": config.dtype, "device": config.device,
         "attn_implementation": "sdpa",
-        "family": config.family, "n": len(config.ks),
+        "family": config.family, "cycle_domain": cycle, "n": len(config.ks),
         "condition": config.condition,
         "head_set_cells": [list(c) for c in cells],
         "head_set_excluded": [list(c) for c in excluded],
-        "operand_pool": config.operand_pool or {config.family: P.DOMAINS[config.family]},
-        "query_pool": config.query_pool or {config.family: P.DOMAINS[config.family]},
+        "operand_pool": config.operand_pool or {cycle: P.DOMAINS[cycle]},
+        "query_pool": config.query_pool or {cycle: P.DOMAINS[cycle]},
         "shots": config.shots, "stratum": "heldout",
         "n_prompts_per_k": config.n_prompts, "seed": config.seed,
         "prompt_sha256": prompt_shas,

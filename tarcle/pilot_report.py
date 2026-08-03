@@ -66,14 +66,47 @@ def accuracy_table(items: list[dict]) -> list[dict]:
 
 def gate_variant(items: list[dict]) -> str:
     """The variant the gate is read off: the single-domain one ("days", "months"),
-    preferring "days" when a run has several. "mixed" is a control, never the gate."""
+    preferring "days" when a run has several.
+
+    "mixed" is normally a control rather than the gate, but under D20 §3 a
+    condition gates itself — and the D5 mixed-domain ladder pins the query to one
+    domain while the demonstrations span several, which makes that condition its
+    own gate target. So a mixed-only run gates on "mixed".
+    """
+    from .prompts import DOMAIN_GROUPS
+
     variants = {it["variant"] for it in items}
     if "days" in variants:
         return "days"
-    single = sorted(variants - {"mixed"})
-    if not single:
-        raise ValueError("run has no single-domain variant to gate on")
-    return single[0]
+    single = sorted(variants - set(DOMAIN_GROUPS))
+    if single:
+        return single[0]
+    multi = sorted(variants & set(DOMAIN_GROUPS))
+    if multi:
+        return multi[0]
+    raise ValueError("run has no variant to gate on")
+
+
+def cycle_domain(items: list[dict], variant: str) -> str:
+    """The domain whose cycle the predicted-shift confusion is computed in.
+
+    For a single-domain variant that is the variant itself. For "mixed" it is the
+    query domain, which is well defined only when the query domain was pinned
+    (prompts.make_prompt_set(query_domain=...)); otherwise the queries span
+    domains of different cycle lengths and a single confusion matrix is not
+    meaningful.
+    """
+    from .prompts import DOMAIN_GROUPS
+
+    if variant not in DOMAIN_GROUPS:
+        return variant
+    domains = {it["domain"] for it in items if it["variant"] == variant}
+    if len(domains) != 1:
+        raise ValueError(
+            f"mixed run spans query domains {sorted(domains)}; a shift confusion "
+            "matrix needs a single cycle length (pin query_domain)"
+        )
+    return domains.pop()
 
 
 def gate_verdict(table: list[dict], ks: list[int], variant: str = "days") -> dict:
@@ -105,11 +138,12 @@ def gate_verdict(table: list[dict], ks: list[int], variant: str = "days") -> dic
 def shift_confusion(
     items: list[dict], ks: list[int], variant: str = "days"
 ) -> np.ndarray:
-    """P(predicted shift | true k) on a single-domain variant, held-out stratum.
+    """P(predicted shift | true k), held-out stratum.
     predicted shift = (pred_index - query_index) mod n, n = cycle length."""
-    n = len(DOMAINS[variant])
+    domain = cycle_domain(items, variant)
+    n = len(DOMAINS[domain])
     counts = np.zeros((len(ks), n))
-    idx = {x: i for i, x in enumerate(DOMAINS[variant])}
+    idx = {x: i for i, x in enumerate(DOMAINS[domain])}
     for it in items:
         if it["variant"] != variant or it["query_in_demos"]:
             continue

@@ -27,6 +27,15 @@ DOMAINS: dict[str, list[str]] = {
 
 MIXED_DOMAINS = ["days", "months", "letters", "digits"]
 
+# Multi-domain variants. The control they serve (BRIEF §6 Control 2) needs only
+# that the demonstration operands not share a single circle, which two domains of
+# different cycle length already satisfy — so the D5 ladder can fall back to
+# "days_months" when the four-domain set fails its behavioural gate.
+DOMAIN_GROUPS: dict[str, list[str]] = {
+    "mixed": MIXED_DOMAINS,
+    "days_months": ["days", "months"],
+}
+
 
 def shift(domain: str, operand: str, k: int) -> str:
     """Apply shift-by-k within the domain's cycle, with wraparound."""
@@ -111,8 +120,8 @@ def make_prompt_set(
       where demos span four domains but the query is always a month so that the
       family keeps its Z/12 semantics (docs/decisions.md D5).
     """
-    if variant == "mixed":
-        domains = MIXED_DOMAINS
+    if variant in DOMAIN_GROUPS:
+        domains = DOMAIN_GROUPS[variant]
     elif variant in DOMAINS:
         domains = [variant]  # single-domain variant: "days", "months", ...
     else:

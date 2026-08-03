@@ -794,6 +794,72 @@ independent gate.
 
 The choice among these is the user's and is not made here.
 
+### D22. Mixed-domain ladder, rung (a): four-domain demonstrations fail the behavioural gate
+
+D5 rung (a) — demonstrations spanning days/months/letters/digits, **query pinned to
+months** so Z/12 semantics hold, 16 shots, held-out stratum, n=100 per k.
+
+**Verdict: NO-GO.** Held-out accuracy by k:
+
+| k | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| acc | 1.00 | 0.99 | 0.99 | 0.87 | 0.53 | 0.37 | 0.84 | **0.25** | **0.27** | 0.34 | 0.33 | 0.55 |
+
+Five cells below the 0.50 GO threshold, two at or below the 0.30 NO-GO floor
+(k=7 at 0.25, k=8 at 0.27). This confirms at 16 shots what
+`docs/pilot_findings.md` §4 found at 10 — the four-domain set is not performable —
+and settles the question §4 left open ("whether 16 shots rescues it is untested"). It
+does not.
+
+Pinning the query to months does **not** rescue it either, which is informative: the
+difficulty is in the *demonstrations*, not in the query domain. Letters and digits in
+the demo set degrade the model's ability to infer shift-by-k even when every scored
+query is a month.
+
+Per D5 the ladder descends to rung (b): **days + months demonstrations only**. Z/7 and
+Z/12 have different cycle lengths, so there is still no single operand circle for the
+geometry to inherit — which is all BRIEF §6 Control 2 requires — and both domains are
+individually performable. `prompts.DOMAIN_GROUPS` adds the variant; existing variants
+are untouched and all recorded prompt hashes still reproduce.
+
+Rung (a)'s artifacts are retained at `results/pilot/gate_mixed_qmonths_s16/`. Note per
+D20 §3 that a passing behavioural gate would still not license extraction on its own —
+the D20 §1 task-encoding gate applies to whichever rung passes.
+
+#### Rung (b) passes, and heterogeneous demonstrations *help*
+
+Days + months demonstrations, query pinned to months, 16 shots, held-out, n=100:
+
+| k | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| days+months | 1.00 | 1.00 | 1.00 | 1.00 | 0.79 | 0.85 | 0.97 | 0.77 | **0.56** | 0.86 | 0.81 | 0.91 |
+| months only (§6) | 1.00 | 1.00 | 1.00 | 1.00 | 0.76 | 0.76 | 0.98 | 0.70 | **0.38** | 0.80 | 0.86 | 1.00 |
+
+**GO**, every k ≥ 0.56. The mixed-domain control (BRIEF §6 Control 2) is therefore
+available on this model, via rung (b).
+
+The comparison is the interesting part and was not predicted: **adding a second,
+differently-sized operand cycle to the demonstrations makes the months task easier**,
+not harder. k=8 — the family's weakest cell and the D2 arbiter's subject — rises from
+0.38 to **0.56**, and k=5 and k=7 each gain ~0.07-0.09. Only k=11 declines (1.00 →
+0.91).
+
+This runs opposite to `docs/pilot_findings.md` §4, where four-domain mixing was
+*uniformly at or below* single-domain accuracy. Two domains help; four hurt. The
+difference between rungs (a) and (b) is letters and digits, the two weakest domains in
+§4 (0.35 and 0.43 aggregate), so the plausible reading is that heterogeneity itself
+aids abstraction while individually-unlearnable domains inject noise. That is a
+hypothesis this run does not test.
+
+**Bearing on the operand-inheritance question**, stated carefully because it is
+suggestive rather than decisive: BRIEF §6's confound is that a circle found in FVs
+extracted from day- or month-shift prompts may be inherited from the known-circular
+operand geometry. If shift-by-k is performed *better* when the demonstrations span two
+cycles of different length, the model is not relying on a single operand circle to do
+it. That is behavioural evidence about competence, not a measurement of FV geometry,
+and the geometry claim still rests on the extraction now running under this condition
+— which must clear the D20 §1 task-encoding gate before anything is read from it.
+
 ---
 
 ## Conventions
