@@ -39,6 +39,13 @@ class PilotConfig:
     batch_size: int = 8
     results_dir: str = "results/pilot"
     base_url: str = ""  # openai_compat only
+    # Per-condition gating (docs/decisions.md D20 §3): a restricted operand pool
+    # is a different effective task and needs its own behavioural gate, so the
+    # pilot has to be able to reproduce the extraction condition's prompts.
+    stratum: str = "both"
+    operand_pool: dict = field(default_factory=dict)
+    query_pool: dict = field(default_factory=dict)
+    query_domain: str = ""
 
 
 def load_config(path: Path, overrides: argparse.Namespace) -> PilotConfig:
@@ -72,12 +79,19 @@ def run(config: PilotConfig, backend=None) -> Path:
         )
     out_dir.mkdir(parents=True)
 
+    extras = {"stratum": config.stratum}
+    if config.operand_pool:
+        extras["operand_pool"] = config.operand_pool
+    if config.query_pool:
+        extras["query_pool"] = config.query_pool
+    if config.query_domain:
+        extras["query_domain"] = config.query_domain
     items = [
         item
         for variant in config.variants
         for k in config.ks
         for item in P.make_prompt_set(
-            variant, k, config.n_per_k, config.shots, config.seed
+            variant, k, config.n_per_k, config.shots, config.seed, **extras
         )
     ]
     prompt_sha = P.write_prompt_set(items, out_dir / "prompts.jsonl")

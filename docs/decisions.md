@@ -678,6 +678,122 @@ not edited; this entry records that its §2-C example is unusable and why.
 The polysemy leave-out condition (9 operands, 7.1 distinct) is **not** affected and
 its artifacts stand.
 
+### D20. Task-encoding gate, mandatory matched baselines, and rule 5 per condition
+
+Three structural changes, all forced by D19, all fixed before the antipodal-halves
+re-run is extracted.
+
+#### 1. The task-encoding gate — blocking, not a caveat
+
+The C test presumes a function vector that encodes its task. D19 shows that
+presumption can fail silently. It is now measured.
+
+**Gate.** On the **matched** condition, over k ∉ {0, 1, 11} (where ±1 is the correct
+answer and collapse is indistinguishable from success):
+
+    P(prediction lands on the correct shift) - P(prediction lands on shift +/-1)  >  0.10
+
+**Failing the gate blocks the condition's verdict entirely** — the D5(c) pattern, not
+a caveated report. A blocked condition is reported as *blocked-by-gate* with its
+numbers, and no transfer, geometry or hypothesis claim may rest on it.
+
+Measured on existing artifacts (`tarcle/nextitem.py`, free from stored
+`efficacy_pred_shift`):
+
+| condition | operand pool | P(correct) | P(±1) | margin | gate |
+|---|---|---|---|---|---|
+| primary | 12 | 0.546 | 0.194 | **+0.352** | pass |
+| polysemy leave-out | 9 | 0.546 | 0.204 | **+0.343** | pass |
+| partition A | 4 | 0.083 | 0.787 | **−0.704** | **fail** |
+| partition B | 4 | 0.009 | 0.954 | **−0.944** | **fail** |
+
+Two things this establishes. The polysemy control's artifacts stand, and that is now
+a measurement rather than an inference from pool size — the margin is within 0.01 of
+the primary's. And **the collapse is a cliff, not a gradient**: 12 and 9 operands both
+pass comfortably, 4 fails catastrophically, with nothing in between yet sampled. The
+**6-operand antipodal halves are therefore untested**, may collapse, and are gated
+like everything else. Pool size is an input to the mechanism, never evidence about it.
+
+#### 2. Matched-condition baselines are mandatory for every remaining control
+
+D18 registered the wrong-region prediction but required only the *transferred*
+prediction-shift distribution. The ±1 push it would have reported as evidence for C
+turned out to be present in the matched condition at 0.90 against 0.93 — i.e. not a
+transfer effect at all. The criterion nearly shipped an artifact as a finding.
+
+**Structural fix:** every remaining control's criterion must name its matched or
+unperturbed baseline **in the entry that fixes the criterion, before the control
+runs**. A criterion that compares a treated quantity against a threshold rather than
+against its own baseline is not accepted. This applies to the mixed-domain,
+unrelated-tasks and ordinal controls, and to any re-run of the partition control.
+
+#### 3. Rule 5 applies per condition, not per family
+
+CLAUDE.md rule 5 gates FV extraction on measured ICL accuracy for the (model, family)
+pair. D19 shows that too coarse: a restricted operand pool is **a different effective
+task**, and months-with-4-operands is not the family the pilot gated. The 16-shot
+months pilot (11/12 cells ≥ 0.70) licensed an extraction whose FVs encode next-item.
+
+**From here on the behavioural pre-gate runs per condition** — per operand pool, per
+query-domain restriction, per family — and never inherits another condition's gate.
+This applies to the antipodal-halves re-run and to the three outstanding controls,
+whose gates were already planned and are now required rather than advisable.
+
+### D21. The operand-partition control is not runnable on months Z/12 — blocked-by-gate
+
+The antipodal-halves re-run was approved as a repair for D19. **It fails the D20
+task-encoding gate too**, and the failure is structural rather than a matter of
+choosing better partitions.
+
+| condition | operand pool | P(correct) | P(±1) | margin | D20 gate |
+|---|---|---|---|---|---|
+| primary | 12 | 0.546 | 0.194 | +0.352 | pass |
+| polysemy leave-out | 9 | 0.546 | 0.204 | +0.343 | pass |
+| **half A (Jan–Jun)** | **6** | 0.231 | 0.546 | **−0.315** | **fail** |
+| **half B (Jul–Dec)** | **6** | 0.139 | 0.602 | **−0.463** | **fail** |
+| partition A (Jan–Apr) | 4 | 0.083 | 0.787 | −0.704 | fail |
+| partition B (Sep–Dec) | 4 | 0.009 | 0.954 | −0.944 | fail |
+
+The margin is monotone in pool size and the threshold lies between **6 and 9**.
+
+**The structural problem:** the control requires two *disjoint* operand partitions.
+On a 12-element cycle the largest disjoint pair is 6 + 6. Six collapses. So there is
+no partition of Z/12 that is simultaneously disjoint and large enough for the
+extracted FV to encode its task. The hypothesis-C test as specified in BRIEF §6
+Control 1 and prereg §2-C **cannot be run on this family with this model.**
+
+Per D20 §1 this is reported as **blocked-by-gate**, not as a caveated C verdict. The
+D18 Δlogp criterion did fire on the 4-operand run (mean Δ +0.516 against band 0.101,
+12/12 k) and that number is retained in the artifacts, but **no hypothesis-C claim
+rests on it**, because the FVs being compared do not encode shift-by-k on either side
+of the comparison.
+
+**Behavioural gating is uninformative here, and that is itself the finding.** All
+three restricted pools return **GO** on the rule-5 behavioural pre-gate — the
+4-operand partition included, at every k ≥ 0.50, and the 6-operand halves at every
+k ≥ 0.83 with k=8 at 0.87 against 0.38 in the full pool. Restricting the operand pool
+makes the *in-context* task easier while making the *extracted function vector*
+worse. Plain ICL accuracy carries no information about whether an FV extracted from
+those prompts encodes the task, which is exactly why D20 §1 exists as a second,
+independent gate.
+
+#### Routes that remain open, none adopted here
+
+- **A larger cycle.** ROT-k on Z/26 admits two disjoint 13-operand partitions, both
+  above the threshold. Deferred previously because letters are the weakest domain
+  (`docs/pilot_findings.md` §4, 0.35 aggregate) and ROT-13's corpus frequency gives
+  the family a privileged k. Both objections stand and the pilot logic would have to
+  be re-run for the pair.
+- **Partition by domain rather than by cycle position.** Extract on days, apply to
+  months: disjoint operands, no shared cycle, and each domain keeps its full pool.
+  This changes what the control means — it tests transfer across *domains* rather
+  than across regions of one operand circle — and the mixed-domain control's gate
+  will bear on whether it is viable at all.
+- **Overlapping partitions**, trading the disjointness the control depends on for
+  pool size. Weakest of the three; recorded for completeness, not recommended.
+
+The choice among these is the user's and is not made here.
+
 ---
 
 ## Conventions

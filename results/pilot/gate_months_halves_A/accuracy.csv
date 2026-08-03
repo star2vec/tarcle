@@ -1,0 +1,13 @@
+variant,k,stratum,domain,n,accuracy
+months,0,heldout,all,100,1.0
+months,1,heldout,all,100,1.0
+months,2,heldout,all,100,1.0
+months,3,heldout,all,100,1.0
+months,4,heldout,all,100,0.97
+months,5,heldout,all,100,1.0
+months,6,heldout,all,100,1.0
+months,7,heldout,all,100,0.99
+months,8,heldout,all,100,0.87
+months,9,heldout,all,100,0.91
+months,10,heldout,all,100,0.83
+months,11,heldout,all,100,0.97
