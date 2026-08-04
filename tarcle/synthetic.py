@@ -85,6 +85,35 @@ def arc(
     return _add_noise(X, noise, rng)
 
 
+def open_helix(
+    n: int, d: int = 16, axial: float = 1.0, radius: float = 1.0, freq: int = 1,
+    offset: float = 0.0, noise: float = 0.0, seed: int = 0,
+) -> np.ndarray:
+    """A line crossed with a circle: monotone axis + circular component, NOT closed.
+
+    The shape missing from the calibration battery (docs/decisions.md D33). The
+    `helix` generator above is a sum of circles and is therefore *closed*; this
+    one adds a monotone axial term, so X[n-1] does not return to X[0] even though
+    a genuine circle is present in the orthogonal subspace.
+
+    It matters because at `axial` >> `radius` it reproduces every whole-vector
+    observation of an ordered non-cyclic family — distances dominated by axial
+    separation, wraparound pairs far apart, participation ratio ~3 (one axial
+    plus two circular dimensions) — while containing a real circle that only
+    appears once the axis is projected out.
+    """
+    rng = _rng(seed)
+    basis = random_orthonormal(d, 4, rng)
+    t = np.arange(n) / max(n - 1, 1)
+    theta = 2 * np.pi * freq * np.arange(n) / n
+    X = axial * np.outer(t, basis[:, 0])
+    X += radius * (
+        np.outer(np.cos(theta), basis[:, 1]) + np.outer(np.sin(theta), basis[:, 2])
+    )
+    X += offset * basis[:, 3]
+    return _add_noise(X, noise, rng)
+
+
 def line(
     n: int, d: int = 16, step: float = 1.0, offset: float = 0.0,
     noise: float = 0.0, seed: int = 0,

@@ -304,7 +304,38 @@ offset behind §4 cannot affect this test.
 
 ---
 
-## 9. What cannot be concluded
+## 9. Cylinder check: inconclusive, and the scope qualifier stands (D33/D37)
+
+An open helix — a monotone axis with a circle wrapped around it — reproduces every §8
+observation while containing a real circle, and no such fixture was in the prereg §0
+calibration battery. The registered check for it **failed its own validation gate**: a
+planted circle recovers to residual circulant 0.350, *below* the 0.410 floor produced by
+families containing no circle. The cause is structural — over one period
+corr(k, sin) = −0.872, so removing a monotone axis removes most of the circle with it,
+and this does not improve with n.
+
+A joint-fit replacement (regress on [1, k, cos, sin], measure the harmonics' unique
+variance) validates cleanly on synthetics — planted circle amplitude 1.599 invariant to
+axis strength against 0.27–0.32 for a line, partial R² 0.15–0.60 against 0.002. But the
+floor on *real* no-circle families is 0.126–0.315, because four parameters on eleven
+points leaves seven residual degrees of freedom. Months returns 0.363 / 0.423: above the
+maximum floor, by margins (+0.048 / +0.109) two to four times **smaller than the floor's
+own spread** (0.189).
+
+**Inconclusive.** Not absence, not presence. The check is underpowered at n=11.
+
+Two things do follow. The **scope qualifier in §8 stands** — "disconfirmed in
+full-vector distances" cannot be strengthened. And the **axis is k, not token
+frequency**: corr(axis, k) = +0.978 / +0.955 against +0.451 / +0.371 with the operand
+frequency proxy, so the frequency-drift reading of the ordered structure is ruled out.
+
+*A sentence connecting the model's behavioural wraparound competence
+(`pilot_findings.md` §3) to the geometric picture was to be written here once this check
+resolved. It did not resolve, so the sentence is not written.*
+
+---
+
+## 10. What cannot be concluded
 
 Carried forward from D24, unchanged by these results:
 

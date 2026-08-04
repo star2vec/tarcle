@@ -1745,6 +1745,110 @@ ROT-13), 24 is composite so the prereg §1 divisor prediction is testable (divis
 4, 6, 8, 12 against Z/12's 2, 3, 4, 6), and digits are a stronger domain than letters
 (0.43 vs 0.35 aggregate, `pilot_findings.md` §4).
 
+### D37. Cylinder check: the registered estimator failed its gate; the replacement is underpowered. INCONCLUSIVE.
+
+#### The D33 estimator failed step 1, exactly as the gate was meant to catch
+
+D33 registered "fit the monotone axis, project it out, look for a circle in the
+residual", with the gate: *if projection does not recover a circle that is known to be
+there, the method cannot detect one and the check is void.*
+
+| planted | residual circulant |
+|---|---|
+| open helix, axial 6.0, radius 1.0 | 0.350 |
+| open helix, axial 3.0, radius 1.0 | 0.345 |
+| pure circle (the ceiling) | 0.953 |
+| **no-circle floor** (add-k / null residuals) | **0.410** |
+
+A circle that is *definitely present* recovers to 0.35, **below** the 0.41 floor produced
+by families with no circle at all. The estimator is void by its own registered gate.
+
+**The reason is structural, not a bug and not sample size.** Over a single period,
+corr(k, sin(2πk/12)) = **−0.872**. A single-period circle is itself strongly linear in
+the parameter, so removing a monotone axis removes most of the circle with it. This does
+not improve with n — the correlation is O(1) in n. Any "project out the trend" approach
+to separating an axis from a one-period circle has the same defect.
+
+(Noted for the next family: the collinearity is phase-dependent — corr(k, cos) = −0.000
+here while corr(k, sin) = −0.872 — so an estimator's power against this geometry varies
+with the unknown phase of whatever circle is present.)
+
+#### Replacement estimator, validated before use
+
+Regress X on [1, k, cos(2πk/12), sin(2πk/12)] and measure the harmonic terms' unique
+variance share (partial R²). Collinearity reduces power but does not prevent
+identification, so unlike projection this does not destroy what it is looking for.
+
+Synthetic validation passes cleanly:
+
+| planted | harmonic amp | partial R² |
+|---|---|---|
+| open helix, axial 6.0 / 3.0 / 1.0 | **1.599** in all three | 0.149 / 0.355 / 0.596 |
+| line only, no circle (3 seeds) | 0.266–0.320 | 0.0013–0.0020 |
+
+Amplitude recovers the planted radius invariant to axis strength; partial R² separates
+by two orders of magnitude.
+
+#### But the floor on *real* no-circle data is enormous
+
+| family (no circle present) | partial R² |
+|---|---|
+| add-k, Todd | **0.3148** |
+| add-k, Hendel | 0.2722 |
+| unrelated null, Todd | 0.1381 |
+| unrelated null, Hendel | 0.1256 |
+
+Four design parameters on eleven points leaves seven residual degrees of freedom, and
+real function vectors have far richer structure than a synthetic ramp plus isotropic
+noise. **A family with no circle reaches partial R² 0.31 — higher than a genuinely
+planted circle at a realistic axial ratio (0.149).**
+
+#### Months, read against the pre-committed floor
+
+| | partial R² | vs floor 0.3148 | floor's own spread |
+|---|---|---|---|
+| Todd | 0.3626 | **+0.048** | 0.189 |
+| Hendel | 0.4233 | **+0.109** | 0.189 |
+
+Nominally above the maximum floor — but by margins **2× to 4× smaller than the spread
+of the floor estimate itself**. The amplitude metric points the other way (2.97 / 2.74
+against a floor of 4.54), though amplitudes are not comparable across families of
+different norm.
+
+**Verdict: INCONCLUSIVE.** Not "no circle" — months does exceed the maximum no-circle
+floor. Not "a circle" — the margin is well inside the noise of the floor. The check
+cannot resolve this at n=11 and is reported as underpowered rather than as either
+outcome.
+
+#### The axis is k, not token frequency
+
+The D33 frequency check returns a clean answer:
+
+| | corr(axis, k) | corr(axis, freq_proxy_operand) | corr(axis, freq_proxy_target) |
+|---|---|---|---|
+| Todd | **+0.978** | +0.451 | −0.424 |
+| Hendel | **+0.955** | +0.371 | −0.363 |
+
+The fitted axial coordinate is essentially k. The frequency-drift alternative — that the
+"ordered" structure is a token-frequency gradient rather than a task-parameter one — is
+**ruled out**. The residual 0.37–0.45 correlation with the operand proxy is reported for
+completeness; since the axis is ~0.97 correlated with k, it is very close to
+corr(k, proxy) in the empirical draw, and prereg §3's norm-based test passed
+independently on `norm_cv` ≤ 0.15.
+
+#### Consequences
+
+- **D32's "in full-vector distances" scope qualifier stands.** The cylinder is neither
+  established nor excluded. Any statement that months contains no circular structure
+  must keep that qualifier.
+- **The held `stage2_findings` sentence stays unwritten.** It was to be resolved by this
+  check into either "the identification the model uses behaviourally is not present in
+  the vector" or "behavioural wraparound lives in a low-amplitude circular
+  subcomponent". Neither is supported. It is not written.
+- **Powering this is now a stated requirement for the next family** (D36): at n=24,
+  four parameters on twenty-four points leaves twenty residual degrees of freedom
+  against seven here, which is where the floor has to fall for the test to discriminate.
+
 ---
 
 ## Conventions
