@@ -1414,6 +1414,95 @@ largest-separation bin — which needs n ≥ 16 or so, i.e. ROT-k on Z/26. That 
 question the deferred ROT-k family would actually answer, and it is a better reason to
 run it than the one previously recorded.
 
+### D31. Seam contest — registered before running, and post-hoc relative to the binned profile
+
+**Stated plainly up front: this registration is post-hoc.** The binned separation
+profiles in D30 have already been seen, and they are what suggested this test. It is
+registered before the contest is computed, not before the data that motivated it. That
+is weaker than D25 §2 (registered before any number existed) and much weaker than the
+pre-registration proper. **Exploratory relative to D24 throughout; it cannot touch the
+confirmatory cells.** The confirmatory home for this test is the *next* family, where
+it can be registered in advance — see §6.
+
+#### The question
+
+D30 established that permutation z and `circulant_score` cannot separate cyclic from
+merely ordered. Neither can the binned |m| profile, whose antipodal turn appears in all
+three families. What none of those tests asks is the specific question that
+distinguishes the two: **is there a seam?**
+
+A cyclic family has none — every point is interior. A linear family that has been
+wrapped for analysis has exactly one: the cut where the line's two endpoints were
+glued. So unrolling the parameter at each possible cut point and asking which unrolling
+best explains the pairwise distances is a direct test, and it is not the test any
+previous diagnostic performed.
+
+#### Design
+
+For FVs X over parameter values k with modulus n:
+
+- **Cyclic model:** separation(i,j) = min(d, n−d), d = |kᵢ−kⱼ|. Six levels at n=12.
+- **Cut-at-c model**, one per c: unroll to pos(k) = (k−c) mod n, separation = |pos(i)
+  − pos(j)|. Eleven levels at n=12. One such model for every c in k=1..11.
+
+Each model is scored two ways against the observed pairwise distances:
+
+- **Spearman ρ** between separation and distance — rank-based, insensitive to the
+  functional form.
+- **Cross-validated isotonic R²** — fit a monotone function of separation on half the
+  pairs, score on the held-out half, repeated over splits.
+
+**The cross-validation is not optional and the reason is registered here:** the cut
+models have eleven separation levels against the cyclic model's six, so an
+unpenalised isotonic fit favours them mechanically, by degrees of freedom alone. Any
+comparison of in-sample fit between models with different level counts is
+uninterpretable. Both metrics are reported for every model; the verdict is read from
+the cross-validated figure.
+
+#### Validation gate — run and read before months
+
+The contest is run on the two families whose answer is known, and **months is not read
+until both behave**:
+
+- **add-k** (ordered, no wraparound, n=11 unrolled with a hypothetical modulus 12).
+  The true structure is a line with its endpoints at 1 and 11. **A cut model must beat
+  the cyclic model**, and the winning cut should sit at an endpoint. If the cyclic
+  model wins here, the contest cannot detect a seam that is known to exist and the
+  whole test is void.
+- **unrelated tasks** (unordered). Distances are flat, so **no model should fit** —
+  all cross-validated R² near zero and no cut distinguishable from any other. A cut
+  winning here means the contest manufactures seams from noise.
+
+#### Pre-labelled outcomes for months
+
+| result | reading |
+|---|---|
+| cyclic model beats **every** cut, cross-validated | genuinely cyclic — no seam. The strongest cyclicity evidence the run could produce |
+| a cut at **c = 0** wins | the family is a line running k=1…11 with the identity as an endpoint. Consistent with FV(0) sitting ~2× outside the cluster; the "cycle" would be an artefact of labelling |
+| a cut at the **antipode** (c ≈ 6) wins | signed-magnitude line: +m and −m identified, distance a function of \|m\| with no direction. The pilot's magnitude-recovered / direction-lost finding (`pilot_findings.md` §2) in geometric form |
+| no cut separable from the cyclic model, or from each other | no discrimination; the run cannot tell, and says so |
+
+#### Reported individually, not only in aggregate
+
+- **The ten fold-back pairs** — those the cyclic model calls close and every cut model
+  calls far. At n=11 on Z/12 these are the pairs with d > 6: (1,8) (2,9) (3,10) (4,11)
+  at d=7, (1,9) (2,10) (3,11) at d=8, (1,10) (2,11) at d=9, (1,11) at d=10. Whether the
+  wraparound identification is real lives entirely in these ten distances, so they are
+  listed with their values rather than folded into a mean.
+- **The five antipode-crossing pairs** at cyclic separation 6: (1,7) (2,8) (3,9)
+  (4,10) (5,11).
+
+Both extraction methods, raw and centered Gram, all reported.
+
+#### Where the confirmatory version lives
+
+Whatever this returns, it is exploratory. If it does not settle the question, the next
+step is **not** more analysis of these artifacts: it is a new family with the seam
+contest registered in advance. Hours-of-day Z/24 and ROT-k Z/26 are both candidates,
+piloted together with the gates deciding which survives, and **a matched-n add-k
+reference registered alongside whichever runs** so the calibration D28 established is
+available at the same n rather than borrowed across sizes.
+
 ---
 
 ## Conventions
