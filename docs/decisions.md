@@ -1503,6 +1503,89 @@ piloted together with the gates deciding which survives, and **a matched-n add-k
 reference registered alongside whichever runs** so the calibration D28 established is
 available at the same n rather than borrowed across sizes.
 
+### D32. Seam contest outcome: a seam is present; its location is not resolved
+
+Exploratory per D31. The validation gate passed before months was read.
+
+#### Validation gate — PASS
+
+| family | cyclic | best cut | verdict |
+|---|---|---|---|
+| **add-k** (seam known to exist) | 0.226 / 0.012 | **0.347 / 0.197** (cut@2) | seam detected ✓ |
+| **unrelated** (nothing should fit) | −0.115 / −0.115 | −0.104 / −0.070 | all negative; nothing fits ✓ |
+
+Cross-validated isotonic R², Todd / Hendel. The contest detects a seam where one is
+known and manufactures none from unordered data.
+
+#### Months — the cyclic model loses decisively
+
+| | cyclic | best cut | margin |
+|---|---|---|---|
+| Todd | **0.031** | 0.237 (cut@2) | **−0.206** |
+| Hendel | **0.049** | 0.221 (cut@2) | **−0.171** |
+
+The cyclic model's cross-validated R² is ≈ 0, i.e. identifying separations mod 12
+explains essentially none of the variance in pairwise distance, while a linear
+unrolling explains ~22%.
+
+#### Location: NOT resolved, and the reason is in the gate data
+
+cut@2 wins for months — but cut@2 **also** wins for add-k, whose true seam is at the
+endpoint, i.e. cut@0/cut@1. There the correct model scored 0.320 against cut@2's 0.347.
+So the contest prefers cut@2 by a small margin even when it is wrong, and the months
+cut@2 win cannot be read as locating the seam. The top three cuts (2, 1, 11) are within
+0.07 of each other and all sit near the k=0 gap.
+
+Registered note: `cut@0` and `cut@1` produce **identical** separations on the k=1..11
+set — only |posᵢ − posⱼ| enters, and the two differ by a constant shift — so the D31
+"seam at k=0" model is the cut@0 = cut@1 tie, scoring 0.171 / 0.182. Second place, not
+the winner.
+
+**None of D31's three location labels fires cleanly.** The reportable outcome is "a
+seam is present, its position is not resolved by this test".
+
+#### The ten fold-back pairs settle the wraparound question directly
+
+These are the pairs the cyclic model calls close and every linear model calls far, so
+the entire wraparound claim lives in them. Distances as multiples of the mean pair
+distance (Todd / Hendel):
+
+| pair | linear sep | cyclic sep | distance |
+|---|---|---|---|
+| **k=1, 11** | 10 | **2** | **1.35× / 1.29×** |
+| k=2, 11 | 9 | 3 | 1.77× / 1.75× |
+| k=1, 10 | 9 | 3 | 1.58× / 1.48× |
+| k=3, 11 | 8 | 4 | 1.72× / 1.68× |
+| k=2, 10 | 8 | 4 | 1.08× / 1.08× |
+| k=1, 9 | 8 | 4 | 1.56× / 1.53× |
+| k=4, 11 | 7 | 5 | 1.65× / 1.68× |
+| k=3, 10 | 7 | 5 | 1.11× / 1.05× |
+| k=2, 9 | 7 | 5 | 1.28× / 1.34× |
+| k=1, 8 | 7 | 5 | 1.55× / 1.49× |
+
+**Every one of the ten is above the mean**, in both extractions. The wraparound
+identification predicts the opposite: pairs at cyclic separation 2–5 should sit near
+the mean or below it. Most telling is **k=1 versus k=11** — shift-by-+1 and
+shift-by-−1, the pair a cyclic code must place adjacent — at **1.35×** the mean
+distance, against a separation-1 bin mean of 0.67×.
+
+The five antipode-crossing pairs are inconsistent rather than uniformly far: (3,9)
+0.82×, (4,10) 0.93×, but (1,7) 1.48× and (5,11) 1.56×. No antipodal identification
+either.
+
+#### Standing of this result
+
+It upgrades D30's "cyclicity not established" toward **positively disconfirmed** for
+the months family: not merely that the diagnostics cannot see a cycle, but that the
+specific pairs a cycle requires to be close are measurably far. It remains
+**exploratory** — D31 is post-hoc relative to the binned profile — so it does not touch
+the D24 confirmatory cells, and the confirmatory version belongs to the next family
+with the contest registered in advance.
+
+Also recorded: centering is a **no-op** for this test, asserted in code rather than
+reported as a column. Pairwise distances are translation-invariant, so the shared
+offset that D27 exists for cannot affect the seam contest at all.
+
 ---
 
 ## Conventions

@@ -249,13 +249,52 @@ bin holding **2 pairs of 110**, and the flat null control turns down as well. Pe
 the non-discriminating outcome applies and the language throughout this document is
 *ordered*, not *cyclic*.
 
-Settling it needs a diagnostic validated to separate the two on real FVs — plausibly
-the antipodal-dip magnitude on a family with enough pairs in the largest-separation
-bin, which means n ≥ 16, i.e. ROT-k on Z/26.
+---
+
+## 8. The seam contest: cyclicity positively disconfirmed (exploratory, D31/D32)
+
+A cyclic family has no seam; a wrapped linear one has exactly one. Unrolling the
+parameter at every cut point and asking which unrolling best explains the pairwise
+distances tests that directly. Cross-validated isotonic R², because the cut models
+carry eleven separation levels against the cyclic model's six and would win on degrees
+of freedom alone.
+
+**Validation gate, read before months and passed:** add-k, whose seam is known to
+exist, is detected (best cut 0.347 / 0.197 over cyclic 0.226 / 0.012); the unordered
+null fits nothing (every R² negative).
+
+**Months:**
+
+| | cyclic | best cut | margin |
+|---|---|---|---|
+| Todd | **0.031** | 0.237 | **−0.206** |
+| Hendel | **0.049** | 0.221 | **−0.171** |
+
+Identifying separations mod 12 explains ≈ 0% of the variance in pairwise distance; a
+linear unrolling explains ~22%.
+
+**The ten fold-back pairs — where the whole wraparound claim lives — are all above the
+mean distance**, in both extractions, at 1.08×–1.77×. The decisive one is **k=1 versus
+k=11**: shift-by-+1 and shift-by-−1, which any cyclic code must place adjacent, sit at
+**1.35× the mean** against a separation-1 bin mean of 0.67×.
+
+**The seam's location is not resolved.** cut@2 wins for months, but cut@2 also wins for
+add-k where the true seam is at the endpoint — so the contest answers *whether*
+reliably and *where* unreliably. The D31 "seam at k=0" model (cut@0 ≡ cut@1) places
+second at 0.171 / 0.182.
+
+This moves the months family from "cyclicity not established" (§7) to **cyclicity
+positively disconfirmed**: not merely that the diagnostics cannot see a cycle, but that
+the pairs a cycle requires to be close are measurably far. It is exploratory — D31 is
+post-hoc relative to §7's binned profiles — and the confirmatory version belongs to the
+next family.
+
+Centering is a no-op here: pairwise distances are translation-invariant, so the shared
+offset behind §4 cannot affect this test.
 
 ---
 
-## 8. What cannot be concluded
+## 9. What cannot be concluded
 
 Carried forward from D24, unchanged by these results:
 
@@ -267,11 +306,12 @@ Carried forward from D24, unchanged by these results:
   open curve (closure 2.4), and the only evidence that these diagnostics separate open
   from closed comes from synthetic fixtures.
 - **One model, one family, one prompt format.** D7 defers format variation to stage 3.
-- **No cyclic claim.** §7 shows the run's ordering evidence does not distinguish cyclic
-  from merely ordered structure. The BRIEF's central question — does a cyclically
-  structured task family yield cyclically structured task representations — is **not
-  answered** by this run. What is answered: the representations are not circular in the
-  registered sense (circulant fails everywhere), not a simplex, and not linear.
+- **No confirmatory cyclic claim, in either direction.** §7 shows the *registered*
+  ordering evidence cannot distinguish cyclic from merely ordered. §8 goes further and
+  disconfirms cyclicity — but exploratorily, so the BRIEF's central question is
+  answered only provisionally: on this family, in this model, the task representations
+  are ordered and **do not** wrap. Confirming that needs the seam contest registered in
+  advance on a fresh family.
 - The result is **not** a null result. It is a positive finding of order-dependent,
   low-dimensional, non-circulant structure that the pre-registration did not
   anticipate, which is a different thing from "no structure".

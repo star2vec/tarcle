@@ -1,0 +1,107 @@
+﻿centering is a no-op for this test (distances are translation-invariant)
+
+========================================================================
+todd
+========================================================================
+
+  VALIDATION GATE (read before months)
+
+  add-k [raw] — a seam is KNOWN to exist
+    model         cv R2  spearman  levels
+    cut@2        0.3474    0.7254      11
+    cut@0        0.3204    0.7473      10
+    cut@1        0.3204    0.7473      10
+    cyclic       0.2257    0.6225       6  <-- cyclic
+    winner: cut@2   cyclic 0.2257 vs best cut cut@2 0.3474   margin -0.1217
+
+  unrelated [raw] — nothing should fit
+    model         cv R2  spearman  levels
+    cut@0       -0.1044   -0.0481      11
+    cut@11      -0.1073   -0.1536      11
+    cyclic      -0.1153   -0.0894       6  <-- cyclic
+    cut@10      -0.1410   -0.1622      11
+    winner: cut@0   cyclic -0.1153 vs best cut cut@0 -0.1044   margin -0.0108
+
+  gate: add-k seam detected = True; null fits nothing = True  -> PASS
+
+  MONTHS (n=11, k=0 dropped)
+
+  months [raw]
+    model         cv R2  spearman  levels
+    cut@2        0.2370    0.6492      11
+    cut@0        0.1707    0.6502      10
+    cut@1        0.1707    0.6502      10
+    cut@11       0.1668    0.6281      11
+    winner: cut@2   cyclic 0.0311 vs best cut cut@2 0.2370   margin -0.2058
+
+    ten fold-back pairs (linear sep > 6, cyclic sep = 12 - it)   [mean pair distance 4.121]
+      k= 1,11  linear 10  cyclic  2  dist 5.555  (1.35x mean)
+      k= 2,11  linear  9  cyclic  3  dist 7.284  (1.77x mean)
+      k= 1,10  linear  9  cyclic  3  dist 6.495  (1.58x mean)
+      k= 3,11  linear  8  cyclic  4  dist 7.083  (1.72x mean)
+      k= 2,10  linear  8  cyclic  4  dist 4.471  (1.08x mean)
+      k= 1, 9  linear  8  cyclic  4  dist 6.419  (1.56x mean)
+      k= 4,11  linear  7  cyclic  5  dist 6.797  (1.65x mean)
+      k= 3,10  linear  7  cyclic  5  dist 4.557  (1.11x mean)
+      k= 2, 9  linear  7  cyclic  5  dist 5.282  (1.28x mean)
+      k= 1, 8  linear  7  cyclic  5  dist 6.379  (1.55x mean)
+    five antipode-crossing pairs (cyclic sep 6)
+      k= 1, 7  linear  6  dist 6.096  (1.48x mean)
+      k= 2, 8  linear  6  dist 4.672  (1.13x mean)
+      k= 3, 9  linear  6  dist 3.388  (0.82x mean)
+      k= 4,10  linear  6  dist 3.851  (0.93x mean)
+      k= 5,11  linear  6  dist 6.441  (1.56x mean)
+
+========================================================================
+hendel
+========================================================================
+
+  VALIDATION GATE (read before months)
+
+  add-k [raw] — a seam is KNOWN to exist
+    model         cv R2  spearman  levels
+    cut@2        0.1973    0.6454      11
+    cut@0        0.1958    0.6712      10
+    cut@1        0.1958    0.6712      10
+    cut@3        0.0921    0.5838      11
+    winner: cut@2   cyclic 0.0124 vs best cut cut@2 0.1973   margin -0.1849
+
+  unrelated [raw] — nothing should fit
+    model         cv R2  spearman  levels
+    cut@11      -0.0700   -0.2816      11
+    cut@10      -0.0799   -0.2589      11
+    cut@0       -0.1020   -0.1998      11
+    cyclic      -0.1154   -0.1299       6  <-- cyclic
+    winner: cut@11   cyclic -0.1154 vs best cut cut@11 -0.0700   margin -0.0454
+
+  gate: add-k seam detected = True; null fits nothing = True  -> PASS
+
+  MONTHS (n=11, k=0 dropped)
+
+  months [raw]
+    model         cv R2  spearman  levels
+    cut@2        0.2208    0.6540      11
+    cut@11       0.2125    0.6460      11
+    cut@0        0.1823    0.6405      10
+    cut@1        0.1823    0.6405      10
+    winner: cut@2   cyclic 0.0495 vs best cut cut@2 0.2208   margin -0.1712
+
+    ten fold-back pairs (linear sep > 6, cyclic sep = 12 - it)   [mean pair distance 3.504]
+      k= 1,11  linear 10  cyclic  2  dist 4.507  (1.29x mean)
+      k= 2,11  linear  9  cyclic  3  dist 6.134  (1.75x mean)
+      k= 1,10  linear  9  cyclic  3  dist 5.178  (1.48x mean)
+      k= 3,11  linear  8  cyclic  4  dist 5.881  (1.68x mean)
+      k= 2,10  linear  8  cyclic  4  dist 3.780  (1.08x mean)
+      k= 1, 9  linear  8  cyclic  4  dist 5.373  (1.53x mean)
+      k= 4,11  linear  7  cyclic  5  dist 5.885  (1.68x mean)
+      k= 3,10  linear  7  cyclic  5  dist 3.668  (1.05x mean)
+      k= 2, 9  linear  7  cyclic  5  dist 4.697  (1.34x mean)
+      k= 1, 8  linear  7  cyclic  5  dist 5.233  (1.49x mean)
+    five antipode-crossing pairs (cyclic sep 6)
+      k= 1, 7  linear  6  dist 5.308  (1.52x mean)
+      k= 2, 8  linear  6  dist 4.111  (1.17x mean)
+      k= 3, 9  linear  6  dist 2.861  (0.82x mean)
+      k= 4,10  linear  6  dist 3.209  (0.92x mean)
+      k= 5,11  linear  6  dist 5.771  (1.65x mean)
+
+wrote results/stage2/seam.json
