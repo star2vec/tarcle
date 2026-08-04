@@ -106,6 +106,39 @@ def centered_view(d: dict) -> dict:
     }
 
 
+def separation_profile(
+    X: np.ndarray, ks: list[int], modulus: int | None = None
+) -> tuple[dict[int, float], dict[int, int]]:
+    """Mean pairwise distance by parameter separation, plus the pair count.
+
+    `ks` are the actual parameter values, not row positions — this matters
+    whenever a subset is analysed. Months with k=0 dropped leaves eleven points
+    whose true separations are still on Z/12; profiling them with modulus 11
+    would fold k=1 and k=11 onto the wrong classes and invent a monotone tail.
+
+    `modulus` identifies separations mod n for a cyclic family (|m| = min(d, n−d),
+    so the largest bin is the antipode); None leaves them linear, which is the
+    add-k case where the first and last parameter are maximally separated.
+
+    Pair counts are returned because the tail bins are thin — a linear family on
+    eleven points has one pair at separation 10 — and a turn in the profile there
+    is not evidence of anything.
+    """
+    D = np.linalg.norm(X[:, None, :] - X[None, :, :], axis=-1)
+    vals: dict[int, list[float]] = {}
+    for i, ki in enumerate(ks):
+        for j, kj in enumerate(ks):
+            if i == j:
+                continue
+            d = abs(ki - kj)
+            m = min(d, modulus - d) if modulus else d
+            vals.setdefault(m, []).append(D[i, j])
+    return (
+        {m: float(np.mean(v)) for m, v in sorted(vals.items())},
+        {m: len(v) for m, v in sorted(vals.items())},
+    )
+
+
 def offset_share(X: np.ndarray) -> float:
     """Fraction of mean squared norm carried by the component shared across k."""
     return float(

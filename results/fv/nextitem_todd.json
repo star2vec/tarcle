@@ -25,18 +25,18 @@
       },
       {
         "k": 2,
-        "p_correct": 0.9583333134651184,
-        "baseline": 0.7916666865348816,
-        "lift": 0.16666662693023682,
+        "p_correct": 1.0,
+        "baseline": 0.8333333134651184,
+        "lift": 0.1666666865348816,
         "informative": false,
         "p_pm1": null,
         "top_shift": null
       },
       {
         "k": 3,
-        "p_correct": 0.8333333134651184,
+        "p_correct": 0.9166666865348816,
         "baseline": 0.0416666679084301,
-        "lift": 0.7916666269302368,
+        "lift": 0.875,
         "informative": true,
         "p_pm1": null,
         "top_shift": null
@@ -114,10 +114,122 @@
         "top_shift": null
       }
     ],
-    "p_correct_mid": 0.6666666716337204,
+    "p_correct_mid": 0.6875000149011612,
     "p_pm1_mid": null,
     "margin": null,
     "n_informative": 4,
+    "verdict": "ENCODES TASK"
+  },
+  {
+    "run": "ctl_addk",
+    "condition": "addk",
+    "pool_size": null,
+    "method": "todd",
+    "rows": [
+      {
+        "k": 1,
+        "p_correct": 1.0,
+        "baseline": 0.0,
+        "lift": 1.0,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 2,
+        "p_correct": 1.0,
+        "baseline": 0.0,
+        "lift": 1.0,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 3,
+        "p_correct": 0.75,
+        "baseline": 0.0,
+        "lift": 0.75,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 4,
+        "p_correct": 0.8333333134651184,
+        "baseline": 0.0,
+        "lift": 0.8333333134651184,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 5,
+        "p_correct": 1.0,
+        "baseline": 0.0,
+        "lift": 1.0,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 6,
+        "p_correct": 1.0,
+        "baseline": 0.0,
+        "lift": 1.0,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 7,
+        "p_correct": 0.6666666865348816,
+        "baseline": 0.0833333358168602,
+        "lift": 0.5833333730697632,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 8,
+        "p_correct": 0.8333333134651184,
+        "baseline": 0.0,
+        "lift": 0.8333333134651184,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 9,
+        "p_correct": 1.0,
+        "baseline": 0.0,
+        "lift": 1.0,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 10,
+        "p_correct": 1.0,
+        "baseline": 0.0833333358168602,
+        "lift": 0.9166666865348816,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      },
+      {
+        "k": 11,
+        "p_correct": 0.25,
+        "baseline": 0.0833333358168602,
+        "lift": 0.1666666567325592,
+        "informative": true,
+        "p_pm1": null,
+        "top_shift": null
+      }
+    ],
+    "p_correct_mid": 0.8257575766606764,
+    "p_pm1_mid": null,
+    "margin": null,
+    "n_informative": 11,
     "verdict": "ENCODES TASK"
   }
 ]

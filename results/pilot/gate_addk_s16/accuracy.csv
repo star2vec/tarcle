@@ -1,0 +1,12 @@
+variant,k,stratum,domain,n,accuracy
+addk,1,heldout,all,100,1.0
+addk,2,heldout,all,100,1.0
+addk,3,heldout,all,100,1.0
+addk,4,heldout,all,100,1.0
+addk,5,heldout,all,100,1.0
+addk,6,heldout,all,100,1.0
+addk,7,heldout,all,100,1.0
+addk,8,heldout,all,100,1.0
+addk,9,heldout,all,100,1.0
+addk,10,heldout,all,100,1.0
+addk,11,heldout,all,100,1.0

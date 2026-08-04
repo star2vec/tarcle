@@ -102,7 +102,7 @@ def forced_choice(
 
 
 def zero_shot_spec(family: str, cycle: str, k: int, queries: list[str] | None = None):
-    """(prompts, choice strings, correct index per prompt, query index per prompt).
+    """(prompts, choice strings, correct index, query index, choice prefix).
 
     Generalises the zero-shot evaluation over the three families. The query index
     is the position of the operand within the candidate set, and exists only for
@@ -124,6 +124,23 @@ def zero_shot_spec(family: str, cycle: str, k: int, queries: list[str] | None = 
             choices,
             np.array([idx[b] for _, b in pairs]),
             None,
+            " ",
+        )
+
+    if family == "addk":
+        from .prompts import ADDK_QUERIES, addk_choices
+
+        # The space goes in the prompt and the bare number is scored: Llama-3
+        # tokenizes ' 15' as [' ', '15'], so scoring with a leading space would
+        # give every candidate the same first token and the forced choice would
+        # be degenerate.
+        choices = addk_choices(k)
+        return (
+            [f"Q: {q}\nA: " for q in ADDK_QUERIES],
+            choices,
+            np.arange(len(ADDK_QUERIES)),  # query i's answer is choices[i]
+            None,  # ordered but not cyclic: no signed shift is defined
+            "",
         )
 
     items = DOMAINS[cycle]  # candidate set is always the full cycle
@@ -134,6 +151,7 @@ def zero_shot_spec(family: str, cycle: str, k: int, queries: list[str] | None = 
         items,
         np.array([idx[shift(cycle, x, k)] for x in asked]),
         np.array([idx[x] for x in asked]),
+        " ",
     )
 
 
@@ -157,10 +175,10 @@ def score_for_k(
     - `margin` mean (logp[correct] - max logp[incorrect]) — positive iff the
                argmax is correct, and its magnitude says by how much
     """
-    prompts, choices, correct, query_idx = zero_shot_spec(
+    prompts, choices, correct, query_idx, prefix = zero_shot_spec(
         family or domain, domain, k, queries
     )
-    choice_ids = [first_token_id(tok, x) for x in choices]
+    choice_ids = [first_token_id(tok, x, prefix) for x in choices]
     inject = None if vector is None else (arch, layer, vector, mode)
     lp = choice_logprobs(model, tok, prompts, choice_ids, batch_size, inject)
     rows = np.arange(len(prompts))

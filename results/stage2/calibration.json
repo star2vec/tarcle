@@ -1,0 +1,268 @@
+{
+  "todd/unrelated (unordered)": {
+    "circulant_score": 0.1904958379204963,
+    "toeplitz_score": 0.1965204777421159,
+    "spectral_concentration": 0.37426304764946083,
+    "significant_frequencies": [
+      4
+    ],
+    "closure_ratio": 0.9963175625112216,
+    "rotation_residual": 0.46272985453612586,
+    "rotation_order_error": 0.39574775161303855,
+    "rotation_wraparound_error": 0.38525821825894685,
+    "rotation_rank": 11,
+    "norm_cv": 0.16914529594152047,
+    "additivity_residual": 1.436569077595238,
+    "participation_ratio": 6.835296746794695,
+    "circulant_centered": 0.41214584739636884,
+    "permutation": {
+      "canonical": 0.1904958379204963,
+      "perm_mean": 0.18932603535623074,
+      "perm_std": 0.006980702585450641,
+      "perm_max": 0.2308344106313157,
+      "percentile": 68.0,
+      "z": 0.16757662283216032,
+      "n_perm": 200
+    },
+    "separation_profile": {
+      "1": 6.620607500600504,
+      "2": 6.645017127430594,
+      "3": 6.063667629800746,
+      "4": 6.488737934795322,
+      "5": 6.643225633439603,
+      "6": 6.091580653652593
+    },
+    "separation_counts": {
+      "1": 24,
+      "2": 24,
+      "3": 24,
+      "4": 24,
+      "5": 24,
+      "6": 12
+    }
+  },
+  "todd/add-k (ordered, non-cyclic)": {
+    "circulant_score": 0.2845598529284461,
+    "toeplitz_score": 0.4588356537355578,
+    "spectral_concentration": 0.7404633341702271,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 1.495627974793117,
+    "rotation_residual": 0.5104215105494315,
+    "rotation_order_error": 1.370065391996238,
+    "rotation_wraparound_error": 1.1885937759677416,
+    "rotation_rank": 8,
+    "norm_cv": 0.027719116488438438,
+    "additivity_residual": 1.188527156526394,
+    "participation_ratio": 4.407474569881391,
+    "circulant_centered": 0.447527561258649,
+    "permutation": {
+      "canonical": 0.2845598529284461,
+      "perm_mean": 0.1877503480245044,
+      "perm_std": 0.01301321640015781,
+      "perm_max": 0.2401825377246335,
+      "percentile": 100.0,
+      "z": 7.439321834590231,
+      "n_perm": 200
+    },
+    "separation_profile": {
+      "1": 4.487995789121543,
+      "2": 4.532848692702465,
+      "3": 6.1892520949038055,
+      "4": 5.608095334643788,
+      "5": 6.6562698327671574,
+      "6": 6.245200478659539,
+      "7": 7.56087957386537,
+      "8": 6.940494599375481,
+      "9": 7.627376485948877,
+      "10": 6.712372052963892
+    },
+    "separation_counts": {
+      "1": 20,
+      "2": 18,
+      "3": 16,
+      "4": 14,
+      "5": 12,
+      "6": 10,
+      "7": 8,
+      "8": 6,
+      "9": 4,
+      "10": 2
+    }
+  },
+  "todd/months n=11 (ordered, cyclic)": {
+    "circulant_score": 0.13666911376916646,
+    "toeplitz_score": 0.19636162130483092,
+    "spectral_concentration": 0.7547577378078891,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 2.0207700817243746,
+    "rotation_residual": 0.5485436383768706,
+    "rotation_order_error": 1.255949458543809,
+    "rotation_wraparound_error": 1.2806245619283803,
+    "rotation_rank": 7,
+    "norm_cv": 0.05543510953213225,
+    "additivity_residual": 1.1856942884268058,
+    "participation_ratio": 3.2079347625376764,
+    "circulant_centered": 0.3119503752913043,
+    "permutation": {
+      "canonical": 0.13666911376916646,
+      "perm_mean": 0.09055596603330532,
+      "perm_std": 0.005847734055647769,
+      "perm_max": 0.11380938033564869,
+      "percentile": 100.0,
+      "z": 7.8856437890373705,
+      "n_perm": 200
+    },
+    "separation_profile": {
+      "1": 2.748717289099928,
+      "2": 3.2623797065208437,
+      "3": 4.488884492733903,
+      "4": 4.6127106166427705,
+      "5": 5.107874669465743,
+      "6": 4.889658649728958
+    },
+    "separation_counts": {
+      "1": 20,
+      "2": 20,
+      "3": 20,
+      "4": 20,
+      "5": 20,
+      "6": 10
+    }
+  },
+  "hendel/unrelated (unordered)": {
+    "circulant_score": 0.2529240067272135,
+    "toeplitz_score": 0.30072641037719716,
+    "spectral_concentration": 0.3104251441091019,
+    "significant_frequencies": [],
+    "closure_ratio": 0.8937395218514306,
+    "rotation_residual": 0.46600817570940306,
+    "rotation_order_error": 0.6374785654885695,
+    "rotation_wraparound_error": 0.37182426889014075,
+    "rotation_rank": 11,
+    "norm_cv": 0.027211872023782967,
+    "additivity_residual": 1.4195683498541432,
+    "participation_ratio": 5.825647443775097,
+    "circulant_centered": 0.3309007417507338,
+    "permutation": {
+      "canonical": 0.2529240067272135,
+      "perm_mean": 0.2618855121131423,
+      "perm_std": 0.01645038945117153,
+      "perm_max": 0.3413012666676313,
+      "percentile": 31.5,
+      "z": -0.5447594667912633,
+      "n_perm": 200
+    },
+    "separation_profile": {
+      "1": 9.550200696711281,
+      "2": 9.113913844781884,
+      "3": 8.747308444161886,
+      "4": 9.02361441348162,
+      "5": 9.200269825791851,
+      "6": 8.789321947801136
+    },
+    "separation_counts": {
+      "1": 24,
+      "2": 24,
+      "3": 24,
+      "4": 24,
+      "5": 24,
+      "6": 12
+    }
+  },
+  "hendel/add-k (ordered, non-cyclic)": {
+    "circulant_score": 0.14409747008200258,
+    "toeplitz_score": 0.1999183327176235,
+    "spectral_concentration": 0.6998238592458299,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 1.9850179649029585,
+    "rotation_residual": 0.5018631087053831,
+    "rotation_order_error": 1.4985264877666895,
+    "rotation_wraparound_error": 1.5839868672108433,
+    "rotation_rank": 8,
+    "norm_cv": 0.010335103037058311,
+    "additivity_residual": 1.0418663902251837,
+    "participation_ratio": 3.672674925579671,
+    "circulant_centered": 0.30427486750230026,
+    "permutation": {
+      "canonical": 0.14409747008200258,
+      "perm_mean": 0.1105461058445821,
+      "perm_std": 0.007482605610481027,
+      "perm_max": 0.137287987750757,
+      "percentile": 100.0,
+      "z": 4.483914559177681,
+      "n_perm": 200
+    },
+    "separation_profile": {
+      "1": 2.284891077106572,
+      "2": 2.138381359901706,
+      "3": 2.9593376085242804,
+      "4": 2.7996876277617035,
+      "5": 3.375295794397628,
+      "6": 3.31928506839688,
+      "7": 4.110499614023581,
+      "8": 3.8971385002211356,
+      "9": 4.7351573395334885,
+      "10": 4.5355498359030175
+    },
+    "separation_counts": {
+      "1": 20,
+      "2": 18,
+      "3": 16,
+      "4": 14,
+      "5": 12,
+      "6": 10,
+      "7": 8,
+      "8": 6,
+      "9": 4,
+      "10": 2
+    }
+  },
+  "hendel/months n=11 (ordered, cyclic)": {
+    "circulant_score": 0.10895893487556718,
+    "toeplitz_score": 0.2016463265594175,
+    "spectral_concentration": 0.8225516740160853,
+    "significant_frequencies": [
+      1
+    ],
+    "closure_ratio": 1.9951060713507187,
+    "rotation_residual": 0.5581651503239208,
+    "rotation_order_error": 0.9154912250993068,
+    "rotation_wraparound_error": 1.2697543817038262,
+    "rotation_rank": 6,
+    "norm_cv": 0.0076306429879572655,
+    "additivity_residual": 1.2092012495614923,
+    "participation_ratio": 3.0180034026972047,
+    "circulant_centered": 0.3277964213712332,
+    "permutation": {
+      "canonical": 0.10895893487556718,
+      "perm_mean": 0.0663978382251882,
+      "perm_std": 0.0047651102724441076,
+      "perm_max": 0.08433456987541532,
+      "percentile": 100.0,
+      "z": 8.931817779014095,
+      "n_perm": 200
+    },
+    "separation_profile": {
+      "1": 2.2591051879699684,
+      "2": 2.745861348913646,
+      "3": 3.780478669861013,
+      "4": 3.974702244771423,
+      "5": 4.3848597373175675,
+      "6": 4.252199583768411
+    },
+    "separation_counts": {
+      "1": 20,
+      "2": 20,
+      "3": 20,
+      "4": 20,
+      "5": 20,
+      "6": 10
+    }
+  }
+}

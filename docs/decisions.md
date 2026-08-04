@@ -1305,6 +1305,115 @@ separated with no wraparound.
 The comparison is **exploratory** throughout. It cannot upgrade or downgrade the D24
 confirmatory cells; it can only qualify how the permutation-null evidence is described.
 
+### D29. Forced-choice token collisions — a scoring bug found while building add-k
+
+Building the add-k family surfaced a tokenizer problem that also affected an artifact
+already committed.
+
+**Llama-3 tokenizes `" 15"` as `[" ", "15"]`** — a bare space token followed by the
+number. Since `first_token_id` scored the leading-space form, every numeric candidate
+shared the same first token and the forced choice would have been completely
+degenerate. add-k therefore puts the space in the prompt (`"Q: 10\nA: "`) and scores
+the bare number; `first_token_id` takes a `prefix` argument for this. The behavioural
+pilot path was never affected — `backends.py` teacher-forces multi-token candidates, so
+the shared space token cancels in the argmax.
+
+**Checking every family for the same defect found three collisions in the
+unrelated-tasks control**, which was already extracted and committed:
+
+| task | colliding candidates | shared first token |
+|---|---|---|
+| comparative | `bolder` / `briefer` | `" b"` |
+| currency | `rial` / `rupiah` | `" r"` |
+| currency | `kuna` / `kip` | `" k"` |
+
+Those pairs were indistinguishable to the scorer, so the affected tasks' efficacy
+numbers were computed over a candidate set two entries smaller than it appeared.
+Replaced with `quicker`, `gourde` and `afghani`; all twelve tasks now have fully
+distinct first tokens (23/23 for currency, previously 21/23).
+
+**Consequence: the committed null-control artifacts are stale.** Two of twelve word
+lists changed, so `results/pilot/gate_unrelated_s16/` and
+`results/fv/ctl_unrelated_12tasks/` can no longer be regenerated from the code —
+`tests/test_extract.py::test_recorded_prompt_hashes_reproduce` fails on them, which is
+the determinism guarantee prereg §5 requires working as intended.
+
+They are **removed and re-run**, not kept. An artifact that cannot be reproduced from
+the committed code is not evidence, and carrying it alongside reproducible ones invites
+exactly the confusion the SHA-256 check exists to prevent. The originals remain in git
+history at `0bad1ba` for anyone auditing this decision.
+
+The D23 verdict is expected to survive — the change touches 3 candidate words out of
+276 pairs — but it is **re-derived from the new artifacts rather than assumed**, and
+§1 of `docs/stage2_findings.md` is recomputed from the re-run.
+
+### D30. Calibration outcome: the ordering evidence does NOT establish cyclicity
+
+D28 pre-stated three possible outcomes. **The non-discriminating one occurred**, and
+its registered consequence is applied: every claim resting on the ordering evidence is
+weakened from *cyclic* to *ordered*.
+
+#### Three real-model references, same diagnostics
+
+| family | ordering | `circulant` | `circulant` centered | permutation z |
+|---|---|---|---|---|
+| unrelated tasks | none | 0.190 / 0.253 | 0.412 / 0.331 | **+0.17 / −0.54** |
+| **add-k** | **ordered, NOT cyclic** | **0.285 / 0.144** | 0.448 / 0.304 | **+7.44 / +4.48** |
+| months n=11 | ordered *and* cyclic | 0.137 / 0.109 | 0.312 / 0.328 | **+7.89 / +8.93** |
+
+(Todd / Hendel. add-k passed both gates: behavioural GO at 1.000 for every k,
+task-encoding lift +0.826.)
+
+#### Two things this settles
+
+**1. Permutation z measures ordering, not cyclicity.** add-k is *definitionally*
+non-cyclic — its first and last parameter values are maximally separated with nothing
+identifying them — and it scores z = +7.44 against months' +7.89. The statistic cannot
+tell them apart. D25 §2 registered the permutation null as "a direct A-vs-D
+discriminator", and it is: it cleanly separates ordered families (z ≈ +4 to +9) from
+the unordered null (z ≈ 0), which rules out the simplex/lookup reading. But it says
+nothing about *cyclic* structure, and `docs/stage2_findings.md` §2 said it did.
+
+**2. `circulant_score` does not rank the families by cyclicity either.** add-k, which
+has no cycle at all, scores **0.285** against months' **0.137** under Todd. The
+non-cyclic family scores higher than the cyclic one. Together with the null control at
+0.190 — also above months — the raw circulant score orders these three families in a
+way unrelated to whether they have a cycle.
+
+#### The pre-stated discriminator did not work, and is not replaced post hoc
+
+D28 predicted months would dip at the antipode while add-k rose to its end. Months does
+dip (5.11 → 4.89 Todd, 4.39 → 4.25 Hendel). But add-k *also* turns down at its largest
+separation — and that bin holds **2 pairs** out of 110, so it is not read. The
+unrelated control turns down too, on a profile that is flat throughout (0.92–1.00). The
+"turn at the end" appears in all three and discriminates nothing.
+
+The profiles do differ in other ways — months rises to 1.86× by separation 5 where
+add-k reaches only 1.48×, and add-k shows an odd/even sawtooth months lacks. **These
+were not pre-registered and are not adopted as discriminators.** They are recorded as
+observations for a future study that can register them in advance.
+
+#### Consequence, applied
+
+`docs/stage2_findings.md` §2 is amended: "the cyclic parameter ordering is doing work"
+becomes "the parameter ordering is doing work", and the summary describes **ordered**
+rather than cyclic structure. What the run supports is:
+
+> The months FVs form a low-dimensional, constant-norm, **ordered** family whose
+> internal distances grow with parameter separation — not a simplex, not a linear
+> code, and **not shown to be cyclic**.
+
+The wraparound quarantine already prevented the one claim that would have been
+specifically cyclic. This entry removes the remaining implicit ones.
+
+#### What would settle it
+
+A diagnostic validated to separate cyclic from ordered on real FVs. The obvious
+candidate is the antipodal-dip magnitude, measured on a family with enough pairs in the
+largest-separation bin — which needs n ≥ 16 or so, i.e. ROT-k on Z/26. That is the
+question the deferred ROT-k family would actually answer, and it is a better reason to
+run it than the one previously recorded.
+
 ---
 
 ## Conventions

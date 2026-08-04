@@ -68,11 +68,13 @@ the primary **0.091** — the primary is *lower* than the negative control. Read
 shift-by-k. Every structural claim below rests on the permutation null, not on this
 number.
 
-- **The ordering carries real structure.** The permutation null (D25 §2, registered
-  before computing) puts the canonical k-ordering at z = +8.48 / +7.52, percentile 100,
-  against a null control at z = +0.21 / −0.53. A permutation-invariant simplex cannot
-  produce this. This — not the circulant score — is what says the cyclic parameter
-  ordering is doing work.
+- **The ordering carries real structure — but only *ordering*, not cyclicity.** The
+  permutation null (D25 §2, registered before computing) puts the canonical k-ordering
+  at z = +8.48 / +7.52, percentile 100, against a null control at z = +0.21 / −0.53.
+  A permutation-invariant simplex cannot produce this, so the simplex/lookup reading is
+  ruled out. **It does not show the structure is cyclic**: the add-k calibration family
+  (§7), which is definitionally non-cyclic, scores z = +7.44 on the same statistic. See
+  D30 — every claim here is about an *ordered* family, not a cyclic one.
 - **FV(0) is an outlier, and the other eleven form a tight cluster.** Distances from
   FV(0) to each FV(k) run **7.61–8.62** (mean 8.03), while the mean pairwise distance
   *among the other eleven* is **4.12**, maximum 7.28. FV(0) sits roughly twice as far
@@ -101,8 +103,9 @@ number.
 - **It is low-dimensional**: PR 3.1–3.6, i.e. ~3 effective dimensions, not 12.
 
 Together: **one displaced identity vector plus a low-dimensional, constant-norm cluster
-whose internal distances grow with cyclic separation**, and which is neither circulant
-nor Toeplitz.
+whose internal distances grow with parameter separation**, and which is neither
+circulant nor Toeplitz. Whether that separation is best described cyclically is **not
+established** — see §7.
 
 ### Wraparound: quarantined, not concluded
 
@@ -219,7 +222,40 @@ way. **Control passes.**
 
 ---
 
-## 6. What cannot be concluded
+## 7. Calibration: the diagnostics do not separate cyclic from ordered (D28/D30)
+
+add-k on small integers — ordered, definitionally **not** cyclic, both gates passed
+(behavioural GO at 1.000 every k; task-encoding lift +0.826) — supplies the reference
+the run was missing.
+
+| family | ordering | `circulant` | permutation z |
+|---|---|---|---|
+| unrelated tasks | none | 0.190 / 0.253 | **+0.17 / −0.54** |
+| **add-k** | **ordered, NOT cyclic** | **0.285 / 0.144** | **+7.44 / +4.48** |
+| months n=11 | ordered *and* cyclic | 0.137 / 0.109 | **+7.89 / +8.93** |
+
+**Permutation z cannot tell cyclic from merely ordered**: add-k reaches +7.44 against
+months' +7.89. It does cleanly separate both from the unordered null at z ≈ 0, which is
+what licenses rejecting the simplex/lookup reading — and nothing more.
+
+**`circulant_score` does not rank these families by cyclicity either.** add-k, with no
+cycle at all, scores 0.285 against months' 0.137; the null control scores 0.190, also
+above months. The ordering of the three by circulant score is unrelated to whether they
+have a cycle.
+
+The D28 discriminator — an antipodal dip in months absent from add-k — did not work.
+Months does dip (5.11 → 4.89), but add-k turns down at its largest separation too, on a
+bin holding **2 pairs of 110**, and the flat null control turns down as well. Per D28
+the non-discriminating outcome applies and the language throughout this document is
+*ordered*, not *cyclic*.
+
+Settling it needs a diagnostic validated to separate the two on real FVs — plausibly
+the antipodal-dip magnitude on a family with enough pairs in the largest-separation
+bin, which means n ≥ 16, i.e. ROT-k on Z/26.
+
+---
+
+## 8. What cannot be concluded
 
 Carried forward from D24, unchanged by these results:
 
@@ -231,6 +267,11 @@ Carried forward from D24, unchanged by these results:
   open curve (closure 2.4), and the only evidence that these diagnostics separate open
   from closed comes from synthetic fixtures.
 - **One model, one family, one prompt format.** D7 defers format variation to stage 3.
-- The result is **not** a null result. It is a positive finding of ordering-dependent,
+- **No cyclic claim.** §7 shows the run's ordering evidence does not distinguish cyclic
+  from merely ordered structure. The BRIEF's central question — does a cyclically
+  structured task family yield cyclically structured task representations — is **not
+  answered** by this run. What is answered: the representations are not circular in the
+  registered sense (circulant fails everywhere), not a simplex, and not linear.
+- The result is **not** a null result. It is a positive finding of order-dependent,
   low-dimensional, non-circulant structure that the pre-registration did not
   anticipate, which is a different thing from "no structure".

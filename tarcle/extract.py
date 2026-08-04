@@ -184,10 +184,17 @@ def encode(tok, prompts: list[str], device: str) -> dict:
     return enc
 
 
-def first_token_id(tok, word: str) -> int:
+def first_token_id(tok, word: str, prefix: str = " ") -> int:
     """Targets are scored as continuations of '...A:', hence the leading space.
-    AIE uses the first target token (Todd et al. score the answer token)."""
-    return tok.encode(" " + word, add_special_tokens=False)[0]
+    AIE uses the first target token (Todd et al. score the answer token).
+
+    `prefix` exists because the leading space is not always part of the first
+    content token. Llama-3 tokenizes ' 15' as [' ', '15'] — a bare space then the
+    number — so for numeric candidates every choice would share the first token
+    ' ' and the forced choice would be degenerate. Those families put the space
+    in the prompt instead and pass prefix='' so the number token is scored.
+    """
+    return tok.encode(prefix + word, add_special_tokens=False)[0]
 
 
 # --------------------------------------------------------------------------

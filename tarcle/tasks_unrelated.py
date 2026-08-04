@@ -54,7 +54,10 @@ UNRELATED_TASKS: dict[str, list[tuple[str, str]]] = {
         ("kind", "kinder"), ("smart", "smarter"), ("safe", "safer"),
         ("mild", "milder"), ("crisp", "crisper"), ("harsh", "harsher"),
         ("fierce", "fiercer"), ("humble", "humbler"), ("gentle", "gentler"),
-        ("plain", "plainer"), ("brief", "briefer"), ("keen", "keener"),
+        # "brief"/"briefer" replaced: it shared a first token with "bolder",
+        # which would make two candidates indistinguishable under first-token
+        # forced-choice scoring.
+        ("plain", "plainer"), ("quick", "quicker"), ("keen", "keener"),
         ("dense", "denser"), ("rude", "ruder"), ("fine", "finer"),
         ("tough", "tougher"), ("neat", "neater"), ("shy", "shyer"),
     ],
@@ -63,11 +66,14 @@ UNRELATED_TASKS: dict[str, list[tuple[str, str]]] = {
         ("India", "rupee"), ("Mexico", "peso"), ("Israel", "shekel"),
         ("Vietnam", "dong"), ("Thailand", "baht"), ("Korea", "won"),
         ("Ghana", "cedi"), ("Nigeria", "naira"), ("Ethiopia", "birr"),
-        ("Brazil", "real"), ("Iran", "rial"), ("Ukraine", "hryvnia"),
+        # "rial" and "kip" replaced: they shared first tokens with "rupiah" and
+        # "kuna" respectively, making those candidates indistinguishable under
+        # first-token forced-choice scoring.
+        ("Brazil", "real"), ("Haiti", "gourde"), ("Ukraine", "hryvnia"),
         ("Czechia", "koruna"), ("Bulgaria", "lev"), ("Croatia", "kuna"),
         ("Malaysia", "ringgit"), ("Indonesia", "rupiah"), ("Bangladesh", "taka"),
         ("Romania", "leu"), ("Serbia", "dinar"), ("Kazakhstan", "tenge"),
-        ("Mongolia", "tugrik"), ("Laos", "kip"), ("Argentina", "peso"),
+        ("Mongolia", "tugrik"), ("Afghanistan", "afghani"), ("Argentina", "peso"),
     ],
     "english_french": [
         ("dog", "chien"), ("cat", "chat"), ("house", "maison"),

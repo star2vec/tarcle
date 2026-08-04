@@ -1,0 +1,112 @@
+{
+  "model": "meta-llama/Llama-3.2-3B",
+  "gate": {
+    "verdict": "GO",
+    "variant": "addk",
+    "per_k": {
+      "1": 1.0,
+      "2": 1.0,
+      "3": 1.0,
+      "4": 1.0,
+      "5": 1.0,
+      "6": 1.0,
+      "7": 1.0,
+      "8": 1.0,
+      "9": 1.0,
+      "10": 1.0,
+      "11": 1.0
+    },
+    "below_go": [],
+    "at_floor": []
+  },
+  "table": [
+    {
+      "variant": "addk",
+      "k": 1,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 2,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 3,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 4,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 5,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 6,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 7,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 8,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 9,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 10,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    },
+    {
+      "variant": "addk",
+      "k": 11,
+      "stratum": "heldout",
+      "domain": "all",
+      "n": 100,
+      "accuracy": 1.0
+    }
+  ]
+}

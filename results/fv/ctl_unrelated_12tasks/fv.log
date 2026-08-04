@@ -5,8 +5,8 @@ head set from results\fv\months_llama32_3b_ada\heads.npz (sha256 fe723a181871): 
 persisting per-head contributions for 36 union cells
   k= 0  todd |FV|    5.158   hendel |FV| (all layers)   17.304
   k= 1  todd |FV|    5.220   hendel |FV| (all layers)   16.745
-  k= 2  todd |FV|    7.715   hendel |FV| (all layers)   16.120
-  k= 3  todd |FV|    5.465   hendel |FV| (all layers)   16.835
+  k= 2  todd |FV|    7.786   hendel |FV| (all layers)   16.141
+  k= 3  todd |FV|    5.430   hendel |FV| (all layers)   16.777
   k= 4  todd |FV|    5.023   hendel |FV| (all layers)   16.299
   k= 5  todd |FV|    6.828   hendel |FV| (all layers)   15.959
   k= 6  todd |FV|    4.628   hendel |FV| (all layers)   16.636
@@ -17,7 +17,7 @@ persisting per-head contributions for 36 union cells
   k=11  todd |FV|    6.862   hendel |FV| (all layers)   16.922
 
 injection-layer sweep (on the head-ID k subset, then frozen):
-  zero-shot baseline acc per k: {0: 1.0, 1: 1.0, 2: 0.792, 3: 0.042, 4: 0.083, 5: 0.042, 6: 0.667, 7: 0.958, 8: 0.208, 9: 0.792, 10: 0.958, 11: 0.958}
+  zero-shot baseline acc per k: {0: 1.0, 1: 1.0, 2: 0.833, 3: 0.042, 4: 0.083, 5: 0.042, 6: 0.667, 7: 0.958, 8: 0.208, 9: 0.792, 10: 0.958, 11: 0.958}
   injection protocol PINNED (not re-swept): {'todd': {'layer': 8, 'scale': 3.0}, 'hendel': {'layer': 15, 'scale': 1.0}}
-wrote results\fv\ctl_unrelated_12tasks\fv_unrelated_todd.npz (sha256 e1d613620d25)
-wrote results\fv\ctl_unrelated_12tasks\fv_unrelated_hendel.npz (sha256 adab8248fafc)
+wrote results\fv\ctl_unrelated_12tasks\fv_unrelated_todd.npz (sha256 9de667d8b3fd)
+wrote results\fv\ctl_unrelated_12tasks\fv_unrelated_hendel.npz (sha256 d913b2704b7c)

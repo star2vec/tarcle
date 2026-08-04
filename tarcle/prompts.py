@@ -265,6 +265,57 @@ def make_unrelated_prompt_set(
     return items
 
 
+# add-k calibration family (D28). Twelve queries, so n and the 1/12 chance level
+# match months exactly and every threshold transfers. Demonstrations are drawn
+# from a disjoint higher range, which makes the held-out condition automatic and
+# forces the rule to generalise across ranges rather than be memorised.
+ADDK_QUERIES: list[int] = list(range(10, 22))
+ADDK_DEMO_POOL: list[int] = list(range(30, 80))
+
+
+def addk_choices(k: int) -> list[str]:
+    """The twelve possible answers at this k: one per query, so the forced choice
+    is 12-wide and chance is 1/12, exactly as for the months cycle."""
+    return [str(q + k) for q in ADDK_QUERIES]
+
+
+def make_addk_prompt_set(
+    k: int, n: int, shots: int, seed: int, stratum: str = "heldout"
+) -> list[PromptItem]:
+    """add-k on small integers: ordered, and genuinely NOT cyclic.
+
+    The calibration reference the run lacks (D28). The ordering is real —
+    10 < 11 < … — but the first and last parameter values are maximally
+    separated with no wraparound identifying them, so a diagnostic that scores
+    this the same as months is measuring ordering rather than cyclicity.
+    """
+    rng = random.Random(child_seed(seed, f"addk|{stratum}", k))
+    choices = addk_choices(k)
+    items: list[PromptItem] = []
+    for _ in range(n):
+        query = rng.choice(ADDK_QUERIES)
+        drawn = (
+            rng.sample(ADDK_DEMO_POOL, shots) if shots <= len(ADDK_DEMO_POOL)
+            else [rng.choice(ADDK_DEMO_POOL) for _ in range(shots)]
+        )
+        items.append(
+            PromptItem(
+                prompt=render_prompt(
+                    [("addk", str(a), str(a + k)) for a in drawn], str(query)
+                ),
+                target=str(query + k),
+                variant="addk",
+                k=k,
+                domain="addk",
+                query=str(query),
+                query_in_demos=False,
+                choices=choices,
+                demos=[[("addk"), str(a), str(a + k)] for a in drawn],
+            )
+        )
+    return items
+
+
 def build_prompt_set(
     variant: str, k: int, n: int, shots: int, seed: int, **kwargs
 ) -> list[PromptItem]:
@@ -284,6 +335,10 @@ def build_prompt_set(
         )
     if variant == "unrelated":
         return make_unrelated_prompt_set(
+            k, n, shots, seed, stratum=kwargs.get("stratum", "heldout")
+        )
+    if variant == "addk":
+        return make_addk_prompt_set(
             k, n, shots, seed, stratum=kwargs.get("stratum", "heldout")
         )
     return make_prompt_set(variant, k, n, shots, seed, **kwargs)

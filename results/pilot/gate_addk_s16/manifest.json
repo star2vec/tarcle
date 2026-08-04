@@ -1,15 +1,14 @@
 {
   "config": {
-    "run_name": "gate_unrelated_s16",
+    "run_name": "gate_addk_s16",
     "model": "meta-llama/Llama-3.2-3B",
     "backend": "local_hf",
     "device": "cuda",
     "dtype": "bfloat16",
     "variants": [
-      "unrelated"
+      "addk"
     ],
     "ks": [
-      0,
       1,
       2,
       3,
@@ -34,10 +33,10 @@
     "query_domain": "",
     "list_len": 12
   },
-  "config_sha256": "a6577f8d03e4e5f7192c4ffce1e8e6c410d257578d1489c7024a1f037faad132",
-  "prompts_sha256": "641932338cf22591e08d9155c86ecf95c011d89b10bc19ca8c8638748b6f05a6",
+  "config_sha256": "e655e6277dc5e1586d0b4258570c4d16647c202135919abf9a31e77d3980154d",
+  "prompts_sha256": "5d04f1321a8730c02c8385b01aa081a3ac7e1fdb246934eec671c53fb06243a0",
   "git_commit": "e0c98ab4676266c676a4ec6f1c14221b5156aec8",
-  "timestamp_utc": "2026-08-04T09:36:33.262427+00:00",
+  "timestamp_utc": "2026-08-04T09:50:39.095772+00:00",
   "python": "3.12.13",
   "platform": "Windows-11-10.0.26200-SP0",
   "versions": {
