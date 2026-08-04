@@ -1237,6 +1237,74 @@ of the norm"* — not "the FVs are circular". The offset is part of the vector t
 actually gets injected and steers the model; a claim about task-space geometry that
 holds only after removing 80% of the vector must say so in those words.
 
+### D28. add-k calibration family — purpose and predictions, fixed before extraction
+
+**Registered before the add-k prompts are generated.** The predictions in §3 are
+committed here so they cannot be fitted to the result.
+
+#### Purpose — calibration, not open-vs-closed
+
+The ordinal control was intended as the *shape* control and is blocked (D23). add-k is
+**not** a replacement for it and the earlier framing of it as an "open-vs-closed
+substitute" is withdrawn: §2 of `docs/stage2_findings.md` no longer describes the
+months result as an open curve, so there is no open-vs-closed claim left for it to
+adjudicate.
+
+What add-k actually provides is a **calibration point the run currently lacks**. The
+diagnostics have exactly two real-model reference readings:
+
+| reference | ordering | permutation z | circulant |
+|---|---|---|---|
+| unrelated tasks (null) | none — arbitrary labels | +0.21 / −0.53 | 0.193 / 0.253 |
+| months Z/12 | cyclic | +8.48 / +7.52 | 0.091 / 0.113 |
+
+There is **no real-model reading for an ordered, non-cyclic parameter**. Without one,
+"permutation z = +8.5 means cyclic structure" is unsupported: any monotone ordering
+would also beat random permutations, so z alone cannot distinguish *cyclic* from merely
+*ordered*. add-k on small integers supplies that missing third reading.
+
+#### Design — same n, same format, k=0 excluded
+
+`Q: <integer>\nA: <integer + k>` over a fixed integer operand pool, same prompt format,
+same shot count, same n as months so every threshold transfers unchanged.
+
+**k = 0 is excluded**, for the reason D3 excludes it from head identification and §2
+of the findings now documents empirically: identity is solvable by the copy prior, and
+in months FV(0) is an outlier at ~2× the family's internal distance scale. Including it
+would plant the same degenerate point in the calibration family and make the comparison
+about that point rather than about ordering. add-k therefore runs k = 1..n over a
+non-cyclic range, and the months comparison is drawn against the **n=11 drop-k=0**
+column, not the full n=12.
+
+Both gates apply per D20 §3: a behavioural pre-gate on this exact condition, and the
+task-encoding gate. add-k has no ±1 attractor analogue defined a priori, so the
+task-encoding gate takes the non-cyclic form — lift over the zero-shot baseline.
+
+#### What would show the diagnostics discriminate — fixed now
+
+add-k is genuinely ordered and genuinely **non**-cyclic: 1 and n are maximally
+separated with no wraparound.
+
+- **Discriminating outcome.** add-k shows high permutation z (ordered) but a
+  *materially different* profile from months on the cyclic-specific diagnostics —
+  circulant score, and the |m| distance profile computed under wraparound
+  identification. Concretely: months' |m| profile is non-monotone at the antipode
+  (|m|=6 dips below |m|=5: 5.11 → 4.89), which is what wraparound identification
+  produces; add-k's should be **monotone through to the largest separation** with no
+  antipodal dip, because there is no antipode. If that holds, the diagnostics separate
+  cyclic from merely-ordered on real FVs, and months' cyclic reading is supported.
+- **Non-discriminating outcome.** add-k reproduces months' profile closely — similar
+  circulant score, similar permutation z, similar antipodal dip. Then permutation z and
+  the |m| profile measure *ordering* and nothing more, months' structure is not shown
+  to be specifically cyclic, and every ordering-based claim in §2 of the findings must
+  be weakened to "ordered" wherever it currently says "cyclic".
+- **Uninformative outcome.** add-k fails either gate, in which case it is reported
+  blocked and no calibration is obtained — the same fate as the ordinal control, and
+  the run keeps the two-reference limitation stated explicitly.
+
+The comparison is **exploratory** throughout. It cannot upgrade or downgrade the D24
+confirmatory cells; it can only qualify how the permutation-null evidence is described.
+
 ---
 
 ## Conventions

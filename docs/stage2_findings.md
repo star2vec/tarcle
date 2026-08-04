@@ -62,23 +62,75 @@ alternatives.**
 
 ### What the numbers do say
 
+**The raw circulant score is not the evidence.** The null control scores **0.193** and
+the primary **0.091** — the primary is *lower* than the negative control. Read alone,
+`circulant_score` would rank twelve unrelated tasks as more cyclically structured than
+shift-by-k. Every structural claim below rests on the permutation null, not on this
+number.
+
 - **The ordering carries real structure.** The permutation null (D25 §2, registered
-  before computing) puts the canonical k-ordering at z ≈ +8, percentile 100, in both
-  methods. A simplex is permutation-invariant and cannot produce this. Whatever the
-  FVs trace, the cyclic parameter ordering is doing work.
+  before computing) puts the canonical k-ordering at z = +8.48 / +7.52, percentile 100,
+  against a null control at z = +0.21 / −0.53. A permutation-invariant simplex cannot
+  produce this. This — not the circulant score — is what says the cyclic parameter
+  ordering is doing work.
+- **FV(0) is an outlier, and the other eleven form a tight cluster.** Distances from
+  FV(0) to each FV(k) run **7.61–8.62** (mean 8.03), while the mean pairwise distance
+  *among the other eleven* is **4.12**, maximum 7.28. FV(0) sits roughly twice as far
+  from the family as its members sit from each other. This is the shape: not a curve
+  with two ends, but one displaced point plus a cluster.
+- **Within the eleven, distance grows monotonically with cyclic separation**
+  |m| = min(m, 12−m):
+
+  | \|m\| | 1 | 2 | 3 | 4 | 5 | 6 |
+  |---|---|---|---|---|---|---|
+  | Todd | 2.75 | 3.26 | 4.49 | 4.61 | 5.11 | 4.89 |
+  | Hendel | 2.26 | 2.75 | 3.78 | 3.98 | 4.39 | 4.25 |
+  | null control | 6.62 | 6.64 | 6.06 | 6.49 | 6.65 | 6.09 |
+
+  Monotone through |m|=5 with a dip at the antipode, against a **flat** null-control
+  profile. Nearby shifts have more similar function vectors; distant ones less so.
+
+  *Not* a finding: that this profile is symmetric in ±m. A Euclidean distance matrix
+  is symmetric, so pairs at separation +m are the transpose of those at −m and their
+  means are equal **by construction** (measured: |difference| = 0.000 at every m). The
+  statistic is therefore blind to the forward/backward asymmetry the pilot found in
+  accuracy (§2 of `pilot_findings.md`), and can neither corroborate nor contradict it.
+
 - **Norms are near-constant** (cv 0.01–0.05) and **additivity fails** (1.15). Both cut
   against a linear code: prereg §2's B requires cv ≥ 0.40 and additivity ≤ 0.25.
-- **The curve does not close.** `closure_ratio` 2.4 against A's requirement of ≤ 1.5,
-  and rotation `wraparound_error` 1.5–1.7 against ≤ 1.0. Hypothesis A's central
-  prediction — FV(n) ≈ FV(0) — **fails**.
 - **It is low-dimensional**: PR 3.1–3.6, i.e. ~3 effective dimensions, not 12.
 
-Together: a **low-dimensional, constant-norm, ordering-dependent open curve** that is
-neither circulant nor Toeplitz.
+Together: **one displaced identity vector plus a low-dimensional, constant-norm cluster
+whose internal distances grow with cyclic separation**, and which is neither circulant
+nor Toeplitz.
+
+### Wraparound: quarantined, not concluded
+
+`closure_ratio` is ‖X[n−1] − X[0]‖ over the mean step, and
+`rotation_wraparound_error` is the error of the fitted rotation on the pair
+X[n−1] → X[0]. **Both are computed from pairs containing FV(0)** — the vector D2
+declared uninterpretable, because the zero-shot baseline is at ceiling for the identity
+task, and which the distances above show to be an outlier at ~2× the family's internal
+scale. A statement that "the loop does not close" resting on these numbers would be
+resting on the one point the run already agreed not to interpret.
+
+Exploratory, alongside the registered k=8 leave-one-out:
+
+| variant | circulant (raw / centered) | closure | wrap_err | PR |
+|---|---|---|---|---|
+| full n=12 | 0.091 / 0.298 | 2.42 | 1.54 | 3.64 |
+| n=11, drop **k=8** (registered, prereg §4) | 0.104 / 0.320 | 2.29 | 1.40 | 3.64 |
+| n=11, drop **k=0** (exploratory) | 0.137 / 0.312 | 2.02 | 1.28 | 3.21 |
+| n=10, drop k=0 and k=8 (exploratory) | 0.158 / 0.345 | 1.91 | 1.20 | 3.20 |
+
+Removing FV(0) moves closure 2.42 → 2.02 and wraparound error 1.54 → 1.28, both toward
+but not past A's thresholds (≤1.5 and ≤1.0). **No claim about FV(n) ≈ FV(0) is made
+from these numbers in either direction.** The "not circulant" verdict is unaffected —
+it survives every exclusion, raw and centered.
 
 ---
 
-## 3. Robustness — every condition agrees
+## 3. Robustness — eleven of twelve cells agree, and the exception matters
 
 `circulant_score` / `closure_ratio` / PR, raw Gram:
 
@@ -91,9 +143,34 @@ neither circulant nor Toeplitz.
 | head set: intersection-8 | 0.102 / 2.46 / 3.82 | — |
 | leave-one-out n=11, no k=8 | 0.104 / 2.29 / 3.64 | 0.135 / 2.35 / 3.11 |
 
-- **Both extraction methods agree** on the bucket, which is not something this project
-  could assume — CLAUDE.md rule 1 exists because they often disagree, and on causal
-  efficacy they did (Todd steers at every k, Hendel only at k ∈ {1,2,11}).
+### The exception: mixed-domain under Hendel
+
+`mixed_daysmonths / hendel` is the **only cell in the matrix without significant order
+structure**: permutation z = **+1.32** (against +7.4 to +9.7 everywhere else) and
+PR = **1.94** (against 3.1–3.8). Its dominant frequency is f=2 rather than f=1, unlike
+every other cell.
+
+This is not a footnote, because of *where* it sits. The mixed-domain condition is the
+one that carries the BRIEF §6 operand-inheritance control — the demonstrations span two
+cycles of different length and so cannot inherit a single operand circle. Under Todd
+that condition retains order structure (z = +7.36) and the inheritance argument goes
+through; under Hendel it does not. **The one cell that fails to show ordering structure
+is the one whose job is to show that the ordering structure is not inherited from
+operand geometry.**
+
+Two readings, neither adopted: Hendel's dummy-query state may be the weaker extraction
+here — consistent with D12, where its FVs steer at only k ∈ {1,2,11} even at their own
+optimal layer and scale — or the order structure in the other conditions may be partly
+operand-inherited in a way that only the mixed condition exposes and only the more
+fragile extraction is sensitive to. Distinguishing them needs the mixed-domain
+condition re-run under a stronger extraction, which is not available.
+
+### The rest
+
+- **Both extraction methods agree** on the bucket in every condition except the one
+  above, which is not something this project could assume — CLAUDE.md rule 1 exists
+  because they often disagree, and on causal efficacy they did (Todd steers at every k,
+  Hendel only at k ∈ {1,2,11}).
 - **All three head sets agree**, satisfying D16 §2: same bucket, and the spread
   (0.091–0.106) is small. D15's warning that head-set choice moves FVs by more than
   the split-half band is about the *vectors*; it does not move this *verdict*.
@@ -101,10 +178,10 @@ neither circulant nor Toeplitz.
   result be claimed only where both columns agree is met — and the k=8 question does
   not change the geometry.
 - **The polysemy control agrees**, so the result is not carried by May/March/August.
-- **The mixed-domain control agrees**, which is the strongest available answer to the
-  BRIEF §6 operand-inheritance confound: the condition whose demonstrations span two
-  cycles of different length, and so cannot inherit a single operand circle, gives the
-  same geometry.
+- **The mixed-domain control agrees under Todd** (z = +7.36), which is the strongest
+  available answer to the BRIEF §6 operand-inheritance confound — but see the exception
+  above: it does **not** agree under Hendel, and that is the cell where it would matter
+  most.
 
 ---
 
