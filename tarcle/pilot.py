@@ -47,6 +47,7 @@ class PilotConfig:
     query_pool: dict = field(default_factory=dict)
     query_domain: str = ""
     list_len: int = 12  # ordinal family only
+    addk_span: int = 12  # add-k family only; matched to the family being calibrated
 
 
 def load_config(path: Path, overrides: argparse.Namespace) -> PilotConfig:
@@ -89,6 +90,8 @@ def run(config: PilotConfig, backend=None) -> Path:
         extras["query_domain"] = config.query_domain
     if "ordinal" in config.variants:
         extras["list_len"] = config.list_len
+    if "addk" in config.variants:
+        extras["addk_span"] = config.addk_span
     items = [
         item
         for variant in config.variants

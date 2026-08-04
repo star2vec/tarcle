@@ -23,6 +23,11 @@ DOMAINS: dict[str, list[str]] = {
     ],
     "letters": list("abcdefghijklmnopqrstuvwxyz"),
     "digits": [str(d) for d in range(10)],
+    # Hours-of-day Z/24: the second-family candidate (docs/decisions.md D36).
+    # Composite, so the prereg §1 divisor test has real content (divisors 2, 3,
+    # 4, 6, 8, 12 against Z/12's 2, 3, 4, 6), and no hour is corpus-privileged
+    # the way ROT-13 is among shifts.
+    "hours": [str(h) for h in range(24)],
 }
 
 MIXED_DOMAINS = ["days", "months", "letters", "digits"]
@@ -269,18 +274,35 @@ def make_unrelated_prompt_set(
 # match months exactly and every threshold transfers. Demonstrations are drawn
 # from a disjoint higher range, which makes the held-out condition automatic and
 # forces the rule to generalise across ranges rather than be memorised.
-ADDK_QUERIES: list[int] = list(range(10, 22))
-ADDK_DEMO_POOL: list[int] = list(range(30, 80))
+ADDK_SPAN: int = 12  # default number of queries; matched to the family under test
 
 
-def addk_choices(k: int) -> list[str]:
-    """The twelve possible answers at this k: one per query, so the forced choice
-    is 12-wide and chance is 1/12, exactly as for the months cycle."""
-    return [str(q + k) for q in ADDK_QUERIES]
+def addk_queries(span: int = ADDK_SPAN) -> list[int]:
+    return list(range(10, 10 + span))
+
+
+def addk_demo_pool(span: int = ADDK_SPAN) -> list[int]:
+    """Disjoint from the query range, so held-out is automatic and the rule must
+    generalise across ranges rather than be memorised."""
+    # The +8 gap is chosen so span=12 reproduces the original 30..79 pool exactly,
+    # keeping the recorded SHA-256 of the n=12 add-k run valid.
+    lo = 10 + span + 8
+    return list(range(lo, lo + 50))
+
+
+ADDK_QUERIES: list[int] = addk_queries()
+ADDK_DEMO_POOL: list[int] = addk_demo_pool()
+
+
+def addk_choices(k: int, span: int = ADDK_SPAN) -> list[str]:
+    """The `span` possible answers at this k: one per query, so the forced-choice
+    width and hence the chance level match the family being calibrated against."""
+    return [str(q + k) for q in addk_queries(span)]
 
 
 def make_addk_prompt_set(
-    k: int, n: int, shots: int, seed: int, stratum: str = "heldout"
+    k: int, n: int, shots: int, seed: int, stratum: str = "heldout",
+    span: int = ADDK_SPAN,
 ) -> list[PromptItem]:
     """add-k on small integers: ordered, and genuinely NOT cyclic.
 
@@ -289,14 +311,19 @@ def make_addk_prompt_set(
     separated with no wraparound identifying them, so a diagnostic that scores
     this the same as months is measuring ordering rather than cyclicity.
     """
+    # The seed string deliberately omits `span`: the query and demo pools already
+    # differ by span, so the same RNG stream yields different prompts, and
+    # keeping the string unchanged preserves the recorded SHA-256 of the n=12
+    # add-k run (the determinism guarantee of prereg §5).
     rng = random.Random(child_seed(seed, f"addk|{stratum}", k))
-    choices = addk_choices(k)
+    choices = addk_choices(k, span)
+    queries, pool = addk_queries(span), addk_demo_pool(span)
     items: list[PromptItem] = []
     for _ in range(n):
-        query = rng.choice(ADDK_QUERIES)
+        query = rng.choice(queries)
         drawn = (
-            rng.sample(ADDK_DEMO_POOL, shots) if shots <= len(ADDK_DEMO_POOL)
-            else [rng.choice(ADDK_DEMO_POOL) for _ in range(shots)]
+            rng.sample(pool, shots) if shots <= len(pool)
+            else [rng.choice(pool) for _ in range(shots)]
         )
         items.append(
             PromptItem(
@@ -339,7 +366,8 @@ def build_prompt_set(
         )
     if variant == "addk":
         return make_addk_prompt_set(
-            k, n, shots, seed, stratum=kwargs.get("stratum", "heldout")
+            k, n, shots, seed, stratum=kwargs.get("stratum", "heldout"),
+            span=kwargs.get("addk_span", ADDK_SPAN),
         )
     return make_prompt_set(variant, k, n, shots, seed, **kwargs)
 

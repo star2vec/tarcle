@@ -283,6 +283,16 @@ add-k where the true seam is at the endpoint — so the contest answers *whether
 reliably and *where* unreliably. The D31 "seam at k=0" model (cut@0 ≡ cut@1) places
 second at 0.171 / 0.182.
 
+One location *is* excluded, and it carries a result (D34). The signed-magnitude model —
+distance a function of |m| = min(k, 12−k) with direction discarded — predicts k=6 and
+k=7 far apart across the seam; they are measured at 0.39× / 0.35× the mean distance,
+second and third closest of the ten separation-1 pairs, with (5,7) at 0.26× / 0.25× and
+(6,8) at 0.41× / 0.39×. It also predicts (1,11) close, and that pair is 1.35× / 1.29×.
+Both predictions fail, so: **the function-vector family is ordered by raw forward k, not
+by signed shift — the signed representation the model uses behaviourally
+(`pilot_findings.md` §2, where accuracy depends on ±m and errors are sign flips) is not
+the representation carried in the vector.**
+
 This moves the months family from "cyclicity not established" (§7) to **cyclicity
 positively disconfirmed in full-vector distances**: not merely that the diagnostics
 cannot see a cycle, but that the pairs a cycle requires to be close are measurably far

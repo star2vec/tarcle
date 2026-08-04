@@ -315,8 +315,12 @@ def test_recorded_prompt_hashes_reproduce():
     import json
     from pathlib import Path
 
-    runs = sorted(Path("results/pilot").iterdir())
-    assert runs, "no recorded pilot runs to check"
+    # A run writes prompts.jsonl first and manifest.json last, so a directory
+    # without a manifest belongs to a run still in progress and has nothing to
+    # check against yet.
+    runs = [r for r in sorted(Path("results/pilot").iterdir())
+            if (r / "manifest.json").exists()]
+    assert runs, "no completed pilot runs to check"
     for run in runs:
         manifest = json.loads((run / "manifest.json").read_text())
         cfg = manifest["config"]
