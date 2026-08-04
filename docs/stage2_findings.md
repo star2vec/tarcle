@@ -284,10 +284,20 @@ reliably and *where* unreliably. The D31 "seam at k=0" model (cut@0 ≡ cut@1) p
 second at 0.171 / 0.182.
 
 This moves the months family from "cyclicity not established" (§7) to **cyclicity
-positively disconfirmed**: not merely that the diagnostics cannot see a cycle, but that
-the pairs a cycle requires to be close are measurably far. It is exploratory — D31 is
-post-hoc relative to §7's binned profiles — and the confirmatory version belongs to the
-next family.
+positively disconfirmed in full-vector distances**: not merely that the diagnostics
+cannot see a cycle, but that the pairs a cycle requires to be close are measurably far
+*in the full-dimensional distance between function vectors*.
+
+The scope qualifier is not hedging. Every statistic here — pairwise distance, isotonic
+fit, the fold-back table — is computed on whole vectors, and a circular component
+carrying a small share of the variance while riding a dominant non-circular axis would
+leave all of them looking exactly as they do. That geometry (an open helix, absent from
+the prereg §0 calibration battery, which contains only *closed* helices and a plain
+line) is the subject of a registered check, D33. Until it runs, "disconfirmed" means
+*as a description of the whole vector*.
+
+Exploratory — D31 is post-hoc relative to §7's binned profiles — and the confirmatory
+version belongs to the next family.
 
 Centering is a no-op here: pairwise distances are translation-invariant, so the shared
 offset behind §4 cannot affect this test.

@@ -1575,16 +1575,175 @@ either.
 
 #### Standing of this result
 
-It upgrades D30's "cyclicity not established" toward **positively disconfirmed** for
-the months family: not merely that the diagnostics cannot see a cycle, but that the
-specific pairs a cycle requires to be close are measurably far. It remains
-**exploratory** — D31 is post-hoc relative to the binned profile — so it does not touch
-the D24 confirmatory cells, and the confirmatory version belongs to the next family
-with the contest registered in advance.
+It upgrades D30's "cyclicity not established" toward **positively disconfirmed in
+full-vector distances** for the months family: not merely that the diagnostics cannot
+see a cycle, but that the specific pairs a cycle requires to be close are measurably far
+**in the full-dimensional Euclidean distance between function vectors**.
+
+That scope qualifier is load-bearing and is not hedging. Every statistic in this
+contest — pairwise distance, isotonic fit, the fold-back table — is computed on whole
+vectors. A circular component carrying a small share of the variance, riding on a
+dominant non-circular axis, would leave all of them looking exactly as they do. D33
+registers the check for precisely that geometry, and until it is run "disconfirmed"
+means disconfirmed *as a description of the whole vector*, not "no circular structure
+is present anywhere in these vectors".
+
+It remains **exploratory** — D31 is post-hoc relative to the binned profile — so it does
+not touch the D24 confirmatory cells, and the confirmatory version belongs to the next
+family with the contest registered in advance.
 
 Also recorded: centering is a **no-op** for this test, asserted in code rather than
 reported as a column. Pairwise distances are translation-invariant, so the shared
 offset that D27 exists for cannot affect the seam contest at all.
+
+### D33. Cylinder / open-helix check — registered before running
+
+**Third look at the same eleven vectors, with a decreasing prior each time.** The
+sequence is: registered diagnostics (D24), post-hoc seam contest (D31), and now a
+post-hoc check motivated by the seam contest's own result. Each step is further from
+pre-registration than the last, and this entry is the furthest. It is registered before
+computing, it is exploratory, and **the confirmatory home is the n ≥ 16 family**, where
+this check can be registered in advance alongside the seam contest.
+
+#### The gap in the calibration battery
+
+`tarcle/synthetic.py`'s `helix` fixtures are sums of circles at several frequencies —
+**closed** curves, every one. `line` is a straight open curve with no circular
+component. **No fixture in the prereg §0 battery is an open helix**: a line crossed with
+a circle, i.e. a dominant monotone axis with a circular component wrapped around it.
+The diagnostics were never calibrated against that shape, so nothing in this run so far
+can distinguish it from a plain ordered family.
+
+And it reproduces **every** seam-contest observation:
+
+| observation | open helix predicts |
+|---|---|
+| fold-back pairs all far | yes — axial separation dominates distance, and k=1 to k=11 is the longest axial span |
+| linear unrolling ~22%, cyclic ~0% | yes — the axial coordinate is monotone in k, the circle contributes little to full-vector distance |
+| PR ≈ 3.1–3.6 | yes — exactly 1 axial + 2 circular dimensions |
+| circulant fails, toeplitz fails | yes — the axial term is neither |
+
+The seam contest cannot reject it, because a cylinder *has* a seam in exactly the sense
+the contest tests: unroll it and the axial coordinate explains the distances.
+
+#### Procedure, fixed before running
+
+1. **Add an open-helix fixture** to `tarcle/synthetic.py`: `axial * t + circle(t)`,
+   parameterised by the axial/circular amplitude ratio, at the **measured** values —
+   the ratio implied by months' PR and axial variance share, and the measured
+   shared-offset regime (78.8% Todd / 94.9% Hendel of mean squared norm).
+2. **Validate the extractor on the fixture.** Fit the monotone axis, project it out,
+   and confirm the planted circle is recovered — circulant score on the residuals, and
+   the fold-back pairs becoming close. If projection does not recover a circle that is
+   *known* to be there, the method cannot detect one and the check is void.
+3. **Validate that it manufactures nothing.** Run the identical projection on **add-k**
+   residuals (ordered, no circle planted) and on the **unrelated null**. Any circular
+   signal there is the method's own artefact.
+4. **Pre-commit an amplitude floor** from step 3: the maximum residual circular
+   amplitude observed on add-k and the null. **A months residual circle below that floor
+   is not a finding** and is reported as absent. This is committed before months
+   residuals are inspected.
+5. **Only then read months residuals**, in this order: the **ten fold-back pairs**
+   first, with **(1,11) decisive** — if k=1 and k=11 do not become close after the axial
+   component is removed, there is no wrapped circle regardless of what any aggregate
+   score says.
+
+#### Same pass: is the axis k, or token frequency?
+
+The fitted axial coordinate is correlated against the **stored per-k frequency proxies**
+(`freq_proxy_operand`, `freq_proxy_target`, present in every months `.npz` per D11).
+
+A monotone axis that tracks token frequency rather than k would mean the "ordered"
+structure this run has been describing is partly a frequency gradient — which would
+also bear on prereg §3, whose norm-based test passed only because `norm_cv` is small
+(0.054 / 0.012) and which does not test a *direction*. Reported either way; a null
+result here is as informative as a positive one.
+
+#### Outcomes
+
+- **Residual circle above the floor, fold-back pairs close, axis uncorrelated with
+  frequency** → the family is a cylinder: ordered along an axis with a genuine circular
+  component that whole-vector distances cannot see. D32's verdict keeps its
+  "in full-vector distances" scope and the cylinder becomes the description.
+- **Residual circle below the floor** → no wrapped circle at any amplitude this method
+  can detect; D32's verdict generalises beyond full-vector distances.
+- **Axis correlates with the frequency proxy** → reported prominently regardless of the
+  circle result, and the "ordered" description is qualified accordingly.
+
+### D34. Free seam-location read — the antipode-seam discriminator
+
+Registered with D33's whole-vector caveat attached: this reads full-vector distances and
+inherits their blindness to a low-amplitude circular component.
+
+D32 found a seam but could not locate it. One pre-labelled location makes a **unique,
+checkable prediction** the others do not:
+
+> The **antipode-seam / signed-magnitude** model says distance depends on
+> |m| = min(k, 12−k) with direction discarded. It therefore places k=6 and k=7 —
+> which have |m| = 6 and 5 — **far apart across the seam**, where every raw-k linear
+> model places them **adjacent** (separation 1).
+
+So **d(6,7)** discriminates, and it needs no new computation.
+
+Reported individually, both extractions: **(6,7)** as the test, with **(5,7)** and
+**(6,8)** as support — both separation 2 under the raw-k line, and both crossing the
+antipode under the signed model.
+
+**Prior evidence already cuts against the signed line**, recorded here so the test is
+not read in isolation: the signed-magnitude model predicts **(1,11) close** — |m| = 1
+for both — and D32 measured it at **1.35× / 1.29× the mean**, among the farthest pairs
+in the family. If (6,7) also comes out ordinary, the signed line is excluded from both
+directions and the k=0-seam reading is what remains.
+
+### D35. The off-by-two localizer bias — observed, not adopted
+
+D32 recorded that the contest mislocated add-k's seam: the true endpoint seam is at
+cut@0 ≡ cut@1 (0.320) but cut@2 won (0.347). Months shows the **same signature** —
+cut@2 first (0.237 / 0.221), the k=0-seam model second (0.171 / 0.182).
+
+Read naively, months reproducing add-k's error pattern is consistent with months having
+a **true seam at k=0**, displaced by the same +2 bias. That reading is **not adopted**,
+for two reasons:
+
+- It rests on a single calibration point — one family, one n, one amplitude regime.
+  Whether the bias is a stable property of the localizer or an accident of add-k's
+  particular geometry is unknown from n=1.
+- The bias direction and size could plausibly depend on n, on the axial/circular ratio,
+  and on how the isotonic levels distribute — none of which is characterised.
+
+**Recorded as an observation with a calibration caveat.** What converts it into a
+measurement is the **matched-n add-k reference registered alongside the next family**
+(D31 §6): with add-k run at the same n as the new family, the localizer's bias becomes
+something measured on a known seam and then subtracted, rather than a pattern noticed
+twice.
+
+### D36. Z/24 planning notes — hypothesis C rides the same extraction
+
+Recorded now so the next family's design is fixed before its pilot rather than after.
+
+**Hours-of-day Z/24 unblocks hypothesis C**, which D21 declared structurally unrunnable
+on Z/12. The blocking argument was arithmetic: the control needs two *disjoint* operand
+partitions, the largest disjoint pair on a 12-element cycle is 6+6, and 6 collapses the
+FVs to next-item (`docs/note_operand_diversity.md`). **On Z/24 the largest disjoint pair
+is 12+12, and 12 operands clear the measured threshold comfortably** — it is the
+full-pool months condition, which passed at +0.352.
+
+So the operand-partition transfer test **rides the same extraction run** at no
+additional pilot cost, and the D18 criterion (Δ logp_lift matched vs transferred,
+against a split-half band) applies unchanged. The D20 §1 task-encoding gate still
+governs: both partitions must clear it before any transfer verdict is read.
+
+**Power the seam contest for two things, not one.** D32 resolved seam *presence* and not
+seam *location*; D33 asks for residual-circle *detection*. Both need more pairs per
+separation bin than n=11 provides — the largest-separation bin held 2 pairs of 110.
+At n=24 the thinnest bin holds 12. The next contest is registered in advance for
+location and residual amplitude, with the matched-n add-k reference of D35 alongside.
+
+ROT-k Z/26 remains a candidate and the two are piloted together with the gates
+deciding. Z/24's advantages are recorded here: hours-of-day has no privileged k (unlike
+ROT-13), 24 is composite so the prereg §1 divisor prediction is testable (divisors 2, 3,
+4, 6, 8, 12 against Z/12's 2, 3, 4, 6), and digits are a stronger domain than letters
+(0.43 vs 0.35 aggregate, `pilot_findings.md` §4).
 
 ---
 
