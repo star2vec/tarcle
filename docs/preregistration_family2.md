@@ -1,5 +1,12 @@
 # Pre-registration: second family (hours Z/24 or ROT-k Z/26)
 
+> **OUTCOME: §6's "neither passes" branch fired.** Both candidates failed their
+> behavioural gates — ROT-k Z/26 at 23 of 26 k below threshold, hours Z/24 at 13 of 24 —
+> as did the matched add-k reference at n=24. No second family runs on this model. See
+> `docs/decisions.md` D38. Sections 1–5 remain registered and unused; they apply
+> unchanged if the programme resumes on a model that can perform a full cycle at
+> n ≥ 16.
+
 **Status: written before any function vector of either candidate family has been
 extracted.** The only empirical inputs are the behavioural gates now running, the
 months results in `docs/stage2_findings.md`, and the power analysis in §1, which is

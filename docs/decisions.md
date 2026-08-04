@@ -1849,6 +1849,74 @@ independently on `norm_cv` ≤ 0.15.
   four parameters on twenty-four points leaves twenty residual degrees of freedom
   against seven here, which is where the floor has to fall for the test to discriminate.
 
+### D38. Both second-family candidates fail their gates. The §6 "neither passes" branch fires.
+
+| family | verdict | detail |
+|---|---|---|
+| **ROT-k, Z/26** | **NO-GO** | 23 of 26 k below 0.50. k=0 1.00, k=1 0.97, then k=2 0.29, k=3 0.19 and flat thereafter |
+| **hours-of-day, Z/24** | **NO-GO** | 13 of 24 k below 0.50; 11 at ≥0.50 |
+| add-k n=24 (matched reference) | **NO-GO** | 8 of 23 k below 0.50; perfect to k=11, then k=13 0.60, k=14 0.43, k=16 0.22 |
+
+`docs/preregistration_family2.md` §6: *"Neither passes → no second family on this
+model; the months results stand with their stated limits and the project's next move is
+a different model, not a different family."* **That branch fires.**
+
+#### ROT-k confirms the literature warning, including for k=13
+
+`docs/lit_sweep_task_space_geometry.md` flagged the ROT-k pivot as weaker than it looks:
+shift-cipher performance is dominated by corpus frequency of the specific shift
+(McCoy et al.; Prabhakar et al. 2407.01687), and letters are this model's weakest
+domain (0.35 aggregate, `pilot_findings.md` §4). Both hold. **ROT-13 does not escape it
+either** — k=13 sits below the GO threshold with the rest. On a 3B model the corpus
+advantage of ROT-13 is not enough to make even the privileged shift usable.
+
+#### Hours: the strongest replication in the project, on a family that still fails
+
+Re-indexed by signed magnitude |m| = min(k, 24−k):
+
+| \|m\| | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| +m | 0.93 | 0.91 | 0.78 | 0.68 | 0.68 | 0.47 | 0.49 | 0.38 | 0.31 | 0.32 | 0.29 | **0.42** |
+| −m | 0.94 | 0.93 | 0.85 | 0.66 | 0.67 | 0.37 | 0.32 | 0.36 | 0.35 | 0.32 | 0.24 | — |
+
+Two things replicate from months and one does not:
+
+- **Monotone decay in |m|** — clean, over twelve magnitudes rather than six.
+- **The antipode is a landmark.** k=12 scores **0.42** against neighbours k=11 at 0.29
+  and k=13 at 0.24. This is the months k=6 effect (0.98 against 0.76 and 0.70,
+  `pilot_findings.md` §3) reproduced on a different cycle at a different n. The
+  order-2 self-inverse element is easier than its neighbours in both families.
+- **The forward/backward asymmetry does NOT replicate.** Forward beats backward at only
+  **6 of 11** magnitudes, mean 0.567 against 0.546. On months the asymmetry was large
+  and consistent (+2 1.00 vs −2 0.86, +3 1.00 vs −3 0.80, +4 0.76 vs −4 0.38) and
+  `pilot_findings.md` §2 generalised it beyond Todd et al.'s ±1 observation. **It is
+  months-specific, or at least not a general property of cyclic shift families.** That
+  qualifies §2, which is now the one pilot finding with a failed replication against it.
+
+This matters beyond the gate, because D34 established that the *function vectors* are
+ordered by raw forward k rather than signed shift. The behavioural asymmetry was the
+strongest reason to expect a signed representation; on hours it is largely absent.
+
+#### The matched add-k reference also fails at n=24
+
+Independently blocking. Even had a family passed, the D28 calibration and the D35
+localizer-bias measurement both require an add-k reference at the family's own n, and
+that reference is itself NO-GO at n=24 (perfect through k=11, degrading past k=13 as
+the arithmetic crosses more tens boundaries). So the n ≥ 16 programme is unavailable on
+this model from two directions at once, not one.
+
+#### What this settles and what it leaves
+
+**Settled:** the months results stand as the project's findings, with the limits already
+recorded — cyclicity disconfirmed in full-vector distances (D32), the cylinder question
+underpowered and open (D37), seam location unresolved (D32), hypothesis C structurally
+unrunnable (D21).
+
+**The next move is a different model, not a different family.** The requirement is a
+model that can do shift-by-k across a full cycle of n ≥ 16 — which the brief's own
+hardware note anticipated (`BRIEF` §7 suggests Llama-3.1-8B), and which D6 records this
+8GB box cannot host at bf16. That is a hardware decision, not an experimental one.
+
 ---
 
 ## Conventions

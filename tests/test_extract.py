@@ -327,7 +327,11 @@ def test_recorded_prompt_hashes_reproduce():
         extras = {}
         if cfg.get("stratum"):
             extras["stratum"] = cfg["stratum"]
-        for key in ("operand_pool", "query_pool", "query_domain", "list_len"):
+        # Every per-condition field a family can key its prompts on. A field
+        # missing here regenerates with the default and the hash check fails —
+        # which is the check working, but on the replay rather than the run.
+        for key in ("operand_pool", "query_pool", "query_domain", "list_len",
+                    "addk_span"):
             if cfg.get(key):
                 extras[key] = cfg[key]
         items = [

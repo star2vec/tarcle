@@ -81,6 +81,25 @@ class LocalHFBackend:
             )
         return self._choice_ids[choice]
 
+    def _shared_prefix(self, choices: list[str]) -> int:
+        """Length of the token prefix every candidate shares.
+
+        Llama-3 tokenizes ' 23' as [' ', '23'], so for numeric candidate sets
+        every choice is multi-token and shares a leading space token. Teacher
+        forcing each one costs a forward pass per candidate — 24x the work for a
+        Z/24 family. The shared prefix contributes the same logprob to every
+        candidate, so it cancels in the argmax and in every difference between
+        candidates; scoring only the first *distinguishing* token is exact for
+        those purposes and needs one forward pass instead of 25.
+        """
+        seqs = [self._encode_choice(c) for c in choices]
+        if len(seqs) < 2:
+            return 0
+        n = 0
+        while all(len(s) > n + 1 for s in seqs) and len({s[n] for s in seqs}) == 1:
+            n += 1
+        return n
+
     @torch.no_grad()
     def _score_continuation(self, prompt: str, cont_ids: list[int]) -> float:
         """Teacher-forced total logprob of a multi-token candidate."""
@@ -100,6 +119,14 @@ class LocalHFBackend:
         for start in range(0, len(prompts), self.batch_size):
             batch = prompts[start : start + self.batch_size]
             batch_choices = choices_per_prompt[start : start + self.batch_size]
+            # Append any token prefix shared by all of a prompt's candidates, so
+            # the distinguishing token is the one predicted at the final position.
+            shared = [self._shared_prefix(c) for c in batch_choices]
+            batch = [
+                p + self.tokenizer.decode(self._encode_choice(c[0])[:n])
+                if n else p
+                for p, c, n in zip(batch, batch_choices, shared)
+            ]
             enc = self.tokenizer(batch, return_tensors="pt", padding=True).to(
                 self.device
             )
@@ -113,7 +140,7 @@ class LocalHFBackend:
                 top_lp, top_ids = lp.topk(5)
                 choice_lps = []
                 for choice in choices:
-                    ids = self._encode_choice(choice)
+                    ids = self._encode_choice(choice)[shared[b] :]
                     if len(ids) == 1:
                         choice_lps.append(lp[ids[0]].item())
                     else:

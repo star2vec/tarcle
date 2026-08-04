@@ -369,7 +369,14 @@ def build_prompt_set(
             k, n, shots, seed, stratum=kwargs.get("stratum", "heldout"),
             span=kwargs.get("addk_span", ADDK_SPAN),
         )
-    return make_prompt_set(variant, k, n, shots, seed, **kwargs)
+    # Drop keyword arguments belonging to other families. A manifest records the
+    # whole config, including defaults for fields this variant never uses, so a
+    # replay must tolerate them — which is what the docstring above promises.
+    allowed = ("stratum", "operand_pool", "query_pool", "query_domain")
+    return make_prompt_set(
+        variant, k, n, shots, seed,
+        **{key: v for key, v in kwargs.items() if key in allowed},
+    )
 
 
 def corrupt_labels(item: PromptItem, seed: int, index: int) -> PromptItem:
