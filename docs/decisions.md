@@ -1919,6 +1919,85 @@ hardware note anticipated (`BRIEF` §7 suggests Llama-3.1-8B), and which D6 reco
 
 ---
 
+## 2026-08-14 — The pivot to a measurement-validity study
+
+All three entries are fixed **before any of the registered runs or statistics in
+`docs/preregistration_instruments.md` exist**. That document carries the detail; these
+entries record the decisions.
+
+### D39. The geometry programme is closed; the contribution is measurement validity
+
+D38 fired the "neither passes" branch: no second family runs on this model, and the
+months results stand with their stated limits (cyclicity disconfirmed in full-vector
+distances, cylinder question underpowered and open, seam location unresolved,
+hypothesis C structurally unrunnable). **No new task families, no n=11 cylinder work,
+no 8B run, no further geometry.** The months geometry becomes a case study.
+
+The new contribution is a measurement-validity paper with one thesis —
+interpretability validation practice is systematically permissive — carried by two
+claims already measurable on this repo's artifacts: the accuracy gate passes while the
+extracted vector encodes a different function (claim A;
+`docs/note_operand_diversity.md`, D20), and estimators validated on synthetic fixtures
+have false-positive floors ~100× higher on real activations (claim B; D37,
+`docs/preregistration_family2.md` §1).
+
+Tonight's session (~6 h, 16 GB M1, no CUDA) runs exactly the tasks registered in
+`docs/preregistration_instruments.md`: T1 (behavioural, MPS fp16 — the sanctioned
+path), and T3/T5/T6/T10 (numpy-only off saved `.npz`). Explicitly out of scope and
+not started even if time remains: the injection sweep on MPS (bf16 FVs into an fp16
+model is incomparable to the frozen L8 × 3.0 baseline), the pool grid (rule 4 → Ada
+box), the standard-FV benchmark task (new head ID), and anything else not in that
+document. Confirmatory for the paper: T1's branch decision and T6's floor table.
+Everything else is supporting material.
+
+### D40. T1 branches pre-committed before the off-diagonal cell is run
+
+Every restricted-pool behavioural gate so far set `query_pool` = `operand_pool`, while
+`efficacy()` scored the FV over the complete 12-month cycle — so claim A rests on a
+gate and a margin scored on different query supports. T1 runs the missing cell:
+restricted demonstrations, full-cycle queries (configs
+`gate_months_partA4_fullq.json`, `gate_months_halves_A_fullq.json`; mechanics
+verified against `prompts.py` — out-of-pool queries leave the demo pool intact,
+held-out is automatic, `choices` stays the full cycle, chance stays 1/12).
+
+Both branches are fixed in `docs/preregistration_instruments.md` §1 before either run
+is launched, with the device-matched full-pool profile (`llama32_3b_mps_months_s16`)
+as reference and an in-pool anchor check against the original bf16 gates as the
+instrument-validity control:
+
+- **survives strong** — full-cycle-query gate GO at every k, or MARGINAL only at k=8
+  within noise of the full pool's own 0.38 → the gate still passes on the same
+  support the margin is scored on, while the vector encodes a different function;
+- **killed / rescoped** — NO-GO, or any cell the full pool clears at ≥ 0.50 drops
+  below 0.50 beyond the two-proportion margin → the original GO verdicts were an
+  in-distribution artifact; claim A weakens to "we gated on the wrong query support";
+  the paper rescopes around claim B and the rescoping is recorded, not argued away.
+
+A registered middle-case resolution (restricted-k margin recomputation) and a
+cross-run rule (strong form needs both pool sizes; disagreement triggers the B-side
+conditions before framing is fixed) are in the pre-registration. Neither run's
+`scores.jsonl` is opened until the pre-registration is committed.
+
+### D41. Rule-5 exception for floor estimation, registered rather than taken silently
+
+T6's floor table characterises the diagnostics' false-positive behaviour on real
+activation statistics, and for that purpose **vectors from tasks the model cannot
+perform are the point, not a defect** — floor estimation needs vectors, not correct
+vectors. CLAUDE.md rule 5 (and D20 §3) forbids extracting or using such FVs for task
+claims, so the exception is registered explicitly:
+
+- gate-failed condition vectors already on disk (partitions and halves, D20/D21) may
+  serve as instrument-characterisation material in T6/T3;
+- any future floor-only extraction from a NO-GO family runs at bf16 minimum, is
+  labelled `floor_only` in metadata, and is categorically never cited for a claim
+  about task-space geometry or the task itself;
+- rule 5 is otherwise untouched.
+
+Scope limit: these vectors characterise estimators. No geometry bucket, hypothesis
+verdict, or task-competence claim may rest on them, tonight or later.
+
+---
+
 ## Conventions
 
 - Entries are append-only. A superseded decision is struck through with a pointer to
