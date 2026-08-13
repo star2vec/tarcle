@@ -1996,6 +1996,120 @@ claims, so the exception is registered explicitly:
 Scope limit: these vectors characterise estimators. No geometry bucket, hypothesis
 verdict, or task-competence claim may rest on them, tonight or later.
 
+### D42. The prereg's T6 §5 conflated two synthetic constructions; both are run
+
+**Recorded after a 20-draw timing pilot of `tarcle/floors.py` was seen, and before
+the 300-draw table is computed or read.** The pilot exposed a defect in the
+registration's wording, and the fix is recorded here rather than silently patched —
+the instruments pre-registration, like the others, is never edited.
+
+#### The conflation
+
+`docs/preregistration_instruments.md` §5 defines C1 as both "the validation practice
+the field uses and prereg §0 used" **and** "matched at the measured months regime
+(offset share, axial share, residual RMS)". Those are different constructions:
+
+- The project's actual fixture-grade practice is `line(11, d=64, step=1.0,
+  offset=8.0, noise=0.3)` (`cylinder.py`, the D37 synthetic validation) and the
+  prereg §0 battery at noise 0.3 — noise ≈ 1% of signal variance. That construction
+  produced D37's 0.0026–0.0061 floors, the numbers claim B itself cites.
+- A regime-matched construction sets the residual RMS to the measured value — on
+  months, the [1,k] residual is comparable to the linear component — and the
+  20-draw pilot shows it reproduces much of the real floor (harmonic partial R²
+  synthetic ≈ 0.14 vs real ≈ 0.22 at 20 draws), i.e. matching second moments
+  already closes most of the D37 gap for that statistic, while for others
+  (toeplitz under an offset-matched isotropic cloud ≈ 0.85 vs real ≈ 0.14) the
+  matched synthetic floor lands far **above** the real one — the simplex-trap
+  direction.
+
+#### Resolution, fixed before the full table
+
+Both columns are computed and reported:
+
+- **C1a — fixture-grade** (the registered C4 reading): N2 form is `cylinder.py`'s
+  own line fixture; N1 form is the §0 `simplex(offset=0.7, noise=0.3)`, the
+  registered unordered shape. d=64, noise 0.3, the repo's committed practice. All
+  statistics in the table are scale- and dimension-invariant, so d=64 vs 3072 is
+  the field's convention, not a distortion. **The pre-committed claim-B thresholds
+  (median ratio ≥ 10 generalises; < 3 does not) apply to C4a = C2/C1a**, matching
+  the construction whose numbers claim B quotes. C1a carries no gate; it is the
+  reference being audited.
+- **C1b — regime-matched** (exploratory decomposition): offset, axial scale and
+  residual RMS matched per dataset. C4b = C2/C1b measures how much of the gap
+  survives honest second-moment matching; the residual gap is attributable to
+  real-activation structure beyond second moments. Reported alongside, cannot
+  move the claim-B verdict.
+
+#### Gate rework, same ordering
+
+The pilot gated planted positives against the synthetic floors, which is the wrong
+operative reference and voided rows for a reason the paper should instead report:
+under the offset-matched isotropic null the toeplitz floor (0.85) sits above a
+genuine planted line (0.49) — the synthetic construction cannot validate its own
+detector there. Reworked rule, fixed now: a row is **VOID** iff its planted
+positive fails to exceed the **C2 (real-permutation) floor** on months/todd, or C2
+self-exceedance on fresh draws leaves [0.02, 0.10] at 300 draws. Planted-vs-C1b
+and C1b calibration are reported per row as findings about the matched synthetic,
+and do not void. Also noted: participation_ratio is exactly invariant under N1 row
+permutation (row order does not enter the covariance spectrum), so its real-N1
+"range" is degenerate at the observed value and the table reports its real range
+under N2 instead.
+
+### D43. T1 outcome: Branch 1 fires at both pool sizes — claim A survives in strong form
+
+Read against the D40 / prereg §1 branches exactly as committed, after every other
+task's output was already written up (the registered reading order). Artifacts:
+`results/pilot/gate_months_{partA4,halves_A}_fullq/`,
+`results/stage2/support_matrix.json`.
+
+**Both off-diagonal runs return GO at every k on full-cycle queries.**
+partA4 (4 operands): minimum cell k=10 at exactly 0.50, Wilson [0.40, 0.60] —
+straddles the threshold and is flagged per the registered convention; next lowest
+0.53. halves_A (6 operands): minimum k=8 at 0.54. The Branch 2 triggers fire
+nowhere: no cell < 0.30, no cell with F(k) ≥ 0.50 below 0.50 at all, let alone
+beyond the two-proportion margin. The registered middle case never engages.
+
+**Instrument checks, both registered, both pass:** the in-pool query subsets
+agree with the original CUDA bf16 in-distribution gates at every k (zero cells
+beyond the two-proportion 95% margin, both runs), so the fp16/MPS instrument
+carries the verdict unflagged.
+
+**The out-of-pool subset — the genuinely new cell — is reported per k as
+registered:** mostly 0.50–1.00 (partA4 weak cells: k=4 at 0.34, k=10 at 0.49;
+halves k=8 at 0.26). The gate verdict reads the per-k aggregate over the uniform
+full-cycle query distribution, as registered and as the field's own gate would.
+A stricter out-of-pool-only gate was not registered and is not applied
+post hoc; the split is published so a reader can apply it.
+
+**Consequence.** The support-mismatch objection to claim A is closed by
+measurement: the behavioural gate passes *on the same query support the FV
+margin is scored on* (margins on disk: −0.315 to −0.944), at both pool sizes,
+satisfying the cross-run rule. Sharper still, combined with T3: the model
+demonstrably generalises restricted-demonstration shift-by-k to operands it
+never saw in the demonstrations — the competence the gate certifies is real on
+that support — while the vector extracted from the same prompts encodes
+next-item even on the demonstrated operands. The failure is in the extraction,
+not the behaviour, and no accuracy-based gate at any query support could see it.
+
+### D44. The gpt2-CPU test guarantee is not certifiable on this M1 tonight
+
+Recorded as an environment finding, not a methodology change. The torch-CPU
+test files (`test_extract.py`, `test_pilot.py`) crash the interpreter with a
+deterministic SIGBUS inside `torch.nn.Linear.forward` on this machine (M1,
+macOS 14.2 / Darwin 23.2.0, torch 2.13.0 arm64) — in isolation, on an idle
+machine, at multiple different tests. The failure predates tonight's changes by
+construction: tonight's additions are five numpy-only stage-2 modules plus
+their tests, none of which touch the crashing path, and the crashing files
+arrived in the `7db8d95` pull already green on the Ada box that produced them.
+
+Scope: the numpy-only suite passes here (26/26 in 1.5 s, including the new
+`test_floors.py`); every tonight artifact is either numpy-only or the MPS
+behavioural run, whose instrument was validated by its own registered in-pool
+anchor check (D43), not by trust in the torch-CPU path. The CLAUDE.md rule-5
+CI guarantee ("gpt2 CPU in < 5 min") remains certified only on the Ada box
+until torch/macOS versions on this machine are reconciled — an infrastructure
+decision for the user, not taken here.
+
 ---
 
 ## Conventions
