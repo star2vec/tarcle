@@ -208,6 +208,43 @@ above its real floor, as D37 found — and observed circulant-centered does too
 (0.312 vs 0.248) **but so does add-k's** (0.448), a family with no cycle, so
 that exceedance carries no cyclicity information — consistent with D30.
 
+### Objections we raise against ourselves
+
+**(a) The C1b objection — "this reduces to matching your null's moments."**
+Second-moment matching takes the harmonic ratio from ~145× to 2.0×, so most of
+the D37 catastrophe was a fixture *construction* defect — the committed
+fixtures put ~1% of variance in the residual where the real family puts an
+amount comparable to its linear component — and a reviewer can fairly say the
+recommendation collapses to textbook advice: match your surrogate's moments.
+The defense is in the C4b column itself. After matching, the ratios still span
+≈0.0 to 2.0 across statistics (harmonic 2.0, spectral concentration 1.4–1.5,
+permutation z 1.1, seam cut-margin 0.4–0.6, circulant raw 0.2–0.3, seam cyclic
+cv-R² ≈0.02 — a residual ~50-fold *overstatement*), and the direction of the
+remaining error is not predictable from the statistic's form. Matching narrows
+the error; it does not tell you which way you are still wrong. The only
+construction whose calibration does not depend on getting nuisance structure
+right is the null derived from the data under study — which is the actual
+recommendation, and it is cheaper to run than the fixtures it replaces.
+
+**(b) The perm_z objection — "your best transfer row is VOID."** The row
+supplying the "self-calibrating nulls transfer" evidence (C4a = 1.1) is the row
+the validation gate voided, and left unlabelled that pairing would read as
+cherry-picking. The two verdicts concern different objects. The VOID is about
+*detector power against a synthetic plant*: the planted line reaches z = +1.03
+against the real floor of 2.15, so the gate cannot certify that this plant
+would be detected. C4a is a ratio between two *independently computed null
+floors* — the fixture-grade floor (1.90, simplex draws) and the real
+row-permutation floor (2.15) — neither of which involves the plant, so the
+ratio remains readable, and it reads ≈1 because the statistic standardises
+itself against its own permutation distribution in either regime. Detection on
+real ordered data is separately established in the same table (add-k, a real
+family with known ordering, z = +7.44). And the plant's failure is itself a
+claim-B instance rather than an embarrassment to manage: the fixture cannot
+produce the smooth ⟨X_k, X̄⟩ cross-term the statistic actually responds to on
+real ordered families — the synthetic *positive control* fails for the same
+reason synthetic *nulls* fail, namely that fixtures do not carry the structure
+real activations do.
+
 ---
 
 ## 5. T1 — the 2×2 support matrix: Branch 1, claim A survives in strong form
