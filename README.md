@@ -36,7 +36,8 @@ tuning (T2) are registered but unrun. Hendel-method columns carry a registered
 **Layout:** `tarcle/` (stage 1: `extract.py`, `causal.py`; stage 2, numpy-only:
 `geometry.py`, `stage2.py`, `floors.py`, `measure_corr.py`, `margin_split.py`,
 `offset_audit.py`, `support_gate.py`), `experiments/` configs, `results/`
-(never overwritten), `docs/` (brief, findings, decision log D1–D44).
+(stage-1 write-once; every writer stamps its filename or refuses to overwrite
+differing content — D45/D46), `docs/` (brief, findings, decision log D1–D46).
 
 **Reproduce stage 2 without a GPU:** every analysis reads saved `.npz` from
 `results/` — `python -m tarcle.stage2 | floors | measure_corr | margin_split |

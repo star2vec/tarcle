@@ -15,6 +15,45 @@ instances; this repo is one. The intro must not claim the framing.
 
 ---
 
+## 0. Verification queue for the post
+
+What must be read **before posting** versus what is merely adjacent. Three
+items are blocking — the post's argument depends on their content; everything
+else carries an in-situ badge or lives only in this doc.
+
+**Blocking:**
+
+1. **arXiv 2605.08012** (carries the post's entire framing paragraph). If it
+   already contains a preregistered empirical instance like ours — especially
+   an extraction-time one — the post's "we read our result as a preregistered
+   empirical instance of exactly that failure" becomes "a further instance,"
+   theirs cited first; the implicit claim to be *the* instance the position
+   paper calls for is dropped, and the lead positioning shifts to the Hendel
+   §4 dialogue. What survives regardless: the operand-diversity mechanism, the
+   task-identity margin, and the T1 support audit are ours.
+2. **Hendel et al. 2023 §4** — verify the one load-bearing detail: that the
+   varied demonstration sets S draw from **full operand pools**. If §4 in fact
+   varied operand support, the post's "the varied sets were drawn from full
+   operand pools" sentence is false, the "regime their robustness check did
+   not cover" framing collapses, and claim A repositions on the mechanism and
+   the margin metric alone — an abstract-level rewrite, not a patch.
+3. **arXiv 2606.05079 ("Fast & Faithful Function Vectors"** — same model,
+   attacks AIE). If it contains a task-identity validation step or documents
+   an extraction collapse, the "What to do instead" bullet must cite it as
+   concurrent work and claim A narrows to the mechanism plus the support
+   audit. If it only replaces AIE estimators, the T5 AIE rows need one
+   engagement sentence and nothing else moves.
+
+**Non-blocking for the post** (badged in situ, or the post survives deletion
+of the single clause that uses them): 2505.17322 (one hedged bias–variance
+sentence in Mechanism), Eklund et al. 2016 (one clause in the claim-B
+section), 2604.02608, 2606.27510, Canby et al., the Tan follow-up lead
+("CAA findings unverified for FVs"), Nullstrap, AxBench. If any of these turns
+out to contain a preregistered instance like ours, it promotes to blocking and
+the 2605.08012 treatment applies to it.
+
+---
+
 ## 1. The frame
 
 **"Position: Mechanistic Interpretability Must Disclose Identification

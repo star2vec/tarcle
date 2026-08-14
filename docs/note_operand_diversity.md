@@ -30,19 +30,25 @@ Two independent measurements per condition:
 
 ## Result
 
-| operand pool | distinct demo operands / 16-shot prompt | behavioural gate | FV encoding margin |
+Gate cells give each condition's worst held-out accuracy across the twelve
+shifts — numbers, not GO/MARGINAL labels, per D46's table convention:
+
+| operand pool | distinct demo operands / 16-shot prompt | gate worst cell | FV encoding margin |
 |---|---|---|---|
-| 12 (full cycle) | 8.6 | GO | **+0.352** |
-| 9 (three months removed) | 7.1 | GO | **+0.343** |
-| 6 (Jan–Jun) | 5 | GO — every k ≥ 0.83 | **−0.315** |
-| 6 (Jul–Dec) | 5 | GO | **−0.463** |
-| 4 (Jan–Apr) | 3.0 | GO — every k ≥ 0.50 | **−0.704** |
-| 4 (Sep–Dec) | 3.0 | GO | **−0.944** |
+| 12 (full cycle) | 8.6 | 0.38 (k=8; D1 weak-cell branch) | **+0.352** |
+| 9 (three months removed) | 7.1 | 0.44 (k=8; D45/D46 re-run) | **+0.343** |
+| 6 (Jan–Jun) | 5 | 0.83 | **−0.315** |
+| 6 (Jul–Dec) | 5 | 0.81 | **−0.463** |
+| 4 (Jan–Apr) | 3.0 | 0.61 | **−0.704** |
+| 4 (Sep–Dec) | 3.0 | 0.54 (D45/D46 re-run) | **−0.944** |
 
 Three observations.
 
-**1. The behavioural gate passes everywhere and carries no information about FV
-quality.** All six pools return GO. The columns do not merely differ in sensitivity —
+**1. The behavioural gate waves every collapsed pool through unqualified and
+carries no information about FV quality.** Under the protocol's gating rule the
+four collapsed pools pass outright (worst cells 0.54–0.83), and the gate's only
+hesitations — 0.38 and 0.44 at k=8, the family's registered weak cell — land on
+the two healthy pools. The columns do not merely differ in sensitivity —
 they move in opposite directions. Shrinking the operand pool makes the in-context task
 *easier* (k=8 rises from 0.38 in the full pool to 0.87 at six operands: fewer candidates
 to confuse, and the demonstrations cover more of the operand space) while making the
