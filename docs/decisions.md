@@ -2183,6 +2183,64 @@ README's "results/ (never overwritten)" is true of stage-1 by construction and
 was false of stage-2 in practice; its correction belongs to the halted prose
 pass and is not made here.
 
+### D46. Device ruled out: the recorded polysemy GO was simply wrong
+
+The D45 §1 correction could have had an innocent instrument explanation: the
+original restricted-pool gates ran CUDA bf16, the re-runs ran MPS fp16, and a
+0.50→0.44 shift at one cell is the size a precision effect might plausibly be.
+That alternative is now tested and excluded (`tarcle/device_check.py`,
+`results/stage2/device_check.json`).
+
+#### The check
+
+Every cross-device pair that exists was compared cell by cell: halves_A and
+partA4 have committed CUDA bf16 originals (n = 100/k) **and** MPS fp16
+re-measurements of the identical in-distribution query population (the in-pool
+subsets of the T1 full-cycle audit runs, n ≈ 50 and ≈ 33/k) — 24 paired cells
+across all twelve k. **Zero cells fall outside the two-proportion 95% margin**;
+the largest difference anywhere is 0.10 against a margin of 0.19 (partA4,
+k=10). Coverage stated plainly: the primary has no CUDA pair — its original
+gate *is* the MPS fp16 months pilot, which means the primary-0.38 /
+polysemy-0.44 monotone pair at k=8 is same-instrument by construction — and
+halves_B, partB4 and polysemy each exist on a single device.
+
+**Verdict: the registered "device ruled out" branch fires.** The gate
+instrument reproduces across devices everywhere it can be checked, and the
+recorded polysemy GO was simply wrong — a verdict entered in the log with no
+artifact behind it (D45 §1), contradicted by the first run that produced one.
+
+#### What the correction does and does not touch
+
+Polysemy (9 operands, margin **+0.343**) is a **healthy** condition. Every one
+of the four **collapsed** conditions passes the behavioural gate unqualified at
+worst cells 0.54–0.83, each now with a committed artifact behind it. The
+correction lands on a healthy row and **strengthens claim A rather than
+weakening it**: across all six conditions, the gate's only hesitations — the
+primary's k=8 at 0.38 (the registered D1 weak-cell branch) and polysemy's k=8
+at 0.44 — fall on the two vectors that were fine. No number in the margin
+column moves. The post must not be readable as reporting a correction that
+undercuts the headline, because it does the opposite.
+
+#### Presentation decision (the writing session's table convention)
+
+Gate columns in tables print **worst-cell numbers**, not GO/MARGINAL labels —
+labels are threshold- and device-dependent, numbers are the finding, and the
+figure already renders it this way. The practitioner-level verdict stays in
+prose, stated once at the table: under the Todd protocol's own gating rule,
+all four collapsed conditions pass unqualified while both healthy conditions
+needed the weak-cell branch. Dropping the verdict entirely would evade the
+step the paper is about.
+
+Also under this entry: the D45 §3 stamp-or-refuse guard is now applied to
+every writer on that list (`ctest.py`, `headset_compare.py`,
+`heads_compare.py`, `stage2.py`, `power.py`, `floors.py`, plus `nextitem.py`
+and `device_check.py` refactored onto the shared helper
+`tarcle/results_io.py`). Identical regeneration is allowed; differing content
+at an existing path is refused. The four artifacts written under pre-stamp
+names (`ctest_todd.json`, two `sweep_comparison.json`, one
+`headset_comparison.json`) remain in place as committed history; stamped names
+cannot collide with them.
+
 ---
 
 ## Conventions

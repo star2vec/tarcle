@@ -159,11 +159,11 @@ def main(argv: list[str] | None = None) -> None:
             report(r)
             out[f"{label}/{method}"] = r
 
+    from .results_io import write_guarded
+
     Path("results/stage2").mkdir(parents=True, exist_ok=True)
-    Path("results/stage2/power.json").write_text(
-        json.dumps(out, indent=2, default=float) + "\n",
-        encoding="utf-8", newline="\n")
-    print("\nwrote results/stage2/power.json")
+    write_guarded(Path("results/stage2/power.json"),
+                  json.dumps(out, indent=2, default=float) + "\n")
 
 
 if __name__ == "__main__":

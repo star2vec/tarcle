@@ -87,9 +87,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("run_b", type=Path)
     args = parser.parse_args(argv)
     out = compare(args.run_a, args.run_b)
-    (args.run_b / "sweep_comparison.json").write_text(
-        json.dumps(out, indent=2) + "\n", encoding="utf-8", newline="\n"
-    )
+    from .results_io import input_stamp, write_guarded
+
+    stamp = input_stamp([args.run_a.name, args.run_b.name])
+    write_guarded(args.run_b / f"sweep_comparison_{stamp}.json",
+                  json.dumps(out, indent=2) + "\n")
 
 
 if __name__ == "__main__":

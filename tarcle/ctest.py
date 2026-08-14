@@ -175,9 +175,11 @@ def main(argv: list[str] | None = None) -> None:
         "pool_a": pool_a, "pool_b": pool_b,
         "injection": {"layer": layer, "scale": scale, "mode": mode},
     }
-    dest = args.a.parent / f"ctest_{args.method}.json"
-    dest.write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8", newline="\n")
-    print(f"\nwrote {dest}")
+    from .results_io import input_stamp, write_guarded
+
+    stamp = input_stamp([args.a.name, args.b.name])
+    write_guarded(args.a.parent / f"ctest_{args.method}_{stamp}.json",
+                  json.dumps(out, indent=2) + "\n")
 
 
 if __name__ == "__main__":

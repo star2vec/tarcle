@@ -120,25 +120,12 @@ def main(argv: list[str] | None = None) -> None:
         # The filename is stamped with a hash of the input run set: a fixed
         # name let successive invocations silently destroy each other's
         # output, which is how the six-months-conditions version of this
-        # file was lost (docs/decisions.md D45). Identical regeneration is
-        # allowed; differing content at the same path is refused.
-        import hashlib
+        # file was lost (docs/decisions.md D45).
+        from .results_io import input_stamp, write_guarded
 
-        stamp = hashlib.sha256(
-            "|".join(sorted(d.name for d in args.runs)).encode()
-        ).hexdigest()[:8]
-        dest = args.runs[0].parent / f"nextitem_{args.method}_{stamp}.json"
-        text = json.dumps(out, indent=2) + "\n"
-        if dest.exists():
-            if dest.read_text(encoding="utf-8") == text:
-                print(f"\n{dest} already exists with identical content")
-                return
-            raise SystemExit(
-                f"refusing to overwrite {dest} with differing content "
-                "(CLAUDE.md: results are never overwritten)"
-            )
-        dest.write_text(text, encoding="utf-8", newline="\n")
-        print(f"\nwrote {dest}")
+        stamp = input_stamp(d.name for d in args.runs)
+        write_guarded(args.runs[0].parent / f"nextitem_{args.method}_{stamp}.json",
+                      json.dumps(out, indent=2) + "\n")
 
 
 if __name__ == "__main__":

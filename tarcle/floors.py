@@ -367,13 +367,12 @@ def main(argv: list[str] | None = None) -> None:
                       "median": med if np.isfinite(med) else "inf",
                       "verdict": verdict}
 
+    from .results_io import write_guarded
+
     dest = Path("results/stage2/floors.json")
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(out, indent=2, default=float) + "\n",
-                    encoding="utf-8", newline="\n")
-    Path("results/stage2/floors.txt").write_text(text + "\n", encoding="utf-8",
-                                                 newline="\n")
-    print(f"\nwrote {dest} and results/stage2/floors.txt")
+    write_guarded(dest, json.dumps(out, indent=2, default=float) + "\n")
+    write_guarded(Path("results/stage2/floors.txt"), text + "\n")
 
 
 if __name__ == "__main__":

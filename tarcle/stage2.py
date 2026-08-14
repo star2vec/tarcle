@@ -258,8 +258,10 @@ def main(argv: list[str] | None = None) -> None:
 
     if any(results[f"null_{m}"]["voids"] for m in ("todd", "hendel")):
         print("\nNULL CONTROL VOIDS THE RUN — stopping before the headline cells.")
-        (args.out / "stage2.json").write_text(
-            json.dumps(results, indent=2) + "\n", encoding="utf-8", newline="\n")
+        from .results_io import write_guarded
+
+        write_guarded(args.out / "stage2.json",
+                      json.dumps(results, indent=2) + "\n")
         return
 
     # ---- 2. headline cells ------------------------------------------------
@@ -302,10 +304,10 @@ def main(argv: list[str] | None = None) -> None:
         print_cell(r)
         results[f"loo_{method}"] = r
 
-    (args.out / "stage2.json").write_text(
-        json.dumps(results, indent=2, default=float) + "\n",
-        encoding="utf-8", newline="\n")
-    print(f"\nwrote {args.out / 'stage2.json'}")
+    from .results_io import write_guarded
+
+    write_guarded(args.out / "stage2.json",
+                  json.dumps(results, indent=2, default=float) + "\n")
 
 
 if __name__ == "__main__":

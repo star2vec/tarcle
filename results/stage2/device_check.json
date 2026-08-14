@@ -1,0 +1,261 @@
+{
+  "git_commit": "ad99fd041bb477512407840ef3f683ef50a64923",
+  "pairs": {
+    "halfA (6)": {
+      "cuda_run": "gate_months_halves_A",
+      "mps_run": "gate_months_halves_A_fullq",
+      "rows": [
+        {
+          "k": 0,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 50,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 1,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 49,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 2,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 48,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 3,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 50,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 4,
+          "cuda": 0.97,
+          "n_cuda": 100,
+          "mps": 0.9464285714285714,
+          "n_mps": 56,
+          "delta": -0.023571428571428577,
+          "margin": 0.06779403071067543,
+          "beyond": false
+        },
+        {
+          "k": 5,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 0.9583333333333334,
+          "n_mps": 48,
+          "delta": -0.04166666666666663,
+          "margin": 0.05653119017819243,
+          "beyond": false
+        },
+        {
+          "k": 6,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 48,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 7,
+          "cuda": 0.99,
+          "n_cuda": 100,
+          "mps": 0.9555555555555556,
+          "n_mps": 45,
+          "delta": -0.03444444444444439,
+          "margin": 0.06329187416665838,
+          "beyond": false
+        },
+        {
+          "k": 8,
+          "cuda": 0.87,
+          "n_cuda": 100,
+          "mps": 0.851063829787234,
+          "n_mps": 47,
+          "delta": -0.018936170212765946,
+          "margin": 0.12126521116026262,
+          "beyond": false
+        },
+        {
+          "k": 9,
+          "cuda": 0.91,
+          "n_cuda": 100,
+          "mps": 0.94,
+          "n_mps": 50,
+          "delta": 0.029999999999999916,
+          "margin": 0.08648465297380803,
+          "beyond": false
+        },
+        {
+          "k": 10,
+          "cuda": 0.83,
+          "n_cuda": 100,
+          "mps": 0.7674418604651163,
+          "n_mps": 43,
+          "delta": -0.06255813953488365,
+          "margin": 0.14616893582765317,
+          "beyond": false
+        },
+        {
+          "k": 11,
+          "cuda": 0.97,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 58,
+          "delta": 0.030000000000000027,
+          "margin": 0.033435095334094694,
+          "beyond": false
+        }
+      ],
+      "beyond": []
+    },
+    "partA (4)": {
+      "cuda_run": "gate_months_partA4",
+      "mps_run": "gate_months_partA4_fullq",
+      "rows": [
+        {
+          "k": 0,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 31,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 1,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 36,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 2,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 39,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 3,
+          "cuda": 0.97,
+          "n_cuda": 100,
+          "mps": 0.96,
+          "n_mps": 25,
+          "delta": -0.010000000000000009,
+          "margin": 0.08377710427079707,
+          "beyond": false
+        },
+        {
+          "k": 4,
+          "cuda": 0.9,
+          "n_cuda": 100,
+          "mps": 0.9090909090909091,
+          "n_mps": 33,
+          "delta": 0.009090909090909038,
+          "margin": 0.11436029233878196,
+          "beyond": false
+        },
+        {
+          "k": 5,
+          "cuda": 1.0,
+          "n_cuda": 100,
+          "mps": 1.0,
+          "n_mps": 31,
+          "delta": 0.0,
+          "margin": 0.0,
+          "beyond": false
+        },
+        {
+          "k": 6,
+          "cuda": 0.93,
+          "n_cuda": 100,
+          "mps": 0.967741935483871,
+          "n_mps": 31,
+          "delta": 0.03774193548387095,
+          "margin": 0.07980872448946684,
+          "beyond": false
+        },
+        {
+          "k": 7,
+          "cuda": 0.99,
+          "n_cuda": 100,
+          "mps": 0.9743589743589743,
+          "n_mps": 39,
+          "delta": -0.015641025641025652,
+          "margin": 0.05330350325974485,
+          "beyond": false
+        },
+        {
+          "k": 8,
+          "cuda": 0.99,
+          "n_cuda": 100,
+          "mps": 0.9666666666666667,
+          "n_mps": 30,
+          "delta": -0.023333333333333317,
+          "margin": 0.06713033116976977,
+          "beyond": false
+        },
+        {
+          "k": 9,
+          "cuda": 0.93,
+          "n_cuda": 100,
+          "mps": 0.9473684210526315,
+          "n_mps": 38,
+          "delta": 0.017368421052631478,
+          "margin": 0.08684248039405255,
+          "beyond": false
+        },
+        {
+          "k": 10,
+          "cuda": 0.61,
+          "n_cuda": 100,
+          "mps": 0.5142857142857142,
+          "n_mps": 35,
+          "delta": -0.09571428571428575,
+          "margin": 0.1911982384856095,
+          "beyond": false
+        },
+        {
+          "k": 11,
+          "cuda": 0.91,
+          "n_cuda": 100,
+          "mps": 0.9375,
+          "n_mps": 32,
+          "delta": 0.02749999999999997,
+          "margin": 0.10089821647333515,
+          "beyond": false
+        }
+      ],
+      "beyond": []
+    }
+  },
+  "cells_beyond_margin": 0,
+  "verdict": "DEVICE RULED OUT \u2014 every paired cell reproduces within margin"
+}

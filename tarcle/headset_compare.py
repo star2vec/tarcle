@@ -118,10 +118,11 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     result = {m: compare(args.runs, m) for m in ("todd", "hendel")}
-    dest = args.out or (args.runs[0] / "headset_comparison.json")
-    dest.write_text(json.dumps(result, indent=2) + "\n",
-                    encoding="utf-8", newline="\n")
-    print(f"\nwrote {dest}")
+    from .results_io import input_stamp, write_guarded
+
+    stamp = input_stamp(r.name for r in args.runs)
+    dest = args.out or (args.runs[0] / f"headset_comparison_{stamp}.json")
+    write_guarded(dest, json.dumps(result, indent=2) + "\n")
 
 
 if __name__ == "__main__":
