@@ -1,0 +1,63 @@
+{
+  "config": {
+    "run_name": "gate_months_partB4",
+    "model": "meta-llama/Llama-3.2-3B",
+    "backend": "local_hf",
+    "device": "mps",
+    "dtype": "float16",
+    "variants": [
+      "months"
+    ],
+    "ks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "n_per_k": 100,
+    "shots": 16,
+    "seed": 0,
+    "batch_size": 8,
+    "results_dir": "results/pilot",
+    "base_url": "",
+    "stratum": "heldout",
+    "operand_pool": {
+      "months": [
+        "September",
+        "October",
+        "November",
+        "December"
+      ]
+    },
+    "query_pool": {
+      "months": [
+        "September",
+        "October",
+        "November",
+        "December"
+      ]
+    },
+    "query_domain": "",
+    "list_len": 12,
+    "addk_span": 12
+  },
+  "config_sha256": "0c33afbaa3d93ccc59b5f3e7d2ed2266cbaee18d53531a78bcfd6d4f79b3f9f7",
+  "prompts_sha256": "0e142c1a2bfd09893b0a8d97d71664f460af3c6fbcde7f4edaaeeabbdf45f14e",
+  "git_commit": "68cc1a8f2f44dba3032e542ac30bc83967eac8f1",
+  "timestamp_utc": "2026-08-14T18:13:40.806431+00:00",
+  "python": "3.12.13",
+  "platform": "macOS-14.2.1-arm64-arm-64bit",
+  "versions": {
+    "torch": "2.13.0",
+    "transformers": "4.57.6",
+    "numpy": "2.5.1"
+  }
+}

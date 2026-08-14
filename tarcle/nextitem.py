@@ -117,9 +117,27 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     out = [r for d in args.runs if (r := analyse(d, args.method))]
     if out:
-        dest = args.runs[0].parent / f"nextitem_{args.method}.json"
-        dest.write_text(json.dumps(out, indent=2) + "\n",
-                        encoding="utf-8", newline="\n")
+        # The filename is stamped with a hash of the input run set: a fixed
+        # name let successive invocations silently destroy each other's
+        # output, which is how the six-months-conditions version of this
+        # file was lost (docs/decisions.md D45). Identical regeneration is
+        # allowed; differing content at the same path is refused.
+        import hashlib
+
+        stamp = hashlib.sha256(
+            "|".join(sorted(d.name for d in args.runs)).encode()
+        ).hexdigest()[:8]
+        dest = args.runs[0].parent / f"nextitem_{args.method}_{stamp}.json"
+        text = json.dumps(out, indent=2) + "\n"
+        if dest.exists():
+            if dest.read_text(encoding="utf-8") == text:
+                print(f"\n{dest} already exists with identical content")
+                return
+            raise SystemExit(
+                f"refusing to overwrite {dest} with differing content "
+                "(CLAUDE.md: results are never overwritten)"
+            )
+        dest.write_text(text, encoding="utf-8", newline="\n")
         print(f"\nwrote {dest}")
 
 

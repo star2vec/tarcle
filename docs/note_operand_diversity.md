@@ -100,6 +100,10 @@ distribution, or the ratio of operands to shots is not determined here.
 
 ## Artifacts
 
-`results/fv/ctl_months_*`, `results/pilot/gate_months_*`, `results/fv/nextitem_todd.json`.
+`results/fv/ctl_months_*`, `results/pilot/gate_months_*`,
+`results/fv/nextitem_todd_0109c67f.json` (regenerated under a collision-proof
+name after the original fixed-filename output was overwritten by later
+invocations — D45; the six margins are independently recomputed and asserted
+in `results/stage2/margin_split.json`).
 Every run carries its prompt SHA-256, config hash and git commit; the analysis is pure
 numpy from saved `.npz` and needs no GPU.

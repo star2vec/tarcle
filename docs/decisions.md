@@ -2110,6 +2110,79 @@ CI guarantee ("gpt2 CPU in < 5 min") remains certified only on the Ada box
 until torch/macOS versions on this machine are reconciled — an infrastructure
 decision for the user, not taken here.
 
+### D45. Two integrity events: gate verdicts without artifacts, and a fixed-filename overwrite chain
+
+Recorded together because the writing session's figure work exposed both, and an
+append-only log records integrity events whether or not their repair changes any
+verdict. One repair did change a verdict; it is stated plainly in §2.
+
+#### 1. Gate verdicts recorded with no committed artifact — and one does not reproduce
+
+D21, D24 and `docs/note_operand_diversity.md` record behavioural-gate GO for the
+polysemy (9-operand) and partition-B (4-operand) conditions. **The complete git
+history of `results/pilot/` additions contains no gate run for either condition,
+ever.** They were never committed — not committed-and-lost; whether they were ever
+executed on the Ada box cannot be determined from the repo, and no claim is made
+either way.
+
+Both were re-run 2026-08-14 (MPS fp16, the sanctioned behavioural path; configs
+`gate_months_{partB4,polysemy}.json`, in-distribution query pools mirroring the
+extraction conditions, n = 100/k, 16 shots, held-out, seed 0):
+
+- **partition B (Sep–Dec): GO** — every k ≥ 0.54 (min at k=10). The recorded
+  verdict reproduces.
+- **polysemy (9): MARGINAL** — k=8 at **0.44** (Wilson ≈ [0.35, 0.54]), every
+  other k ≥ 0.60. The unqualified GO **does not reproduce**. What the re-run
+  shows instead is the primary's own signature: the worst cell is k=8, the
+  family's registered weak cell (primary k=8 = 0.38, same device and dtype),
+  with polysemy's 0.44 sitting between the primary's 0.38 and the halves' 0.87 —
+  monotone in pool size at exactly that cell. The polysemy *margin* (+0.343) is
+  untouched; only the gate column's label is at issue.
+
+Consequence: any table quoting polysemy's gate must carry the same weak-cell
+qualification the primary's D1 branch carries, or the gate convention must be
+restated for both. **That choice changes the post's table and is the user's; the
+writing pass halted at this point per the pre-committed stop condition.**
+
+#### 2. The nextitem.py overwrite chain
+
+`tarcle/nextitem.py` wrote to a fixed filename (`nextitem_<method>.json`), so
+successive invocations destroyed each other's output. The committed history shows
+five clobber events: `6c1c760` {half_a, half_b} → `12ffc04` {mixed_daysmonths} →
+`0bad1ba` {unrelated} → `21eb3a5` {unrelated, addk}. **The six-months-conditions
+version that `note_operand_diversity.md` cites as its artifact was never
+committed at all.** No number was ever wrong — the margins were quoted in the log
+at computation time and are deterministically regenerable — but the artifact
+trail behind the note's central table was broken from the start.
+
+Repairs, all verified: the file is regenerated as
+`results/fv/nextitem_todd_0109c67f.json` (filename stamped with the SHA-256 of
+the input run set) and reproduces the D20 table exactly; the canonical
+machine-readable home of the six margins is `results/stage2/margin_split.json`,
+which recomputes them independently from `efficacy_pred_shift` and is asserted
+equal to 1e-9 by `tarcle/post_figure.py`; `nextitem.py` now stamps its output
+name and refuses to overwrite differing content.
+
+#### 3. Audit of every writer, per the same defect
+
+- **Proven loss: `nextitem.py` only** (above; fixed).
+- **Same defect, no loss occurred:** `ctest.py` (dest from `--a`'s parent;
+  invoked exactly once in history), `headset_compare.py`, `heads_compare.py`
+  (comparison written into run_b), and the argument-dependent fixed-path writers
+  `stage2.py` (`root`, `--n-perm`), `power.py` (`--draws`), `floors.py`
+  (`--draws`, `--seam-folds`) — committed finals preserved in git history.
+  These await the same stamp-or-refuse guard; only `nextitem.py` was fixed,
+  per the audit-first instruction.
+- **Guarded already:** `pilot.py` and `extract.py` refuse to overwrite.
+- **Fixed path but canonical content** (no content-varying inputs; overwrite =
+  deterministic regeneration): `seam.py`, `cylinder.py`, `calibrate.py`,
+  `measure_corr.py`, `margin_split.py`, `offset_audit.py`, `support_gate.py`,
+  `post_figure.py`.
+
+README's "results/ (never overwritten)" is true of stage-1 by construction and
+was false of stage-2 in practice; its correction belongs to the halted prose
+pass and is not made here.
+
 ---
 
 ## Conventions
