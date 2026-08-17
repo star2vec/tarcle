@@ -1,5 +1,34 @@
 # A function vector can pass the accuracy gate, reliability, and causal-effect checks — and encode a different function
 
+*Second in a sequence on interpretability instruments failing quietly. Previous
+post: a probe error masquerading as a model error. This post: the validation
+gate itself.*
+
+**TL;DR**
+
+- A function vector extracted from 16-shot demonstrations restricted to 4 of 12
+  months passes every check standard practice applies: behavioural gate GO at
+  every k (worst cell 0.50, scored on the full query cycle), split-half cosine
+  ≥ 0.99, large causal effect.
+- It encodes **next-item, not shift-by-k**. Task-identity margin runs −0.31 to
+  −0.94 across four restricted conditions against **+0.35** for the full-pool
+  vector, and reaches **−1.00** at the worst cell — on the demonstrated
+  operands themselves.
+- Across these six conditions the gate **anti-correlates** with what the vector
+  encodes: the four collapsed vectors have the highest gate worst-cells
+  (0.54–0.83), the two healthy ones the lowest (0.38 and 0.44). All four
+  collapsed conditions pass unqualified; both healthy ones needed our
+  registered weak-cell branch.
+- The driver is **operand diversity, not shot count**: 16 shots from a 4-month
+  pool contain ~3 distinct operands, and below a threshold between 9 and 6 pool
+  operands the vector snaps to the family's degenerate default. That default is
+  not noise — `next_item` is itself a named task in Todd et al.'s own benchmark
+  suite, so the collapsed vector returns a different catalogue task.
+- We killed our own second headline on a pre-committed test (median real-floor /
+  fixture-floor ratio: ≥10 generalises, <3 kills it). **It returned 0.79.**
+  What survives is worse for current practice: fixture-grade nulls mis-state
+  real false-positive floors in *both* directions, 0.01× to 156×.
+
 *Draft for LessWrong / Alignment Forum. All numbers from preregistered runs on
 saved artifacts; repo link at the end. Citation badges: [VERIFIED] = checked
 against the paper; [UNVERIFIED] = search-snippet lead, will be read before
@@ -34,7 +63,7 @@ practice applies:
 
 Every check passes. **The vector encodes next-item, not shift-by-k.** Injected
 into zero-shot prompts and scored over the full cycle, P(prediction lands on
-the correct shift) − P(prediction lands on shift ±1) runs **−0.32 to −0.94**
+the correct shift) − P(prediction lands on shift ±1) runs **−0.31 to −0.94**
 across the four restricted conditions (it is +0.35 for the full-pool vector).
 At the worst cell the collapse is total: **every** in-pool mid-cycle
 prediction lands on the adjacent month (margin −1.00).
@@ -47,7 +76,7 @@ and device-dependent and the numbers are the finding:
 |---|---|---|---|
 | 12 months | 0.38 | = in-dist (queries are the full pool) | **+0.35** |
 | 9 months | 0.44 | — | **+0.34** |
-| 6 months (Jan–Jun) | 0.83 | 0.54 | **−0.32** |
+| 6 months (Jan–Jun) | 0.83 | 0.54 | **−0.31** |
 | 6 months (Jul–Dec) | 0.81 | — | **−0.46** |
 | 4 months (Jan–Apr) | 0.61 | 0.50 | **−0.70** |
 | 4 months (Sep–Dec) | 0.54 | — | **−0.94** |
@@ -97,13 +126,25 @@ contain ~3 distinct operands; the in-context task gets *easier* (fewer
 candidates, better coverage — k=8 accuracy rises from 0.38 to 0.87 as the pool
 shrinks) while the identification of the function gets *worse*, and below a
 threshold between 9 and 6 distinct operands the extracted vector snaps to the
-family's degenerate default (the adjacency prior). The failure is **silent**:
-the collapsed vector is well-formed, maximally reliable, causally potent. And
-it is a **bias** phenomenon, not a variance one — stable across prompt draws,
-systematically the wrong function; more samples of the same restricted
-distribution cannot fix it. *(A 2025 bias–variance decomposition of task
-vectors over demonstration count [UNVERIFIED: arXiv 2505.17322] may give this
-a formal home; we will verify before positing.)*
+family's degenerate default (the adjacency prior). That default is not a
+degradation into noise: `next_item` and `prev_item` are named benchmark tasks
+in Todd et al.'s own task suite, so the collapsed vector returns a *different
+task from the same catalogue* — which is why it looks so healthy on every
+measure that scores vectors rather than functions. The failure is **silent**:
+the collapsed vector is well-formed, maximally reliable, causally potent.
+
+And it is a **bias** phenomenon, not a variance one — stable across prompt
+draws, systematically the wrong function; more samples of the same restricted
+distribution cannot fix it. *From Compression to Expansion* [VERIFIED: arXiv
+2505.17322] gives this a formal home, and a sharper one than we expected: their
+Theorem 5.1 proves that the bias *and* the variance of the task vector both
+decay O(1/K) in the number of demonstrations K — **under i.i.d. demonstrations
+drawn from the task distribution** — and their Appendix E shows the guarantee
+breaking when the demonstration distribution is degenerate (their repeat mode).
+Restricting the operand pool changes the demonstration distribution itself, so
+the convergence result still holds and simply points somewhere else: extraction
+converges at O(1/K) to the *wrong* limit. More shots converge faster to the
+wrong vector.
 
 ## What to do instead
 
@@ -141,11 +182,25 @@ a formal home; we will verify before positing.)*
   steer — an **efficacy** axis. Ours steer perfectly and lie about what they
   steer toward — a **faithfulness** axis. A reliability metric scores our
   failure as success.
-- A May 2026 position paper [UNVERIFIED: arXiv 2605.08012] names the general
+- A May 2026 position paper [VERIFIED: arXiv 2605.08012] names the general
   pattern "validation metric substitution" and calls for identification
   assumptions to be disclosed. We read our result as a preregistered empirical
   instance of exactly that failure, in the most standard extraction protocol
-  in the FV literature.
+  in the FV literature — the paper is a position piece and carries no
+  preregistered empirical instance of its own.
+
+Concretely, that paper's Table 4 pairs each method with the validation metric
+it typically reports and the identification assumption that metric leaves
+untested, for four methods: activation patching, SAE steering, causal
+abstraction, and probing-plus-ablation. **FV extraction is absent from the
+table, and this post is the missing fifth row.** Method: FV extraction from ICL
+demonstrations. Validation metric typically reported: behavioural accuracy gate,
+plus reliability, plus causal effect. Identification assumption left untested:
+**demonstration-distribution sufficiency** — that the demonstration
+distribution identifies the intended function. Why the metric cannot test it:
+the model can perform the task on any query support, while the extraction
+inherits that distribution's degenerate default; competence and identification
+come apart, and the accuracy gate only ever sees the first.
 
 ## We killed our own second headline, and you should trust the rest more for it
 
@@ -240,6 +295,12 @@ benchmark task with a closed operand set — if margins hold up there, claim A
 narrows to shift-like families and we will say so; and **T2**, per-condition
 injection tuning — every margin above sits at one frozen injection protocol,
 and if a collapsed vector steers correctly at some other layer × scale, the
-claim weakens to "collapse at the shared protocol." Preregistrations,
+claim weakens to "collapse at the shared protocol." On that second axis:
+*Fast & Faithful Function Vectors* [VERIFIED: arXiv 2606.05079] shows
+distributed per-head injection outperforming the averaged single-layer FV by up
+to +0.156, so a reviewer may ask whether the collapse is an artifact of
+averaged single-layer injection. Our control is that the full-pool vector earns
++0.35 under the identical protocol; T2's sweep covers the protocol axis we
+froze. Preregistrations,
 decision log, and every artifact (with prompt hashes and commits) are in the
 repo: **https://github.com/star2vec/tarcle**.

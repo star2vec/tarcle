@@ -89,6 +89,17 @@ condition's in-sweep k. A reviewer can say: the restricted-pool FVs might
 encode shift-by-k perfectly well and merely need a different injection layer
 or scale; the negative margins measure protocol mismatch, not encoding.
 
+**Scope note added 2026-08-17 (verification pass).** *Fast & Faithful Function
+Vectors* [VERIFIED: arXiv 2606.05079] shows distributed per-head injection
+outperforming the averaged single-layer FV by up to +0.156, so the objection has
+a published form: collapse could be an artifact of averaged single-layer
+injection. Our control is that the full-pool vector earns +0.35 under the
+identical protocol, and T2's sweep is the axis we froze. Stated, not argued;
+T2's pre-committed branches below are unchanged by it, and the sweep remains
+layer × scale on the averaged FV (distributed per-head injection is a different
+extraction-and-injection protocol, out of T2's scope and not substituted for
+it).
+
 ### Design
 
 For each gate-failed condition (partA, partB, halfA, halfB) and each

@@ -1,12 +1,15 @@
 # Literature positioning
 
 **Epistemic status of this document.** A literature sweep was done outside the
-repo (2026-08-14). Several entries post-date the assisting model's knowledge and
-were seen only as search snippets; those are recorded as **leads, not facts**.
-Badges: **[VERIFIED]** = within the assistant's knowledge and consistent with
-the sweep, still re-read before submission; **[UNVERIFIED]** = snippet-level
-lead only, **must be read in full before it is cited anywhere**. Claims in
-UNVERIFIED entries are attributed to the sweep, not to the papers.
+repo (2026-08-14). Several entries post-dated the assisting model's knowledge and
+were seen only as search snippets; those were recorded as **leads, not facts**.
+A **verification pass on 2026-08-17** read the four load-bearing papers in full
+(2605.08012, 2505.17322, 2604.02608, 2606.05079) and re-checked Hendel §4,
+Makelov 2024 and Tan 2024; those entries now carry paper content, not sweep
+content. Badges: **[VERIFIED]** = read and the claims below are the paper's;
+**[UNVERIFIED]** = snippet-level lead only, **must be read in full before it is
+cited anywhere**. Claims in UNVERIFIED entries are attributed to the sweep, not
+to the papers.
 
 **The one positioning rule:** the thesis is pitched as **measurement, not
 insight**. The insight — validation metrics substituted for identification —
@@ -15,71 +18,95 @@ instances; this repo is one. The intro must not claim the framing.
 
 ---
 
-## 0. Verification queue for the post
+## 0. Verification status (pass completed 2026-08-17)
 
-What must be read **before posting** versus what is merely adjacent. Three
-items are blocking — the post's argument depends on their content; everything
-else carries an in-situ badge or lives only in this doc.
+All three blocking items are **resolved**; none of the pre-committed
+repositioning branches fired.
 
-**Blocking:**
+1. **arXiv 2605.08012 — resolved, positioning held.** It is a position paper
+   with **no preregistered empirical instance of its own**, so the post's "we
+   read our result as a preregistered empirical instance of exactly that
+   failure" stands as written; the "a further instance" fallback is not needed.
+   New load-bearing content: **Table 4** maps method → validation metric
+   typically reported → identification assumption left untested, for four
+   methods (activation patching, SAE steering, causal abstraction,
+   probing + ablation). **FV extraction is absent.** We are the missing fifth
+   row (§1).
+2. **Hendel et al. 2023 §4 — resolved, load-bearing detail confirmed.** The
+   varied demonstration sets S are drawn from **full operand pools**; the
+   "regime their robustness check did not cover" framing survives and the
+   abstract-level rewrite is off the table.
+3. **arXiv 2606.05079 — resolved, no collapse in it.** No task-identity
+   validation step and no extraction collapse; it replaces the AIE/injection
+   machinery (distributed per-head injection beats the averaged single-layer FV
+   by up to +0.156). So: one engagement sentence on the T5 AIE rows, plus one
+   **protocol-scope** sentence in the post and in T2's registration (§3.4).
+   Its Appendix G also settles a separate question: `next_item` and `prev_item`
+   are named tasks in Todd et al.'s benchmark suite, so our collapsed vector
+   returns a catalogue task rather than noise.
 
-1. **arXiv 2605.08012** (carries the post's entire framing paragraph). If it
-   already contains a preregistered empirical instance like ours — especially
-   an extraction-time one — the post's "we read our result as a preregistered
-   empirical instance of exactly that failure" becomes "a further instance,"
-   theirs cited first; the implicit claim to be *the* instance the position
-   paper calls for is dropped, and the lead positioning shifts to the Hendel
-   §4 dialogue. What survives regardless: the operand-diversity mechanism, the
-   task-identity margin, and the T1 support audit are ours.
-2. **Hendel et al. 2023 §4** — verify the one load-bearing detail: that the
-   varied demonstration sets S draw from **full operand pools**. If §4 in fact
-   varied operand support, the post's "the varied sets were drawn from full
-   operand pools" sentence is false, the "regime their robustness check did
-   not cover" framing collapses, and claim A repositions on the mechanism and
-   the margin metric alone — an abstract-level rewrite, not a patch.
-3. **arXiv 2606.05079 ("Fast & Faithful Function Vectors"** — same model,
-   attacks AIE). If it contains a task-identity validation step or documents
-   an extraction collapse, the "What to do instead" bullet must cite it as
-   concurrent work and claim A narrows to the mechanism plus the support
-   audit. If it only replaces AIE estimators, the T5 AIE rows need one
-   engagement sentence and nothing else moves.
+**Adjacent — skim before ARR submission, not load-bearing for the post.** None
+of these carries a sentence in the post that would need rewriting if the skim
+surprises us; each is a strengthening citation at most.
 
-**Non-blocking for the post** (badged in situ, or the post survives deletion
-of the single clause that uses them): 2505.17322 (one hedged bias–variance
-sentence in Mechanism), Eklund et al. 2016 (one clause in the claim-B
-section), 2604.02608, 2606.27510, Canby et al., the Tan follow-up lead
-("CAA findings unverified for FVs"), Nullstrap, AxBench. If any of these turns
-out to contain a preregistered instance like ours, it promotes to blocking and
-the 2605.08012 treatment applies to it.
+- **Canby et al. 2024** — causal probing reliability.
+- **Davidson et al. 2025 (NeurIPS)** — instructions vs demonstrations elicit
+  distinct heads. Bears on T7's head-identification assumption, not on claim A.
+- **arXiv 2606.16867** — FVs/TVs fail on negation resolution. Efficacy axis,
+  not faithfulness; same shelf as Tan et al.
+- **arXiv 2605.08295** — in-context label-override regime.
+- **Eklund, Nichols & Knutsson 2016 (PNAS, "Cluster failure")** — carries one
+  clause in the claim-B section (§4); skim only if that clause stays.
+- Also still adjacent: 2606.27510, the Tan follow-up lead ("CAA findings
+  unverified for FVs"), Nullstrap, AxBench.
+
+If any of these turns out to contain a preregistered instance like ours, it
+promotes to blocking and the 2605.08012 treatment applies to it.
 
 ---
 
 ## 1. The frame
 
 **"Position: Mechanistic Interpretability Must Disclose Identification
-Assumptions for Causal Claims" — arXiv 2605.08012 (May 2026). [UNVERIFIED]**
-Per the sweep: names **"validation metric substitution"** — validation metrics
-offered in support of causal claims without stating identification
-assumptions — and cites Makelov et al. and Canby et al. as empirical evidence
-that high validation scores co-exist with failed identification.
-*Does not provide (per sweep):* new empirical instances; it is a position
-paper. *Our sentence:* **we are a preregistered empirical instance of
-validation-metric substitution — the gate passes, the identification fails,
-and the actually-encoded function is identified (next-item) rather than
-inferred.** Cite as the frame this paper instantiates. — *Locate and read
-Canby et al. (no ID in sweep) while verifying this. [UNVERIFIED lead]*
+Assumptions for Causal Claims" — arXiv 2605.08012 (May 2026). [VERIFIED]**
+Names **"validation metric substitution"** — validation metrics offered in
+support of causal claims without stating identification assumptions — and cites
+Makelov et al. and Canby et al. as empirical evidence that high validation
+scores co-exist with failed identification.
+*Does not provide:* new empirical instances; it is a position paper, with **no
+preregistered empirical instance of its own**. *Our sentence:* **we are a
+preregistered empirical instance of validation-metric substitution — the gate
+passes, the identification fails, and the actually-encoded function is
+identified (next-item) rather than inferred.** Cite as the frame this paper
+instantiates. — *Canby et al. moved to §0's adjacent list.*
+
+**The Table 4 row we supply.** Their Table 4 pairs, for each of four methods,
+the validation metric typically reported with the identification assumption
+that metric leaves untested: activation patching, SAE steering, causal
+abstraction, probing + ablation. **FV extraction does not appear.** State our
+contribution as exactly that missing row, in their columns:
+
+| column | our row |
+|---|---|
+| method | FV extraction from ICL demonstrations |
+| validation metric typically reported | behavioural accuracy gate + reliability (split-half) + causal effect |
+| identification assumption left untested | **demonstration-distribution sufficiency** — that the demonstration distribution identifies the intended function |
+| why the metric does not test it | the model can perform the task on any query support, while the extraction inherits the distribution's degenerate default; competence and identification come apart and accuracy only sees the first |
+
+This is the strongest available form of the positioning rule at the top of this
+doc: the framing is theirs, the row is ours, and the row is empirical.
 
 ## 2. Claim A — the four required engagements
 
 **2.1 Hendel, Geva & Globerson 2023, "In-Context Learning Creates Task
-Vectors" (arXiv 2310.15916), §4 "Robustness of Task Vectors". [VERIFIED —
-highest priority; re-read §4 before submission.]**
+Vectors" (arXiv 2310.15916), §4 "Robustness of Task Vectors". [VERIFIED — §4
+read; the load-bearing detail is confirmed.]**
 *Claims:* 50 task vectors per task over varied demonstration sets S and dummy
 queries x′ form clean per-task t-SNE clusters → task vectors are robust.
 *Does not claim:* robustness under **restricted operand support** — the check
-varied S drawn from a full operand pool. **Load-bearing detail to verify in
-the paper's own setup before submission: that S is sampled from the full
-pool.** *Our sentence:* **we identify the regime their robustness check did
+varied S drawn from a **full operand pool**, which is the detail the post's
+framing rests on and which the verification pass confirmed in the paper's own
+setup. *Our sentence:* **we identify the regime their robustness check did
 not cover: restrict the operand pool and the vector stays exactly as "robust"
 (split-half ≥ 0.99, stable, large causal effect) while encoding a different
 function — consistency measures certify the stability of whatever got
@@ -87,9 +114,9 @@ encoded, never its identity.** This engagement shapes the abstract.
 
 **2.2 Makelov, Lange & Nanda 2024, ICLR, "Is This the Subspace You Are
 Looking For? An Interpretability Illusion for Subspace Activation Patching"
-(arXiv 2311.17030). [VERIFIED — author-list caveat: the sweep lists "Makelov,
-Lange, Geiger & Nanda"; the assistant's knowledge has Geiger on a separate
-*reply* to this paper, not on it. Verify the author list before citing.]**
+(arXiv 2311.17030). [VERIFIED — author-list caveat resolved: cite as Makelov,
+Lange & Nanda; Geiger is on a separate *reply* to this paper, not on it, which
+is where the sweep's four-author listing came from.]**
 *Claims:* subspace activation patching can achieve the intended end-to-end
 causal effect by activating a **dormant parallel pathway** fed by a causally
 disconnected component — an interpretability illusion for patching-based
@@ -100,8 +127,8 @@ causal effect, passing validation, wrong object — with a different mechanism
 object (an extracted vector, not a patched subspace).**
 
 **2.3 Tan et al. 2024, NeurIPS, "Analysing the Generalisation and Reliability
-of Steering Vectors" (arXiv 2407.12404). [VERIFIED — re-read for the exact
-"anti-steerability" and answer-token-bias terminology.]**
+of Steering Vectors" (arXiv 2407.12404). [VERIFIED — re-checked, including the
+"anti-steerability" and answer-token-bias terminology as used below.]**
 *Claims:* steering vectors (CAA) are unreliable — high in-distribution
 variance, anti-steerable examples, spurious answer-token biases; efficacy is
 fragile. *Does not claim:* anything about what a *reliable* vector encodes.
@@ -113,20 +140,29 @@ states CAA findings are unverified for Function Vectors. Locate that
 follow-up. [UNVERIFIED lead]*
 
 **2.4 "Steerable but Not Decodable: Function Vectors Operate Beyond the Logit
-Lens" — arXiv 2604.02608 (2026). [UNVERIFIED]**
-Per the sweep: an FV dissociation between two measures (steerability vs
-logit-lens decodability). *Our sentence (conditional on reading):* their
+Lens" — arXiv 2604.02608 (2026). [VERIFIED]**
+An FV dissociation between two measures (steerability vs logit-lens
+decodability) — noting that their "FVs" are mean-of-differences contrastive
+vectors (CAA-style), not Todd causal-head averages. *Our sentence:* their
 dissociation is between an intervention measure and a readout measure; ours is
 between the **validation gate and the encoded function**, with the encoded
 function identified. Also bears on T5's composition point.
 
-**2.5 "From Compression to Expression" — arXiv 2505.17322. [UNVERIFIED]**
-Per the sweep: a bias–variance decomposition of task vectors over
-demonstration count. *Use, conditional on reading:* state precisely that our
-collapse is a **bias** phenomenon, not a variance one — the collapsed vector
-is stable across prompt draws (split-half ≥ 0.99) and systematically encodes
-the wrong function; more draws of the same restricted distribution cannot fix
-it. Adopt their decomposition language only after verifying it.
+**2.5 "From Compression to Expansion" — arXiv 2505.17322. [VERIFIED]**
+*(Title is "Expansion", not "Expression" — the sweep had it wrong.)* A
+bias–variance decomposition of task vectors over demonstration count.
+**Theorem 5.1** proves that the bias *and* the variance of the task vector both
+decay O(1/K) in the demonstration count K — **under i.i.d. demonstrations drawn
+from the task distribution**. **Appendix E** shows the guarantee breaking when
+the demonstration distribution is degenerate (their repeat mode).
+*Our sentence, no longer hedged:* restricting the operand pool **changes the
+demonstration distribution itself**, so their convergence result still holds
+and simply points elsewhere — extraction converges at O(1/K) to the *wrong*
+limit, and more shots converge faster to the wrong vector. This is the formal
+home for our bias-not-variance claim: the collapsed vector is stable across
+prompt draws (split-half ≥ 0.99) and systematically encodes the wrong function,
+and no amount of additional sampling from the same restricted distribution can
+fix it.
 
 ## 3. T5 — occupied ground; claim only the narrow thing
 
@@ -141,9 +177,24 @@ swing with ablation and experimental choices.
 [UNVERIFIED]** Per the sweep: attributes faithfulness-score instability to
 interaction-effect variance.
 **3.4 "Fast & Faithful Function Vectors" — arXiv 2606.05079 (2026).
-[UNVERIFIED — HIGH PRIORITY: per the sweep it attacks AIE per-head patching
-directly on Llama-3.2-3B, our model. If it deprecates AIE, our AIE columns
-(T5, D8/D15) need a sentence engaging it.]**
+[VERIFIED]** Attacks AIE per-head patching directly on Llama-3.2-3B, our model.
+*Contains:* no task-identity validation step and no extraction collapse, so
+claim A is not preempted. *What it does show that we must engage:*
+**distributed per-head injection outperforms the averaged single-layer FV by up
+to +0.156.** Two consequences, both stated rather than argued:
+- **T5's AIE rows** get one engagement sentence — our AIE columns use the
+  estimator they improve on, and the T5 claim (composed measures disagree) does
+  not depend on AIE being the best available estimator.
+- **Protocol scope for claim A** (also written into `preregistration_t7.md` §2
+  and the post's scope section): a reviewer may ask whether the collapse is an
+  artifact of averaged single-layer injection. The control is that the
+  full-pool vector earns +0.35 under the identical protocol, and T2's sweep
+  covers the protocol axis we froze.
+*Separately, its Appendix G settles the benchmark-catalogue question:*
+`next_item` and `prev_item` are **named tasks in Todd et al.'s own suite**, so
+the collapsed months vector does not degrade into noise — it returns a
+different task from the same catalogue. Used in the post where the adjacency
+prior is first named, and in the TL;DR.
 
 *The narrow novel claim T5 is allowed to make, against all four:* **not**
 "importance measures are unstable" (occupied) but: *the two measures the FV
@@ -161,10 +212,11 @@ would look naive. Frame: **importing an established discipline into mech-interp
 validation, with the C4a/C4b table as the measurement showing why it is
 needed.**
 
-- **Eklund, Nichols & Knutsson 2016 (PNAS, "Cluster failure"). [VERIFIED]**
-  Canonical neuroimaging result: parametric-null FPRs measured on real
-  resting-state data; the field's methods were permissive. Our C4a column is
-  the same move for interp diagnostics.
+- **Eklund, Nichols & Knutsson 2016 (PNAS, "Cluster failure"). [ADJACENT —
+  §0 skim list; not load-bearing. Badged [UNVERIFIED] in the post, which is
+  where it carries its single clause.]** Canonical neuroimaging result:
+  parametric-null FPRs measured on real resting-state data; the field's methods
+  were permissive. Our C4a column is the same move for interp diagnostics.
 - **Permutation inference (Nichols & Holmes 2002; Winkler et al. 2014).
   [VERIFIED]** The standard data-derived-null machinery our perm_z / residual
   permutation rows instantiate.
