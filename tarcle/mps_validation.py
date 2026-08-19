@@ -65,9 +65,15 @@ def main() -> None:
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     assert torch.backends.mps.is_available(), "MPS not available"
+    # Tokenizer configured exactly as extract.load_model does: pad = eos,
+    # left padding so the last position is the true final token.
     tok = AutoTokenizer.from_pretrained(MODEL)
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL, dtype=torch.float16).to("mps").eval()
+        MODEL, dtype=torch.float16, attn_implementation="sdpa").to("mps").eval()
+    model.config.use_cache = False
     arch = describe(model)
 
     baseline = causal.baseline_accuracy(model, tok, arch, "months", KS, BATCH)

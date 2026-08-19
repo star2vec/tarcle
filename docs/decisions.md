@@ -2335,6 +2335,49 @@ criterion fails → **T2 stops and waits for CUDA hardware**; the failure is
 logged as its own entry and treated as a valid result about the instrument,
 not a problem to engineer around.
 
+### D51. MPS injection validation: FAIL. T2 waits for CUDA hardware.
+
+Read against D50 exactly as registered
+(`results/stage2/mps_validation.json`).
+
+| criterion | result |
+|---|---|
+| 1 — accuracy per cell, two-proportion margin | pass (0 of 120 outside) |
+| 2 — logp-lift per cell, paired SE tolerance | pass (120/120 within) |
+| 3 — per-condition D20 margin, paired 95% CI + class stability | **FAIL** |
+
+Criterion 3 fails on the **primary condition, both methods**: Todd margin
++0.352 (CUDA) → +0.269 (MPS), difference −0.083 against a paired CI of
+±0.069; Hendel −0.343 → −0.407, difference −0.065 against ±0.059. Every gate
+class is stable (the primary stays healthy at +0.269; all eight collapsed
+cells stay collapsed, within CI — partB/todd reproduces prediction-for-
+prediction, diff exactly 0). The four T2 conditions individually validate;
+the anchor does not.
+
+**The registered FAIL branch fires: T2 does not run on this machine and
+waits for CUDA hardware.** The subset included the primary deliberately —
+T2's control argument ("the full-pool vector earns +0.35 under the identical
+protocol") leans on it — and the primary is exactly where the instrument
+drifts. Re-scoping the subset after seeing which cell failed would be the
+post-hoc move this log exists to prevent. Rule 4 is **not** extended;
+injection-bearing work remains CUDA-only.
+
+Two observations recorded with the verdict, not as mitigation:
+
+- The drift is one-directional and lands where the vector carries fine
+  structure: fp16 injection at ×3.0 weakens the healthy Todd margin and
+  pushes the (already-confined) healthy-condition Hendel margin further
+  negative, while the degenerate attractors are insensitive to precision.
+  Steering *toward a task* degrades under fp16 here; steering *toward the
+  default* does not. If T2 had run on this device, its rescue criterion
+  (margin ≥ +0.10, CI clear of 0) would have been biased **against** rescue —
+  the adversarial direction, but a biased instrument regardless.
+- The per-cell tolerances (criteria 1–2) passed everywhere while the
+  aggregate decision statistic (n = 108 paired predictions) caught the drift.
+  One more instance of the project's thesis: the low-powered checks pass, the
+  decision-relevant statistic disagrees, and which one you consult decides
+  what you ship.
+
 ---
 
 ## Conventions
