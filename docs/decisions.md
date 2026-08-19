@@ -2294,6 +2294,47 @@ corresponds to — the definition must be named wherever the quote is used.
 Match under one definition → `results/stage2/efficacy_quote_partB.json` is the
 record. Match under neither → **STOP and report.**
 
+### D50. MPS injection validation — subset, tolerances and branches, registered before the run
+
+CLAUDE.md rule 4 sanctions this M1 for behavioural runs only; it has never
+been validated for interventions. T2 is injection-bearing, so before it may
+run here, the frozen-protocol injection cells are re-executed on MPS fp16 and
+compared against the committed CUDA bf16 values inside the `ctl_*` `.npz`
+files. Script: `tarcle/mps_validation.py`, committed with this entry; run
+after commit.
+
+**Subset:** the four T2 conditions (partA, partB, halfA, halfB) plus the
+primary (the +0.35 healthy anchor T2's control argument leans on), both
+extraction methods, all twelve k, the full 12-query zero-shot cycle, at the
+frozen protocols exactly as stored in each `.npz` (Todd: L8 × 3.0 add;
+Hendel: L15 × 1.0 replace) — 120 (condition, method, k) cells plus MPS-side
+baselines (lift is computed same-instrument on each side).
+
+**Tolerances, fixed now:**
+
+1. **Accuracy per cell:** |Δ| ≤ the two-proportion 95% margin at n = 12/12 —
+   the behavioural cross-device regime (D46). At n = 12 this margin is wide
+   (≈ 0.3–0.4), so this criterion alone cannot carry a PASS; it can only fail
+   one.
+2. **logp-lift per cell (the analogous tolerance the D entry must document):**
+   |Δ lift| ≤ 1.96·√(SE²_cuda + SE²_mps), SEs over the twelve queries on each
+   side (the D17 injected-side semantics both sides), devices treated as
+   independent — conservative in the direction of flagging. **Pass requires
+   ≥ 95% of the 120 cells within tolerance.**
+3. **Decision statistic (what T2 actually reads):** per (condition, method),
+   the D20 margin from `pred_shift` over mid-cycle k (108 paired predictions).
+   |margin_mps − margin_cuda| must lie within the 95% CI of the paired
+   per-prediction difference (1.96·sd(d_mps − d_cuda)/√108), **and** no
+   condition may cross a ±0.10 D20 gate line in a way that changes its class
+   (collapsed stays collapsed; the primary stays healthy).
+
+**Branches:** PASS = all three criteria hold → the next entry extends rule 4
+to injection-on-MPS **for T2 specifically** (this model, these saved FVs,
+zero-shot injection scoring; not extraction, not geometry). FAIL = any
+criterion fails → **T2 stops and waits for CUDA hardware**; the failure is
+logged as its own entry and treated as a valid result about the instrument,
+not a problem to engineer around.
+
 ---
 
 ## Conventions
