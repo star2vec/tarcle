@@ -2243,6 +2243,59 @@ cannot collide with them.
 
 ---
 
+## 2026-08-19 — M1 session: hygiene, MPS injection validation, T2
+
+### D47. Correction to D45 §2's clobber count, with the definition it lacked
+
+D45 §2 says "five clobber events" while listing a four-commit chain, and the
+figure is not derivable from any stated definition. D45 is not edited; this
+entry states the census and the definition.
+
+**Definition:** a clobber event is a write of `nextitem_todd.json` that
+replaced differing content at that path.
+
+**Census, from evidence:** the file has exactly **four committed versions**
+(`6c1c760` {half_a, half_b} → `12ffc04` {mixed_daysmonths} → `0bad1ba`
+{unrelated} → `21eb3a5` {unrelated, addk}), i.e. **three clobber events
+visible in committed history**. At least **one further uncommitted clobber is
+proven by content**: `6c1c760`'s decisions.md quotes the D20 margins for
+primary/polysemy/partition conditions, which required nextitem invocations
+whose outputs are absent from that same commit's `nextitem_todd.json` — they
+were overwritten by the halves invocation before the commit. **Correct
+statement: at least four clobber events, exactly three of them visible in
+committed history; the true total is unknowable because uncommitted
+invocations leave no trace.** D45's "five" overcounted by treating the
+four-commit chain itself as four events and adding the inferred one; the
+chain's four versions contain only three transitions.
+
+### D48. Landing-map read, registered with its script before appearing in prose
+
+A descriptive read used in post drafting is registered before it may appear in
+public prose (house rule): the landing map of injected zero-shot predictions
+for the four collapsed conditions. Script: `tarcle/landing_map.py` (guarded
+writer, committed with this entry); definition in its docstring (Todd,
+k ∉ {0,1,11}, full query cycle; classes: correct / successor / predecessor /
+copy / fwd-2-8-excluding-correct / other).
+
+**Expected values, stated before the committed-artifact run:** strictest
+condition ≈ 95% adjacent; zero predictions 2–8 steps forward there. Match →
+`results/stage2/landing_map.json` is the record and the numbers may enter the
+post. Mismatch on any quoted figure → **STOP and report; no silent
+reconciliation.**
+
+### D49. Partition-B efficacy quote, registered with its script before appearing in prose
+
+Same treatment for the second drafting read: ctl_months_partB / Todd, quoted
+as injected accuracy mean 0.257 vs zero-shot baseline 0.083, logp_lift mean
++1.19. Script: `tarcle/efficacy_quote.py` (guarded writer, committed with this
+entry). It computes all three means under both candidate definitions (all
+twelve k; k ≠ 0 per the D2 ceiling caveat) and records which one the quote
+corresponds to — the definition must be named wherever the quote is used.
+Match under one definition → `results/stage2/efficacy_quote_partB.json` is the
+record. Match under neither → **STOP and report.**
+
+---
+
 ## Conventions
 
 - Entries are append-only. A superseded decision is struck through with a pointer to

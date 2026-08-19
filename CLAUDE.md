@@ -1,5 +1,12 @@
 # tarcle — is task space circular?
 
+> **PROGRAMME STATUS (2026-08): the geometry programme below is CLOSED — D38
+> fired the "neither passes" branch and the months results stand as a case
+> study with their stated limits. The project is now the measurement-validity
+> study: see `README.md`, `docs/instruments_findings.md`, and decisions
+> D39 onward. The text below is kept as the historical brief; its rules
+> (extraction methods, gates, determinism, hardware, style) still bind.**
+
 Empirical study: do function vectors (FVs) for a cyclically-structured task family
 (shift-by-k on days of week, Z/7; later months Z/12, ROT-k Z/26) inherit the cyclic
 group structure — i.e. does k -> FV(T_k) trace a circle in activation space?
