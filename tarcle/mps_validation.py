@@ -11,11 +11,17 @@ hardware).
 
 GPU code — imports torch. Output is a guarded JSON with every paired cell.
 
+D52 re-runs the identical gate with the model at bfloat16 (the second and
+final candidate instrument on this hardware; fp32 exceeds the MPS working-set
+ceiling). The dtype is a CLI argument and the output file is dtype-stamped so
+the fp16 artifact is never touched.
+
 Usage:
-    .venv/bin/python -m tarcle.mps_validation
+    .venv/bin/python -m tarcle.mps_validation --dtype float16|bfloat16
 """
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 from pathlib import Path
@@ -61,8 +67,14 @@ def d20_margin(shifts: np.ndarray, ks: list[int]) -> np.ndarray:
     return ((s == kcol).astype(float) - np.isin(s, [1, 11]).astype(float)).ravel()
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--dtype", required=True,
+                    choices=("float16", "bfloat16"))
+    args = ap.parse_args(argv)
+    dtype = getattr(torch, args.dtype)
 
     assert torch.backends.mps.is_available(), "MPS not available"
     # Tokenizer configured exactly as extract.load_model does: pad = eos,
@@ -72,14 +84,14 @@ def main() -> None:
         tok.pad_token = tok.eos_token
     tok.padding_side = "left"
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL, dtype=torch.float16, attn_implementation="sdpa").to("mps").eval()
+        MODEL, dtype=dtype, attn_implementation="sdpa").to("mps").eval()
     model.config.use_cache = False
     arch = describe(model)
 
     baseline = causal.baseline_accuracy(model, tok, arch, "months", KS, BATCH)
 
     out = {"git_commit": git_commit(), "model": MODEL, "device": "mps",
-           "dtype": "float16", "cells": [], "margins": {},
+           "dtype": args.dtype, "cells": [], "margins": {},
            "criteria": {}}
     acc_fail, lift_out, n_cells = [], 0, 0
 
@@ -168,8 +180,9 @@ def main() -> None:
     print(f"criterion 3 (margins): {'pass' if crit3 else 'FAIL'}")
     print(f"VERDICT: {out['criteria']['VERDICT']}")
 
-    write_guarded(Path("results/stage2/mps_validation.json"),
-                  json.dumps(out, indent=2, default=float) + "\n")
+    dest = ("results/stage2/mps_validation.json" if args.dtype == "float16"
+            else f"results/stage2/mps_validation_{args.dtype}.json")
+    write_guarded(Path(dest), json.dumps(out, indent=2, default=float) + "\n")
 
 
 if __name__ == "__main__":

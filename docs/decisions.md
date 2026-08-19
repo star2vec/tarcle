@@ -2378,6 +2378,34 @@ Two observations recorded with the verdict, not as mitigation:
   decision-relevant statistic disagrees, and which one you consult decides
   what you ship.
 
+### D52. Second candidate instrument: bf16-on-MPS, submitted to the unchanged D50 gate
+
+D51's FAIL concerned **fp16** injection — the dtype mismatch against the bf16
+CUDA artifacts being the most plausible drift source. A probe (2026-08-20)
+established that this stack supports **bfloat16 on MPS** (torch 2.13,
+macOS 14.2, M1 / Metal bfloat; bf16 linear forward verified) and that the
+bf16 model (6.4 GB) fits under the 10.7 GB MPS working-set ceiling (fp32, at
+12.8 GB, does not and is excluded).
+
+**Registered before the run:** `tarcle/mps_validation.py` is re-run with the
+model at bfloat16, everything else identical — **the D50 subset, all three
+tolerances, and the pass rule are frozen and reused unchanged.** This is the
+same gate applied to a second candidate instrument, not dtype-shopping: D51's
+fp16 verdict stands untouched whatever happens here, and no third dtype
+exists on this hardware, so the candidate set is exhausted by this entry.
+Output goes to its own guarded artifact
+(`results/stage2/mps_validation_bfloat16.json`).
+
+**Branches, pre-committed:**
+
+- **PASS** (all three D50 criteria) → a follow-up entry extends rule 4 to
+  injection-on-MPS **at bf16, for T2 specifically** (this model, these saved
+  FVs, zero-shot injection scoring); T2 runs on this machine at bf16.
+- **FAIL** → T2 is genuinely CUDA-only on the evidence of two instruments;
+  no further engineering on this machine.
+- **Instrument unavailable** (bf16 execution errors mid-run despite the
+  probe) → treated as FAIL for T2 purposes, logged with the error.
+
 ---
 
 ## Conventions
