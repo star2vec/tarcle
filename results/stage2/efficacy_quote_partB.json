@@ -1,0 +1,18 @@
+{
+  "git_commit": "a7803266dd60c76f487317699239641a04b041e9",
+  "npz": "results/fv/ctl_months_partB/fv_partition_b_todd.npz",
+  "definitions": {
+    "all_k": {
+      "efficacy_acc_mean": 0.25694444465140504,
+      "baseline_mean": 0.08333333333333333,
+      "logp_lift_mean": 1.1937837849060695,
+      "n_k": 12
+    },
+    "k_ne_0": {
+      "efficacy_acc_mean": 0.18939393961971457,
+      "baseline_mean": 0.0,
+      "logp_lift_mean": 1.2546227953650735,
+      "n_k": 11
+    }
+  }
+}
