@@ -2406,6 +2406,35 @@ Output goes to its own guarded artifact
 - **Instrument unavailable** (bf16 execution errors mid-run despite the
   probe) → treated as FAIL for T2 purposes, logged with the error.
 
+### D53. bf16-on-MPS PASSES the D50 gate; rule 4 extended for T2; T2 launched
+
+Read against D50's criteria exactly as registered
+(`results/stage2/mps_validation_bfloat16.json`): criterion 1 pass (0 of 120
+accuracy cells outside), criterion 2 pass (120/120 lifts within), criterion 3
+pass (all ten condition/method margins within their paired 95% CIs, every
+gate class stable). The cell that failed at fp16 — the primary anchor —
+reproduces at bf16: Todd +0.352 → +0.324 (diff −0.028 vs CI ±0.048), Hendel
+−0.343 → −0.352 (diff −0.009 vs ±0.018). The D51 diagnosis holds: the fp16
+drift was the dtype mismatch against the bf16 CUDA artifacts, and it is gone
+when the dtypes agree.
+
+**The D52 PASS branch fires: CLAUDE.md rule 4 is extended to
+injection-on-MPS at bfloat16, scoped to T2 specifically** — this model, the
+saved `ctl_*` FVs, zero-shot injection scoring. Not extraction, not geometry,
+not fp16 (D51 stands), not any future run that does not inherit this exact
+instrument.
+
+**T2 launch, registration-interpretation note recorded before the run:** the
+`ctl_*` `.npz` files persist only the frozen-layer (L15) Hendel dummy-query
+state, so the registered "layer-only sweep on the saved FVs, no
+re-extraction" (prereg_t7 §2) necessarily means injecting that saved L15
+state at each of the 28 layers. Per-layer Hendel states were never saved and
+re-extracting them is outside T2's scope; this is the only executable literal
+reading, and it is recorded here rather than discovered in review. Sweep:
+`tarcle/t2_sweep.py --device mps --dtype bfloat16`, 224 hash-stamped
+resumable chunks, grid run to completion, verdict read only by
+`tarcle/t2_report.py` against the registered branches.
+
 ---
 
 ## Conventions
