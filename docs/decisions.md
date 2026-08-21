@@ -2435,6 +2435,36 @@ reading, and it is recorded here rather than discovered in review. Sweep:
 resumable chunks, grid run to completion, verdict read only by
 `tarcle/t2_report.py` against the registered branches.
 
+### D54. T2 outcome: OBJECTION CLOSED — no injection protocol rescues a collapsed vector
+
+The sweep ran exactly as registered (prereg_t7 §2; D53 sanction: MPS bf16),
+to completion, no early stops: 224/224 chunks, ~99 minutes wall
+(`results/t2/`, hash-stamped; verdict `results/t2/t2_report.json`).
+Internal-consistency anchor before reading: the sweep's frozen-protocol cell
+(partA/todd, L8 × 3.0) reproduces the D52-validated margin exactly (−0.685).
+
+**Registered branch fired: OBJECTION CLOSED.** Every condition/method
+best-over-grid margin is < +0.10 — and the result is much stronger than the
+threshold: the best cell anywhere is exactly **0.000** (weak-injection cells
+where the copy prior dominates and predictions land on neither the correct
+shift nor ±1), and **no cell in the entire space has a positive margin at
+all** — Todd 0 of 560 (512 negative, 48 zero), Hendel 0 of 112 (66 negative,
+46 zero). At no layer, at no scale, under either extraction method, does any
+collapsed vector produce even one more correct-shift prediction than
+adjacent-item predictions. The adversarial max never found anything to
+maximise.
+
+Per the registration, claim A's sentence gains its clause: no accuracy gate
+at any query support could detect the collapse, **and no injection tuning
+could rescue it** (applied to the post and README with this entry).
+
+Scope carried, not hidden: instrument is MPS bf16 under the D53 sanction;
+the Hendel arm injects the saved L15 state at each layer (D53 note); the
+grid is the registered layer × scale space over averaged single-layer FVs —
+distributed per-head injection (arXiv 2606.05079) is a different protocol,
+out of T2's scope per the 2026-08-17 registration note, and this verdict
+says nothing about it.
+
 ---
 
 ## Conventions

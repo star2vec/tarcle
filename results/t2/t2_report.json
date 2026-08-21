@@ -1,0 +1,342 @@
+{
+  "git_commit": "667a7d06ce9ff1648cb4fed9900b4968a418de31",
+  "conditions": {
+    "partA/todd": {
+      "best": {
+        "layer": 4,
+        "scale": 0.5,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 4,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 6,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 8,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 22,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 23,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 140,
+      "branch": "closed"
+    },
+    "partA/hendel": {
+      "best": {
+        "layer": 0,
+        "scale": 1.0,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 0,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 1,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 2,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 3,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 4,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 28,
+      "branch": "closed"
+    },
+    "partB/todd": {
+      "best": {
+        "layer": 8,
+        "scale": 0.5,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 8,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 19,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 21,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 22,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 23,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 140,
+      "branch": "closed"
+    },
+    "partB/hendel": {
+      "best": {
+        "layer": 0,
+        "scale": 1.0,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 0,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 1,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 2,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 3,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 4,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 28,
+      "branch": "closed"
+    },
+    "halfA/todd": {
+      "best": {
+        "layer": 5,
+        "scale": 0.5,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 5,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 6,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 22,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 23,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 24,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 140,
+      "branch": "closed"
+    },
+    "halfA/hendel": {
+      "best": {
+        "layer": 0,
+        "scale": 1.0,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 0,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 1,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 3,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 4,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 5,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 28,
+      "branch": "closed"
+    },
+    "halfB/todd": {
+      "best": {
+        "layer": 6,
+        "scale": 0.5,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 6,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 8,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 21,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 22,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 23,
+          "scale": 0.5,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 140,
+      "branch": "closed"
+    },
+    "halfB/hendel": {
+      "best": {
+        "layer": 0,
+        "scale": 1.0,
+        "margin": 0.0,
+        "ci95": 0.0
+      },
+      "top5": [
+        {
+          "layer": 0,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 1,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 3,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 4,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        },
+        {
+          "layer": 5,
+          "scale": 1.0,
+          "margin": 0.0,
+          "ci95": 0.0
+        }
+      ],
+      "n_cells": 28,
+      "branch": "closed"
+    }
+  },
+  "verdict": "OBJECTION CLOSED \u2014 every best-over-grid margin < +0.10; collapse holds across the protocol space"
+}

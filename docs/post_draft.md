@@ -116,7 +116,11 @@ real, on the very query support the FV margin is scored over. And the vector
 extracted from those same prompts steers to next-item **even on the
 demonstrated operands** (in-pool margins −0.13 to −1.00). The failure is in
 the extraction, not the behaviour — which is why **no accuracy gate, at any
-query support, could detect it.**
+query support, could detect it — and no injection tuning could rescue it**:
+the registered T2 sweep (28 layers × 5 scales, both methods, run to
+completion) found **no grid cell with a positive task-encoding margin
+anywhere** — 0 of 560 Todd cells and 0 of 112 Hendel cells; the best cell in
+the whole space is exactly 0.000 (D54).
 
 ## Mechanism, as far as we measured it
 
@@ -289,18 +293,17 @@ Hendel-style dummy-query extraction cannot steer mid-cycle shifts at all on
 this model — a registered limitation reported throughout). The degenerate
 default here is the adjacency prior; the general claim is that accuracy-gating
 misses *some* degenerate default, not that it is always next-item. Two
-registered follow-ups will test the load-bearing generalisations
+registered follow-up will test the load-bearing generalisation
 (`docs/preregistration_t7.md`): **T7**, the same audit on a standard FV
 benchmark task with a closed operand set — if margins hold up there, claim A
-narrows to shift-like families and we will say so; and **T2**, per-condition
-injection tuning — every margin above sits at one frozen injection protocol,
-and if a collapsed vector steers correctly at some other layer × scale, the
-claim weakens to "collapse at the shared protocol." On that second axis:
-*Fast & Faithful Function Vectors* [VERIFIED: arXiv 2606.05079] shows
-distributed per-head injection outperforming the averaged single-layer FV by up
-to +0.156, so a reviewer may ask whether the collapse is an artifact of
-averaged single-layer injection. Our control is that the full-pool vector earns
-+0.35 under the identical protocol; T2's sweep covers the protocol axis we
-froze. Preregistrations,
+narrows to shift-like families and we will say so. **T2 has now run** (its
+registration unchanged; instrument validated first, D50–D53): the
+per-condition injection sweep closed the protocol objection as above, with
+one scope line — the sweep covers the layer × scale space of averaged
+single-layer FVs, the axis we froze; distributed per-head injection
+[VERIFIED: arXiv 2606.05079, up to +0.156 over averaged FVs] is a different
+extraction-and-injection protocol and this verdict says nothing about it.
+Our control against the averaged-injection worry stands as before: the
+full-pool vector earns +0.35 under the identical protocol. Preregistrations,
 decision log, and every artifact (with prompt hashes and commits) are in the
 repo: **https://github.com/star2vec/tarcle**.

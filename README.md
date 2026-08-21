@@ -29,9 +29,11 @@ Llama-3.2-3B, months shift-by-k, 16-shot (`docs/instruments_findings.md`):
    the same injections).
 
 **Not established:** one model, one task family, one prompt format. Generality
-to standard FV benchmark tasks (T7) and robustness to per-condition injection
-tuning (T2) are registered but unrun. Hendel-method columns carry a registered
-±1-confinement limitation throughout.
+to standard FV benchmark tasks (T7) is registered but unrun. The injection-
+protocol objection is closed (T2, D54): across the full 28-layer × 5-scale
+grid, both methods, no cell gives a collapsed vector a positive task-encoding
+margin — collapse is not an artifact of the frozen protocol. Hendel-method
+columns carry a registered ±1-confinement limitation throughout.
 
 **Layout:** `tarcle/` (stage 1: `extract.py`, `causal.py`; stage 2, numpy-only:
 `geometry.py`, `stage2.py`, `floors.py`, `measure_corr.py`, `margin_split.py`,
