@@ -2465,6 +2465,13 @@ distributed per-head injection (arXiv 2606.05079) is a different protocol,
 out of T2's scope per the 2026-08-17 registration note, and this verdict
 says nothing about it.
 
+### D55. Post figure 2 (`tarcle/fig_diversity.py`, contributed) re-run against current artifacts
+
+All assertions pass on the current repo state — diversity means from the
+committed prompt files, all six margins from `margin_split.json` (to 5e-4),
+all six gate worst-cells including the D45/D46 re-run values — output
+`results/stage2/fig_diversity_92bf0dd7d6c1.{svg,png}` (content-hash-stamped).
+
 ---
 
 ## Conventions
