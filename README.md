@@ -6,18 +6,18 @@ preregistered geometry study (do shift-by-k task vectors sit on a circle?
 they don't), and the control vectors built for that study turned out to be the
 actual finding.
 
-**write-up:** [[LessWrong article]](PASTE-LINK-AFTER-POSTING)
+**Write-up:** [[LessWrong article]](https://www.lesswrong.com/posts/aFyir2PaoCHK5prAu/the-imposters-among-us-function-vectors-that-ace-every-check)
 
-Short version: extract shift-by-k-months vectors (Llama-3.2-3B) from
-demonstrations that use only a few distinct months, and the result passes the
-behavioural gate, split-half reliability, and causal-effect checks while
-outputting a month adjacent to the query regardless of k (margins down to
-−0.94, exactly −1.000 on the demonstrated months). Fewer distinct months makes
-the in-prompt task easier while the vector breaks, so the checks favor the
-broken vectors. No injection layer or strength rescues them (0 of 672 settings).
-Bonus finding: pass/fail thresholds calibrated on generated random data miss in
-both directions (145–156× too lenient for some statistics, ~100× too strict for
-another); thresholds from shuffled real vectors transfer.
+We extracted shift-by-k-months function vectors on Llama-3.2-3B from few-shot prompts that contained fewer distinct months (lower diversity). The vectors passed three classic checks: the behavioral gate, stability when extracting from disjoint halves of the prompt samples (cosine similarity ≥  0.99 for the broken vectors, 0.98 for the full set), and the causal effect (where injection tripled zero-shot accuracy and the correct answer’s probability, including for the most broken vector).
+
+However, they encoded a completely different task: output a month adjacent to the queried one, while completely ignoring “k”. Margins ranged from -0.31 to -0.94 across the broken sets, with -1.000 for the most broken set, on the months included in the few-shot prompts.
+
+The culprit is the number of distinct example inputs. Lower diversity makes the model perform the few-shot task better (from 0.38 to 0.83) even though the function vector changes identity, so the checks actually favor the imposters. 
+
+After a sweep across layers and strengths, no injection setting (0 out of 672) rescued the broken vectors. Thresholds calibrated on generated random data were wrong in both directions (145–156× too low or 100× too high), compared to the thresholds from shuffled real vectors, which were correct.
+
+To catch imposters, report example diversity, and score not only whether injection helps on average but also which function it performs. 
+
 
 ## Where things are
 
